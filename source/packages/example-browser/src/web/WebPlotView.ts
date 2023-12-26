@@ -192,6 +192,8 @@ export class WebPlotView implements IPlotView {
 
   private _throttleRender: () => void = this.throttle(() => this.renderCore(false), 16)
 
+  private _rendering = false
+
   private async renderCore(updateData?: boolean) {
     const view = this._view
     const model = this._model
@@ -199,18 +201,24 @@ export class WebPlotView implements IPlotView {
     if (!model) {
       return
     }
-    model.update(updateData || false)
+    if (this._rendering) return
+    this._rendering = true
+    try {
+      model.update(updateData || false)
 
-    if (!model.background.isUndefined()) {
-      this._drawCtx.fillStyle = this._styleConverter.convertStrokeOrFillStyle(model.background)
-      this._drawCtx.fillRect(0, 0, view.width, view.height)
-    }
-    await model.render(this._renderContext, new OxyRect(0, 0, view.width, view.height))
+      if (!model.background.isUndefined()) {
+        this._drawCtx.fillStyle = this._styleConverter.convertStrokeOrFillStyle(model.background)
+        this._drawCtx.fillRect(0, 0, view.width, view.height)
+      }
 
-    if (this._zoomRectangle && this._zoomRectangle.equals(OxyRect.Empty)) {
-      const fill = OxyColor.parse('#40FFFF00')
-      const stroke = OxyColors.Black
-      await this._renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
+      await model.render(this._renderContext, new OxyRect(0, 0, view.width, view.height))
+      if (this._zoomRectangle && this._zoomRectangle.equals(OxyRect.Empty)) {
+        const fill = OxyColor.parse('#40FFFF00')
+        const stroke = OxyColors.Black
+        await this._renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
+      }
+    } finally {
+      this._rendering = false
     }
   }
 
