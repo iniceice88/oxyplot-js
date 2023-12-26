@@ -11,6 +11,8 @@ import dayOfYear from 'dayjs/plugin/dayOfYear'
 import { WebPlotView } from './web/WebPlotView'
 import oxyPlotImg from './assets/OxyPlot.png'
 
+import { getRenderContextImageCacheService } from './web/RenderContextImageCacheService.ts'
+
 ;(window as any).oxyPlotImg = oxyPlotImg
 
 dayjs.extend(duration)
@@ -86,6 +88,8 @@ async function handleExampleClick(ec: ExampleCategory, ei: ExampleInfo) {
 
   isTransposable.value = PlotModelUtilities.isTransposable(example.model)
   isReversible.value = PlotModelUtilities.isReversible(example.model)
+
+  getRenderContextImageCacheService().clear()
 
   await display(example)
 }

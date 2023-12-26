@@ -260,7 +260,7 @@ function polarHeatMapLinearAxesFixed256(): PlotModel {
 function polarHeatMapLinearAxesFixed1000(): PlotModel {
   const model = polarHeatMapLinearAxes()
   model.title = 'Polar heat map on linear axes & fixed size image (1000x1000)'
-  ;(model.series[0] as PolarHeatMapSeries).imageSize = 1000
+  ;(model.series[0] as PolarHeatMapSeries).imageSize = 1100
   return model
 }
 

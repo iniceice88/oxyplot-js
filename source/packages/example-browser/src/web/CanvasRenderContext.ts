@@ -10,17 +10,20 @@ import {
   OxyImage,
   OxyRect,
   OxySize,
+  round,
   ScreenPoint,
   StringHelper,
   VerticalAlignment,
 } from 'oxyplot-js'
 import { canvasTextMeasurer, OxyStyleToCanvasStyleConverter } from './canvasTextMeasurer'
+import { getRenderContextImageCacheService, IRenderContextImageCacheService } from './RenderContextImageCacheService.ts'
 
 export class CanvasRenderContext extends ClippingRenderContext {
   private readonly ctx: CanvasRenderingContext2D
   private readonly _textMeasurer: ITextMeasurer
   private readonly styleConverter = new OxyStyleToCanvasStyleConverter()
   private readonly _ctxInitStyles: Record<string, any>
+  private readonly _renderContextImageCacheService: IRenderContextImageCacheService
 
   constructor(private canvas: HTMLCanvasElement) {
     super()
@@ -36,6 +39,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
       lineWidth: ctx.lineWidth,
     }
 
+    this._renderContextImageCacheService = getRenderContextImageCacheService()
     this._textMeasurer = canvasTextMeasurer(ctx)
   }
 
@@ -55,30 +59,25 @@ export class CanvasRenderContext extends ClippingRenderContext {
     if (opacity <= 0) return
 
     this.resetStyles()
-
     const ctx = this.ctx
-    if (!source.uri) {
-      const blob = new Blob([source.data], { type: 'image/png' })
-      const img = await createImageBitmap(blob)
-      ctx.imageSmoothingEnabled = interpolate
-      ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight)
-      return
-    }
 
-    return new Promise<void>((resolve) => {
-      const img = new Image(source.width, source.height)
-      const base64String = btoa(String.fromCharCode(...source.data))
-      img.src = `data:image/png;base64,${base64String}`
-      img.onerror = (e) => {
-        console.log('error loading image', e)
-        resolve()
-      }
-      img.onload = () => {
-        ctx.imageSmoothingEnabled = interpolate
-        ctx.drawImage(img, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight)
-        resolve()
-      }
+    const img = await this.getOrCreateImage(source, () => {
+      const blob = new Blob([source.data], { type: 'image/png' })
+      return createImageBitmap(blob)
     })
+
+    ctx.imageSmoothingEnabled = interpolate
+    ctx.drawImage(
+      img,
+      srcX,
+      srcY,
+      srcWidth,
+      srcHeight,
+      round(destX, 0),
+      round(destY, 0),
+      round(destWidth, 0),
+      round(destHeight, 0),
+    )
   }
 
   /**
@@ -371,5 +370,19 @@ export class CanvasRenderContext extends ClippingRenderContext {
       const point = points[i]
       this.ctx.lineTo(point.x, point.y)
     }
+  }
+
+  private async getOrCreateImage(
+    source: OxyImage,
+    creator: () => Promise<ImageBitmap | HTMLImageElement>,
+  ): Promise<ImageBitmap | HTMLImageElement> {
+    const hashCode = source.getHashCode().toString()
+    const existsImage = this._renderContextImageCacheService.get(hashCode)
+    if (existsImage) {
+      return Promise.resolve(existsImage)
+    }
+    const image = await creator()
+    this._renderContextImageCacheService.set(hashCode, image)
+    return image
   }
 }

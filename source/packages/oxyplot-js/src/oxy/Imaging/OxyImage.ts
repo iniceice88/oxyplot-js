@@ -1,6 +1,6 @@
 ﻿import type { ImageEncoderOptions } from '@/oxyplot'
 import { ImageFormat, OxyColor } from '@/oxyplot'
-import { type EncodeImageOptions, getImageService, type TwoDimensionalArray } from '@/patch'
+import { type EncodeImageOptions, getImageService, hashCode, type TwoDimensionalArray } from '@/patch'
 
 /**
  * Represents an image.
@@ -19,6 +19,10 @@ export class OxyImage {
     this._data = s
   }
 
+  /**
+   * Gets or sets the URI of the image.
+   * Not implemented.
+   */
   uri?: string
 
   /**
@@ -109,5 +113,14 @@ export class OxyImage {
     }
 
     return ImageFormat.Unknown
+  }
+
+  private _hashCode?: number
+
+  public getHashCode() {
+    if (this._hashCode === undefined) {
+      this._hashCode = hashCode([...this._data])
+    }
+    return this._hashCode!
   }
 }
