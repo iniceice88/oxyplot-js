@@ -7,7 +7,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "type-check": "tsc"
   },
   "main": "./dist/oxyplot-js.umd.cjs",
   "module": "./dist/oxyplot-js.js",

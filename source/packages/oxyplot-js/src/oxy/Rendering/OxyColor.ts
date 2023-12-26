@@ -1,4 +1,4 @@
-﻿import { toByte, trimString } from '@/patch'
+﻿import { trimString } from '@/patch'
 
 /**
  * Describes a color in terms of alpha, red, green, and blue channels.

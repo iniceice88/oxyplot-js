@@ -40,12 +40,6 @@ export class PlotController extends ControllerBase implements IPlotController {
       2,
     )
     ControllerExtensions.bindKeyDown(this, OxyKey.A, PlotCommands.reset)
-    ControllerExtensions.bindKeyDown(
-      this,
-      OxyKey.C,
-      PlotCommands.copyCode,
-      OxyModifierKeys.Control | OxyModifierKeys.Alt,
-    )
     ControllerExtensions.bindKeyDown(this, OxyKey.Home, PlotCommands.reset)
     this.bindCore(new OxyShakeGesture(), PlotCommands.reset)
 
