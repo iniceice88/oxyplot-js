@@ -20,7 +20,7 @@ import {
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { maxValueOfArray, minValueOfArray } from '../../patch'
+import { maxValueOfArray, minValueOfArray } from '@/patch'
 
 /** Represents an item in a VectorSeries. */
 export interface VectorItem {

@@ -18,7 +18,7 @@ import {
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '../../../patch'
+import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
 
 /**
  * Represents a rectangle item in a RectangleBarSeries.
