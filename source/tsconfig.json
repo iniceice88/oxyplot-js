@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.build.json",
+  "include": [
+    "env.d.ts",
+    "packages/*/src/**/*",
+    "packages/*/src/**/*.vue"
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "noEmit": true
+  }
+}

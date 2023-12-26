@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/patch": [
+        "./oxy/patch"
+      ],
+      "@/oxyplot": [
+        "./src/oxy/internal"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
