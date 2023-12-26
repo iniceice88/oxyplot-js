@@ -24,9 +24,6 @@ export class PlotCommands {
   private static init() {
     // commands that can be triggered from key events
     this.reset = new DelegatePlotCommand<OxyKeyEventArgs>((view, controller, args) => this.handleReset(view, args))
-    this.copyCode = new DelegatePlotCommand<OxyKeyEventArgs>((view, controller, args) =>
-      this.handleCopyCode(view, args),
-    )
 
     // commands that can be triggered from mouse down events
     this.resetAt = new DelegatePlotCommand<OxyMouseEventArgs>((view, controller, args) => this.handleReset(view, args))
@@ -190,11 +187,6 @@ export class PlotCommands {
   public static resetAt: IViewCommandG<OxyMouseEventArgs>
 
   /**
-   * Gets the copy code command.
-   */
-  public static copyCode: IViewCommandG<OxyKeyEventArgs>
-
-  /**
    * Gets the pan/zoom touch command.
    */
   public static panZoomByTouch: IViewCommandG<OxyTouchEventArgs>
@@ -340,19 +332,6 @@ export class PlotCommands {
     args.handled = true
     view.actualModel.resetAllAxes()
     view.invalidatePlot(false)
-  }
-
-  /**
-   * Handles the copy code event.
-   * @param view The view.
-   * @param args The OxyInputEventArgs instance containing the event data.
-   */
-  private static handleCopyCode(view: IPlotView, args: OxyInputEventArgs): void {
-    if (!view.actualModel) return
-
-    args.handled = true
-    const code = view.actualModel.toCode()
-    view.setClipboardText(code)
   }
 
   /**

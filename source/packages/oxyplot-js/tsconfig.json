@@ -4,7 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "@/patch": [
-        "./oxy/patch"
+        "./src/patch"
       ],
       "@/oxyplot": [
         "./src/oxy/internal"

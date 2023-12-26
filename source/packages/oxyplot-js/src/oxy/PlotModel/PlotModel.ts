@@ -9,7 +9,6 @@ import {
   BarSeries,
   BarSeriesManager,
   CategoryAxis,
-  CodeGenerator,
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
@@ -730,15 +729,6 @@ export class PlotModel extends Model implements IPlotModel {
     if (mindist < limit) {
       return nearestSeries
     }
-  }
-
-  /**
-   * Generates TypeScript code of the model.
-   * @returns TypeScript code.
-   */
-  public toCode(): string {
-    const cg = new CodeGenerator(this)
-    return cg.toCode()
   }
 
   /**
