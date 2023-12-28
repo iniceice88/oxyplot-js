@@ -15,6 +15,7 @@
     "autoprefixer": "^10.4.16",
     "dayjs": "^1.11.10",
     "image-js": "^0.35.5",
+    "jspdf": "^2.5.1",
     "oxyplot-js": "workspace:*",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.4.0",

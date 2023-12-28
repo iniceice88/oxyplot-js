@@ -223,7 +223,6 @@ export class SvgRenderContext extends ClippingRenderContext {
       -Math.sin((rotate / 180.0) * Math.PI) * lineHeight,
       +Math.cos((rotate / 180.0) * Math.PI) * lineHeight,
     )
-
     if (this.useVerticalTextAlignmentWorkaround) {
       // offset the position, and set the valign to neutral value of `Bottom`
       const offsetRatio =
@@ -311,7 +310,7 @@ export class SvgRenderContext extends ClippingRenderContext {
     opacity: number,
     interpolate: boolean,
   ): Promise<void> {
-    this.w.writeImage(srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, source)
+    this.w.writeImage(srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, source, interpolate)
   }
 
   protected disposed = false

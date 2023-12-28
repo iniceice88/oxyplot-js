@@ -1,4 +1,5 @@
 import {
+  CursorType,
   OxyModifierKeys,
   OxyMouseButton,
   type OxyMouseDownEventArgs,
@@ -6,6 +7,7 @@ import {
   type OxyMouseWheelEventArgs,
   ScreenPoint,
 } from 'oxyplot-js'
+import { WebPlotViewBase } from './WebPlotViewBase.ts'
 
 export function toOxyMouseEventArgs(e: MouseEvent): OxyMouseEventArgs {
   return {
@@ -52,4 +54,49 @@ function convertMouseButtons(e: MouseEvent): number {
   if (e.button === 3) return OxyMouseButton.XButton1
   if (e.button === 4) return OxyMouseButton.XButton2
   return OxyMouseButton.None
+}
+
+export function convertCursorType(cursorType: CursorType) {
+  switch (cursorType) {
+    case CursorType.Default:
+      return 'default'
+    case CursorType.Pan:
+      return 'grab'
+    case CursorType.ZoomRectangle:
+      return 'nwse-resize'
+    case CursorType.ZoomHorizontal:
+      return 'ew-resize'
+    case CursorType.ZoomVertical:
+      return 'ns-resize'
+    default:
+      return 'default'
+  }
+}
+
+export function addPlotViewEvents(view: HTMLElement, plotView: WebPlotViewBase) {
+  view.addEventListener('contextmenu', function (event) {
+    event.preventDefault()
+  })
+
+  view.addEventListener('resize', async () => {
+    plotView.invalidatePlot(false)
+  })
+  view.onmousedown = (e) => {
+    plotView.actualController.handleMouseDown(plotView, toOxyMouseDownEventArgs(e))
+  }
+  view.onmousemove = (e) => {
+    plotView.actualController.handleMouseMove(plotView, toOxyMouseEventArgs(e))
+  }
+  view.onmouseup = (e) => {
+    plotView.actualController.handleMouseUp(plotView, toOxyMouseEventArgs(e))
+  }
+  view.onmouseenter = (e) => {
+    plotView.actualController.handleMouseEnter(plotView, toOxyMouseEventArgs(e))
+  }
+  view.onmouseleave = (e) => {
+    plotView.actualController.handleMouseLeave(plotView, toOxyMouseEventArgs(e))
+  }
+  view.onwheel = (e) => {
+    plotView.actualController.handleMouseWheel(plotView, toOxyMouseWheelEventArgs(e))
+  }
 }

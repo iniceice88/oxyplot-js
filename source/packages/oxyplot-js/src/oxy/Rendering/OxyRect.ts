@@ -224,7 +224,7 @@ export class OxyRect {
    * @param t The thickness to apply to the rectangle.
    * @returns The inflated `OxyRect`.
    */
-  public inflate2(t: OxyThickness): OxyRect {
+  public inflateAll(t: OxyThickness): OxyRect {
     return new OxyRect(
       this._left - t.left,
       this._top - t.top,

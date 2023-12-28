@@ -2,17 +2,30 @@
 import type { ExampleCategory, ExampleInfo } from './examples/types'
 import examples from './examples/AllExamples'
 import { computed, ref, toRaw, watch } from 'vue'
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-import { ChevronUpIcon } from '@heroicons/vue/20/solid'
-import { type IPlotController, PlotModel, PlotModelUtilities } from 'oxyplot-js'
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  Switch,
+} from '@headlessui/vue'
+import { ChevronUpDownIcon, ChevronUpIcon } from '@heroicons/vue/20/solid'
+import { type IPlotController, IPlotView, PlotModel, PlotModelUtilities } from 'oxyplot-js'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import dayOfYear from 'dayjs/plugin/dayOfYear'
-import { WebPlotView } from './web/WebPlotView'
 import oxyPlotImg from './assets/OxyPlot.png'
 
 import { getRenderContextImageCacheService } from './web/RenderContextImageCacheService.ts'
 
+import { PdfPlotView } from './web/PdfPlotView.ts'
+import { CanvasPlotView } from './web/CanvasPlotView.ts'
+import { SvgPlotView } from './web/SvgPlotView.ts'
+
+type RendererType = 'svg' | 'canvas' | 'pdf'
 ;(window as any).oxyPlotImg = oxyPlotImg
 
 dayjs.extend(duration)
@@ -23,15 +36,15 @@ interface PageExample {
   controller?: IPlotController
 }
 
-let canvas: HTMLCanvasElement | null = null
 const selectedExample = ref<ExampleInfo | null>(null)
 const filterKey = ref('')
 const isTransposed = ref(false)
 const isTransposable = ref(false)
 const isReversed = ref(false)
 const isReversible = ref(false)
-
-let plotView: WebPlotView | null = null
+const currentRendererType = ref('canvas' as RendererType)
+const rendererOptions = ref<RendererType[]>(['canvas', 'pdf', 'svg'])
+const isPdfOrientationP = ref<boolean>(false)
 
 const displayExamples = computed(() => {
   if (!filterKey.value) return examples
@@ -52,7 +65,7 @@ const displayExamples = computed(() => {
   return result
 })
 
-watch([isTransposed, isReversed], async (a, b) => {
+watch([isTransposed, isReversed, currentRendererType], async () => {
   if (!selectedExample.value) return
 
   const example = await getExample(selectedExample.value)
@@ -61,10 +74,14 @@ watch([isTransposed, isReversed], async (a, b) => {
   await display(example)
 })
 
+watch(isPdfOrientationP, () => {})
+
+let canvas: HTMLCanvasElement | null = null
+
 function getCanvas() {
   if (canvas) return canvas
 
-  const c = document.getElementById('plotView')! as HTMLCanvasElement
+  const c = document.getElementById('canvasPlotView')! as HTMLCanvasElement
   const width = c.clientWidth
   const height = c.clientHeight
 
@@ -76,6 +93,46 @@ function getCanvas() {
 
   canvas = c
   return canvas
+}
+
+let plotViewCache = {} as Record<string, IPlotView>
+
+function getPlotView() {
+  if (currentRendererType.value === 'canvas') {
+    const key = 'canvas'
+    if (plotViewCache[key]) return plotViewCache[key]
+
+    const canvas = getCanvas()
+    const plotView = new CanvasPlotView(canvas)
+    plotViewCache[key] = plotView
+    return plotView
+  }
+
+  if (currentRendererType.value === 'pdf') {
+    const key = isPdfOrientationP.value ? 'pdf-portrait' : 'pdf-landscape'
+    if (plotViewCache[key]) return plotViewCache[key]
+
+    const plotView = new PdfPlotView(document.getElementById('pdfPlotView')! as HTMLIFrameElement)
+    plotView.orientation = isPdfOrientationP.value ? 'portrait' : 'landscape'
+    plotViewCache[key] = plotView
+    return plotView
+  }
+
+  if (currentRendererType.value === 'svg') {
+    const key = 'svg'
+    let plotView = plotViewCache[key]
+    const div = document.getElementById('svgPlotView')! as HTMLDivElement
+    div.innerHTML = ''
+    if (plotView) {
+      return plotView
+    }
+
+    plotView = new SvgPlotView(div)
+    plotViewCache[key] = plotView
+    return plotView
+  }
+
+  throw new Error(`Unknown renderer type: ${currentRendererType.value}`)
 }
 
 async function handleExampleClick(ec: ExampleCategory, ei: ExampleInfo) {
@@ -128,12 +185,10 @@ async function display(pageExample: PageExample) {
   const model = pageExample.model
   if (!model) return
 
-  if (!plotView) {
-    const c = getCanvas()!
-    plotView = new WebPlotView(c)
-  }
-  plotView.model = model
-  plotView.controller = pageExample.controller
+  const plotView = getPlotView()
+  ;(plotView as any).model = model
+  ;(plotView as any).controller = pageExample.controller
+  plotView.invalidatePlot(true)
 }
 </script>
 
@@ -171,35 +226,123 @@ async function display(pageExample: PageExample) {
       </div>
     </div>
     <div class="flex-grow ml-4">
-      <canvas id="plotView" class="border border-gray-200 rounded-lg shadow" style="width: 800px; height: 600px" />
+      <iframe
+        v-show="currentRendererType === 'pdf'"
+        id="pdfPlotView"
+        class="border border-gray-200 rounded-lg shadow"
+        :class="[isPdfOrientationP ? 'pdfplotview-portrait' : 'pdfplotview-landscape']"
+      />
+      <canvas
+        id="canvasPlotView"
+        v-show="currentRendererType === 'canvas'"
+        class="border border-gray-200 rounded-lg shadow"
+        style="width: 800px; height: 600px"
+      />
+      <div
+        id="svgPlotView"
+        v-show="currentRendererType === 'svg'"
+        class="border border-gray-200 rounded-lg shadow select-none"
+        style="width: 800px; height: 600px"
+      ></div>
 
-      <div class="flex justify-end mt-2">
-        <div class="flex items-center" v-if="selectedExample">
-          <input
-            v-model="isTransposed"
-            type="checkbox"
-            :disabled="!isTransposable"
-            id="chkTransposed"
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label class="ml-1 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300" for="chkTransposed"
-            >Transposed</label
-          >
+      <div class="flex justify-between mt-2">
+        <div class="flex items-center">
+          Renderer:
+          <Listbox v-model="currentRendererType" class="ml-2" style="min-width: 120px">
+            <div class="relative mt-1">
+              <ListboxButton
+                class="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm"
+              >
+                <span class="block truncate">{{ currentRendererType }}</span>
+                <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                  <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </span>
+              </ListboxButton>
+
+              <transition
+                leave-active-class="transition duration-100 ease-in"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <ListboxOptions
+                  class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
+                >
+                  <ListboxOption
+                    v-slot="{ active, selected }"
+                    v-for="r in rendererOptions"
+                    :key="r"
+                    :value="r"
+                    as="template"
+                  >
+                    <li
+                      :class="[
+                        active ? 'bg-purple-100 text-purple-900' : 'text-gray-900',
+                        'relative cursor-default select-none py-2 pl-10 pr-4',
+                      ]"
+                    >
+                      <span :class="[selected ? 'font-medium' : 'font-normal', 'block truncate']">{{ r }}</span>
+                    </li>
+                  </ListboxOption>
+                </ListboxOptions>
+              </transition>
+            </div>
+          </Listbox>
+
+          <template v-if="currentRendererType === 'pdf'">
+            <span class="ml-4 mr-2">landscape</span>
+            <Switch
+              v-model="isPdfOrientationP"
+              :class="isPdfOrientationP ? 'bg-purple-600' : 'bg-gray-200'"
+              class="relative inline-flex h-6 w-11 items-center rounded-full"
+            >
+              <span
+                :class="isPdfOrientationP ? 'translate-x-6' : 'translate-x-1'"
+                class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+              />
+            </Switch>
+            <span class="ml-2">portrait</span>
+          </template>
         </div>
 
-        <div class="flex items-center ml-2" v-if="selectedExample">
-          <input
-            v-model="isReversed"
-            :disabled="!isReversible"
-            type="checkbox"
-            id="chkReversed"
-            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label class="ml-1 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300" for="chkReversed"
-            >Reversed</label
-          >
+        <div class="flex" v-if="currentRendererType === 'canvas' || currentRendererType === 'svg'">
+          <div class="flex items-center" v-if="selectedExample">
+            <input
+              v-model="isTransposed"
+              type="checkbox"
+              :disabled="!isTransposable"
+              id="chkTransposed"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label class="ml-1 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300" for="chkTransposed"
+              >Transposed</label
+            >
+          </div>
+          <div class="flex items-center ml-2" v-if="selectedExample">
+            <input
+              v-model="isReversed"
+              :disabled="!isReversible"
+              type="checkbox"
+              id="chkReversed"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label class="ml-1 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300" for="chkReversed"
+              >Reversed</label
+            >
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pdfplotview-portrait {
+  width: 800px;
+  height: 80vh;
+}
+
+.pdfplotview-landscape {
+  width: 800px;
+  height: 600px;
+}
+</style>

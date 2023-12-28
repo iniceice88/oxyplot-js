@@ -1799,7 +1799,7 @@ export class PlotModel extends Model implements IPlotModel {
     }
 
     this._plotArea = plotArea
-    this._plotAndAxisArea = plotArea.inflate2(this.actualPlotMargins)
+    this._plotAndAxisArea = plotArea.inflateAll(this.actualPlotMargins)
 
     switch (this.titleHorizontalAlignment) {
       case TitleHorizontalAlignment.CenteredWithinView:

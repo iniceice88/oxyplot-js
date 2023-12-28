@@ -10,7 +10,7 @@ import {
   VerticalAlignment,
   XmlWriterBase,
 } from '@/oxyplot'
-import { round } from '@/patch'
+import { arrayBufferToBase64, round } from '@/patch'
 
 /**
  * Represents a writer that provides easy generation of Scalable Vector Graphics files.
@@ -185,6 +185,7 @@ export class SvgWriter extends XmlWriterBase {
    * @param destWidth Width of the destination rectangle.
    * @param destHeight Height of the destination rectangle.
    * @param image The image.
+   * @param interpolate Interpolate if set to true.
    */
   public writeImage(
     srcX: number,
@@ -196,13 +197,14 @@ export class SvgWriter extends XmlWriterBase {
     destWidth: number,
     destHeight: number,
     image: OxyImage,
+    interpolate: boolean,
   ): void {
     const x = destX - (srcX / srcWidth) * destWidth
     const width = (image.width / srcWidth) * destWidth
     const y = destY - (srcY / srcHeight) * destHeight
     const height = (image.height / srcHeight) * destHeight
     this.beginClip(destX, destY, destWidth, destHeight)
-    this.writeImage2(x, y, width, height, image)
+    this.writeImage2(x, y, width, height, image, interpolate)
     this.endClip()
   }
 
@@ -213,8 +215,9 @@ export class SvgWriter extends XmlWriterBase {
    * @param width The width of the image.
    * @param height The height of the image.
    * @param image The image.
+   * @param interpolate Interpolate if set to true.
    */
-  public writeImage2(x: number, y: number, width: number, height: number, image: OxyImage): void {
+  public writeImage2(x: number, y: number, width: number, height: number, image: OxyImage, interpolate: boolean): void {
     // http://www.w3.org/TR/SVG/shapes.html#ImageElement
     this.writeStartElement('image')
     this.writeAttributeNumberString('x', x)
@@ -222,9 +225,11 @@ export class SvgWriter extends XmlWriterBase {
     this.writeAttributeNumberString('width', width)
     this.writeAttributeNumberString('height', height)
     this.writeAttributeString('preserveAspectRatio', 'none')
-    const imageData = image.data
-    // TODO
-    const encodedImage = 'data:image/png;base64,' + btoa(String.fromCharCode(...imageData))
+    if (!interpolate) {
+      this.writeAttributeString('image-rendering', 'pixelated')
+    }
+    const base64 = arrayBufferToBase64(image.data)
+    const encodedImage = 'data:image/png;base64,' + base64
     this.writeAttributeString('xlink:href', encodedImage)
     this.writeEndElement()
   }

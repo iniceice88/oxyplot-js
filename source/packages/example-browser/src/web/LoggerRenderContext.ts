@@ -22,23 +22,6 @@ export class LoggerRenderContext extends ClippingRenderContext {
   }
 
   /**
-   * Closes the svg writer.
-   */
-  public close(): void {
-    log(`${++this._no} close`)
-  }
-
-  /**
-   * Completes the svg element.
-   */
-  public complete(): void {
-    log(`${++this._no} complete`)
-    printLog()
-    this._no = 0
-    logs = ''
-  }
-
-  /**
    * Draws an ellipse.
    * @param rect The rectangle.
    * @param fill The fill color.
@@ -150,13 +133,6 @@ export class LoggerRenderContext extends ClippingRenderContext {
         maxSize || ''
       }`,
     )
-  }
-
-  /**
-   * Flushes this instance.
-   */
-  public flush(): void {
-    log(`${++this._no} flush`)
   }
 
   /**
