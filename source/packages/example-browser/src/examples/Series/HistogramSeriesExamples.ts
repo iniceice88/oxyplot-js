@@ -257,8 +257,8 @@ function createDisconnectedBins(): PlotModel {
 
   const chs = new HistogramSeries()
   chs.items.push(new HistogramItem(0, 0.5, 10, 7), new HistogramItem(0.75, 1.0, 10, 7))
-  chs.labelStringFormatter = (x) => x.toFixed(2)
   //chs.labelFormatString = '{0:0.00}'
+  chs.labelStringFormatter = (x: HistogramItem) => x.value.toFixed(2)
   chs.labelPlacement = LabelPlacement.Middle
   model.series.push(chs)
 
