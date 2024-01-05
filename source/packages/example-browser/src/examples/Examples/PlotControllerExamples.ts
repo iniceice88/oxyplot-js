@@ -2,7 +2,6 @@ import {
   AxisPosition,
   AxisPreference,
   ControllerExtensions,
-  DataPoint,
   DelegatePlotCommand,
   FunctionSeries,
   HitTestArguments,
@@ -10,6 +9,7 @@ import {
   Legend,
   LinearAxis,
   LineSeries,
+  newDataPoint,
   OxyColors,
   OxyModifierKeys,
   OxyModifierKeysExtensions,
@@ -207,7 +207,7 @@ function showHideLegend(): Example {
     const s = new LineSeries({ title: 'Series ' + i })
     plotModel.series.push(s)
     for (let x = 0; x < 2 * Math.PI; x += 0.1) {
-      s.points.push(new DataPoint(x, Math.sin(x * i) / i + i))
+      s.points.push(newDataPoint(x, Math.sin(x * i) / i + i))
     }
   }
   const l = new Legend()

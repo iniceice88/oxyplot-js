@@ -6,6 +6,7 @@ import {
   DataPoint,
   DateTimeIntervalType,
   LinearAxis,
+  newDataPoint,
   OxyRect,
 } from '@/oxyplot'
 import {
@@ -79,7 +80,7 @@ export class DateTimeAxis extends LinearAxis {
 
   /** Creates a data point. */
   public static createDataPoint(x: Date, y: number): DataPoint {
-    return new DataPoint(DateTimeAxis.toDouble(x), y)
+    return newDataPoint(DateTimeAxis.toDouble(x), y)
   }
 
   /** Converts a numeric representation of the date (number of days after the time origin) to a DateTime structure. */

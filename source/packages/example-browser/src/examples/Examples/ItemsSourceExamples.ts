@@ -1,4 +1,4 @@
-import { DataPoint, type IDataPointProvider, LineSeries, PlotModel, ScreenPoint } from 'oxyplot-js'
+import { DataPoint, type IDataPointProvider, LineSeries, newDataPoint, PlotModel, ScreenPoint } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 const n = 100000
@@ -11,7 +11,7 @@ function usingIDataPoint(): PlotModel {
   const points: DataPoint[] = []
   for (let i = 0; i < n; i++) {
     const x = i / (n - 1)
-    points.push(new DataPoint(x, y(x)))
+    points.push(newDataPoint(x, y(x)))
   }
 
   const model = new PlotModel({ title: 'Using IDataPoint' })
@@ -50,7 +50,7 @@ function usingMappingProperty(): PlotModel {
   model.series.push(
     new LineSeries({
       itemsSource: points,
-      mapping: (item) => new DataPoint(item.abscissa, item.ordinate),
+      mapping: (item) => newDataPoint(item.abscissa, item.ordinate),
     }),
   )
   return model
@@ -77,7 +77,7 @@ class PointType1 implements IDataPointProvider {
   constructor(private abscissa: number, private ordinate: number) {}
 
   getDataPoint(): DataPoint {
-    return new DataPoint(this.abscissa, this.ordinate)
+    return newDataPoint(this.abscissa, this.ordinate)
   }
 }
 

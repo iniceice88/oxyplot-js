@@ -1,7 +1,7 @@
 import {
   ArrowAnnotation,
   AxisPosition,
-  DataPoint,
+  DataPoint_Undefined,
   FunctionSeries,
   getImageService,
   HorizontalAlignment,
@@ -13,6 +13,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyImage,
@@ -78,10 +79,10 @@ function mouseDownEventHitTestResult(): PlotModel {
   })
 
   const s1 = new LineSeries()
-  s1.points.push(new DataPoint(0, 10))
-  s1.points.push(new DataPoint(10, 40))
-  s1.points.push(new DataPoint(40, 20))
-  s1.points.push(new DataPoint(60, 30))
+  s1.points.push(newDataPoint(0, 10))
+  s1.points.push(newDataPoint(10, 40))
+  s1.points.push(newDataPoint(40, 20))
+  s1.points.push(newDataPoint(60, 30))
   model.series.push(s1)
   s1.mouseDown = (s, e) => {
     model.subtitle = 'Index of nearest point in LineSeries: ' + Math.round(e.hitTestResult.index || 0)
@@ -112,10 +113,10 @@ function mouseDownEvent(): PlotModel {
     markerSize: 6,
     strokeThickness: 1.5,
   })
-  s1.points.push(new DataPoint(0, 10))
-  s1.points.push(new DataPoint(10, 40))
-  s1.points.push(new DataPoint(40, 20))
-  s1.points.push(new DataPoint(60, 30))
+  s1.points.push(newDataPoint(0, 10))
+  s1.points.push(newDataPoint(10, 40))
+  s1.points.push(newDataPoint(40, 20))
+  s1.points.push(newDataPoint(60, 30))
   model.series.push(s1)
 
   let indexOfPointToMove = -1
@@ -276,12 +277,12 @@ function arrowAnnotation(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -10, maximum: 10 }))
 
   const arrow = new ArrowAnnotation({
-    startPoint: new DataPoint(8, 4),
-    endPoint: new DataPoint(0, 0),
+    startPoint: newDataPoint(8, 4),
+    endPoint: newDataPoint(0, 0),
     text: 'Move me!',
   })
 
-  let lastPoint = DataPoint.Undefined
+  let lastPoint = DataPoint_Undefined
   let moveStartPoint = false
   let moveEndPoint = false
   let originalColor = OxyColors.White
@@ -305,11 +306,11 @@ function arrowAnnotation(): PlotModel {
     const dx = thisPoint.x - lastPoint.x
     const dy = thisPoint.y - lastPoint.y
     if (moveStartPoint) {
-      arrow.startPoint = new DataPoint(arrow.startPoint.x + dx, arrow.startPoint.y + dy)
+      arrow.startPoint = newDataPoint(arrow.startPoint.x + dx, arrow.startPoint.y + dy)
     }
 
     if (moveEndPoint) {
-      arrow.endPoint = new DataPoint(arrow.endPoint.x + dx, arrow.endPoint.y + dy)
+      arrow.endPoint = newDataPoint(arrow.endPoint.x + dx, arrow.endPoint.y + dy)
     }
 
     lastPoint = thisPoint
@@ -331,13 +332,7 @@ function polygonAnnotation(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, minimum: -20, maximum: 20 }))
 
   const pa = new PolygonAnnotation({ text: 'Polygon 1' })
-  pa.points.push(
-    new DataPoint(4, -2),
-    new DataPoint(8, -4),
-    new DataPoint(17, 7),
-    new DataPoint(5, 8),
-    new DataPoint(2, 5),
-  )
+  pa.points.push(newDataPoint(4, -2), newDataPoint(8, -4), newDataPoint(17, 7), newDataPoint(5, 8), newDataPoint(2, 5))
 
   let hitCount = 1
   pa.mouseDown = (s, e) => {
@@ -359,7 +354,7 @@ function textAnnotation(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, minimum: -20, maximum: 20 }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -10, maximum: 10 }))
 
-  const ta = new TextAnnotation({ textPosition: new DataPoint(4, -2), text: 'Click here' })
+  const ta = new TextAnnotation({ textPosition: newDataPoint(4, -2), text: 'Click here' })
 
   ta.mouseDown = (s, e) => {
     console.log('mouseDown')
@@ -541,8 +536,8 @@ function touch(): PlotModel {
 function touchSeries(): PlotModel {
   const model = new PlotModel({ title: 'Touch on a LineSeries' })
   const series = new LineSeries()
-  series.points.push(new DataPoint(0, 0))
-  series.points.push(new DataPoint(10, 10))
+  series.points.push(newDataPoint(0, 0))
+  series.points.push(newDataPoint(10, 10))
   model.series.push(series)
 
   series.touchStarted = (s, e) => {

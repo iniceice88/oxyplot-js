@@ -1,4 +1,4 @@
-import type { CreateHighLowSeriesOptions, HighLowItem, IRenderContext } from '@/oxyplot'
+import { CreateHighLowSeriesOptions, HighLowItem, IRenderContext, newDataPoint } from '@/oxyplot'
 import {
   DataPoint,
   HighLowSeries,
@@ -246,7 +246,7 @@ export class CandleStickSeries extends HighLowSeries {
     const midx = distance(this.items[pidx]) <= distance(this.items[nidx]) ? pidx : nidx
     const mbar = this.items[midx]
 
-    const hit = new DataPoint(mbar.x, mbar.close)
+    const hit = newDataPoint(mbar.x, mbar.close)
     const text = this.formatHighLowItemTrackerString(mbar)
     return new TrackerHitResult({
       series: this,

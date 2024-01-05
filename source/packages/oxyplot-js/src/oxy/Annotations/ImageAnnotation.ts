@@ -1,6 +1,6 @@
 import {
   type CreateTransposableAnnotationOptions,
-  DataPoint,
+  DataPoint_Zero,
   HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
@@ -240,7 +240,7 @@ export class ImageAnnotation extends TransposableAnnotation {
     if (x.unit === PlotLengthUnit.Data || y.unit === PlotLengthUnit.Data) {
       const dataX = x.unit === PlotLengthUnit.Data ? x.value : NaN
       const dataY = y.unit === PlotLengthUnit.Data ? y.value : NaN
-      const v = PlotElementExtensions.transform(this, dataX, dataY).minus(this.transform(DataPoint.Zero))
+      const v = PlotElementExtensions.transform(this, dataX, dataY).minus(this.transform(DataPoint_Zero))
       xd = v.x
       yd = v.y
     }

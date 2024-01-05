@@ -2,7 +2,6 @@ import {
   AreaSeries,
   AxisPosition,
   type AxisStringFormatterType,
-  DataPoint,
   DateTimeAxis,
   DateTimeIntervalType,
   DayOfWeek,
@@ -12,6 +11,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -189,7 +189,7 @@ function labelFormatter(): PlotModel {
     time.setDate(time.getDate() + i)
     const x = DateTimeAxis.toDouble(time)
     const y = Math.sin(i * i)
-    series.points.push(new DataPoint(x, y))
+    series.points.push(newDataPoint(x, y))
   }
 
   return model

@@ -1,9 +1,9 @@
 import {
   AnnotationLayer,
   AxisPosition,
-  DataPoint,
   HorizontalAlignment,
   LinearAxis,
+  newDataPoint,
   PlotModel,
   PolygonAnnotation,
   TextAnnotation,
@@ -16,17 +16,17 @@ function textAnnotations(): PlotModel {
   const model = new PlotModel({ title: 'TextAnnotation' })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, minimum: -15, maximum: 25 }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -5, maximum: 18 }))
-  model.annotations.push(new TextAnnotation({ textPosition: new DataPoint(-6, 0), text: 'Text annotation 1' }))
+  model.annotations.push(new TextAnnotation({ textPosition: newDataPoint(-6, 0), text: 'Text annotation 1' }))
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(-7, 10),
+      textPosition: newDataPoint(-7, 10),
       textRotation: 80,
       text: 'Text annotation 2',
     }),
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(2, 2),
+      textPosition: newDataPoint(2, 2),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Right,
       textVerticalAlignment: VerticalAlignment.Top,
@@ -35,7 +35,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(2, 4),
+      textPosition: newDataPoint(2, 4),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Right,
       textVerticalAlignment: VerticalAlignment.Middle,
@@ -44,7 +44,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(2, 6),
+      textPosition: newDataPoint(2, 6),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Right,
       textVerticalAlignment: VerticalAlignment.Bottom,
@@ -53,7 +53,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(10, 2),
+      textPosition: newDataPoint(10, 2),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Center,
       textVerticalAlignment: VerticalAlignment.Top,
@@ -62,7 +62,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(10, 4),
+      textPosition: newDataPoint(10, 4),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Center,
       textVerticalAlignment: VerticalAlignment.Middle,
@@ -71,7 +71,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(10, 6),
+      textPosition: newDataPoint(10, 6),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Center,
       textVerticalAlignment: VerticalAlignment.Bottom,
@@ -80,7 +80,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(18, 2),
+      textPosition: newDataPoint(18, 2),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Left,
       textVerticalAlignment: VerticalAlignment.Top,
@@ -89,7 +89,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(18, 4),
+      textPosition: newDataPoint(18, 4),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Left,
       textVerticalAlignment: VerticalAlignment.Middle,
@@ -98,7 +98,7 @@ function textAnnotations(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(18, 6),
+      textPosition: newDataPoint(18, 6),
       textRotation: 20,
       textHorizontalAlignment: HorizontalAlignment.Left,
       textVerticalAlignment: VerticalAlignment.Bottom,
@@ -112,11 +112,11 @@ function textAnnotations(): PlotModel {
     const annotation = new PolygonAnnotation({
       layer: AnnotationLayer.BelowAxes,
       points: [
-        new DataPoint(x - d, y - d),
-        new DataPoint(x + d, y - d),
-        new DataPoint(x + d, y + d),
-        new DataPoint(x - d, y + d),
-        new DataPoint(x - d, y - d),
+        newDataPoint(x - d, y - d),
+        newDataPoint(x + d, y - d),
+        newDataPoint(x + d, y + d),
+        newDataPoint(x - d, y + d),
+        newDataPoint(x - d, y - d),
       ],
     })
     model.annotations.push(annotation)
@@ -149,7 +149,7 @@ function rotations(): PlotModel {
     model.annotations.push(
       new TextAnnotation({
         textRotation: i,
-        textPosition: new DataPoint(i % 45, i / 45),
+        textPosition: newDataPoint(i % 45, i / 45),
         text: `${i}°`,
         textVerticalAlignment: VerticalAlignment.Middle,
         textHorizontalAlignment: HorizontalAlignment.Center,

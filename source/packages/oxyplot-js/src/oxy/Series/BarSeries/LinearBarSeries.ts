@@ -1,8 +1,10 @@
-import type { CreateDataPointSeriesOptions, IRenderContext } from '@/oxyplot'
 import {
+  CreateDataPointSeriesOptions,
   DataPoint,
   DataPointSeries,
   EdgeRenderingMode,
+  IRenderContext,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -275,7 +277,7 @@ export class LinearBarSeries extends DataPointSeries {
 
       const screenPoint = this.transform(actualPoint).minusVector(widthVector)
       const basePoint = this.transform(
-        new DataPoint(actualPoint.x, clampBase ? this.yAxis!.clipMinimum : this.baseValue),
+        newDataPoint(actualPoint.x, clampBase ? this.yAxis!.clipMinimum : this.baseValue),
       ).plus(widthVector)
       const rectangle = OxyRect.fromScreenPoints(basePoint, screenPoint)
       this.rectangles.push(rectangle)

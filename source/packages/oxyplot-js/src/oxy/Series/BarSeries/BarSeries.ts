@@ -1,12 +1,12 @@
-﻿import type { CreateBarSeriesBaseOptions, TrackerStringFormatterArgs } from '@/oxyplot'
-import {
+﻿import {
   BarItem,
   BarSeriesBase,
-  DataPoint,
+  CreateBarSeriesBaseOptions,
   EdgeRenderingMode,
   type IRenderContext,
   type IStackableSeries,
   type LabelStringFormatterType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -14,6 +14,7 @@ import {
   RenderingExtensions,
   ScreenPoint,
   TrackerHitResult,
+  TrackerStringFormatterArgs,
 } from '@/oxyplot'
 import {
   isNullOrUndef,
@@ -168,7 +169,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
         // get the item corresponding to this bar/column rectangle
         const item = this.validItems[i]
         const categoryIndex = item.getCategoryIndex(i)
-        const dp = new DataPoint(categoryIndex, this.validItems[i].value)
+        const dp = newDataPoint(categoryIndex, this.validItems[i].value)
 
         // get the item that the bar/column is bound to, or the item from the Items collection
         const boundItem = this.getItem(this.validItemsIndexInversion.get(i)!)

@@ -1,4 +1,4 @@
-import { DataPoint } from 'oxyplot-js'
+import { newDataPoint } from 'oxyplot-js'
 
 const points = [
   { x: 589.3649979, y: 16.10595703 },
@@ -856,4 +856,4 @@ const points = [
   { x: 588.6629715, y: 0.352966309 },
 ] as { x: number; y: number }[]
 
-export default points.map((p) => new DataPoint(p.x, p.y))
+export default points.map((p) => newDataPoint(p.x, p.y))

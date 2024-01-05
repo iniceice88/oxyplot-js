@@ -7,6 +7,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColors,
   OxyRect,
   PlotModel,
@@ -112,7 +113,7 @@ function lineSeriesItemsSourceMapping(): PlotModel {
   addDataPoints(points, 100000)
   const rects = points.map((pt) => new OxyRect(pt.x, pt.y, 0, 0))
   s1.itemsSource = rects
-  s1.mapping = (r) => new DataPoint((r as OxyRect).left, (r as OxyRect).top)
+  s1.mapping = (r) => newDataPoint((r as OxyRect).left, (r as OxyRect).top)
   model.series.push(s1)
 
   return model
@@ -163,7 +164,7 @@ function lineSeries2MiterLineJoins(): PlotModel {
   })
   const s1 = new LineSeries({ lineJoin: LineJoin.Miter, strokeThickness: 8.0 })
   for (let i = 0; i < 3000; i++) {
-    s1.points.push(new DataPoint(i, i % 2))
+    s1.points.push(newDataPoint(i, i % 2))
   }
 
   model.series.push(s1)
@@ -178,7 +179,7 @@ function lineSeries2RoundLineJoins(): PlotModel {
   })
   const s1 = new LineSeries({ lineJoin: LineJoin.Round, strokeThickness: 8.0 })
   for (let i = 0; i < 3000; i++) {
-    s1.points.push(new DataPoint(i, i % 2))
+    s1.points.push(newDataPoint(i, i % 2))
   }
 
   model.series.push(s1)
@@ -193,7 +194,7 @@ function lineSeries2BevelLineJoins(): PlotModel {
   })
   const s1 = new LineSeries({ lineJoin: LineJoin.Bevel, strokeThickness: 8.0 })
   for (let i = 0; i < 3000; i++) {
-    s1.points.push(new DataPoint(i, i % 2))
+    s1.points.push(newDataPoint(i, i % 2))
   }
 
   model.series.push(s1)
@@ -432,7 +433,7 @@ function intOverflow(n: number): PlotModel {
   const ls = new LineSeries()
   let k = 0
   for (let i = 0; i < n; i++) {
-    ls.points.push(new DataPoint(i, (k += i * i)))
+    ls.points.push(newDataPoint(i, (k += i * i)))
   }
 
   model.series.push(ls)
@@ -448,7 +449,7 @@ function getPoints(n: number): DataPoint[] {
 function addDataPoints(points: DataPoint[], n: number): void {
   for (let i = 0; i < n; i++) {
     const x = (Math.PI * 10 * i) / (n - 1)
-    points.push(new DataPoint(x * Math.cos(x), x * Math.sin(x)))
+    points.push(newDataPoint(x * Math.cos(x), x * Math.sin(x)))
   }
 }
 

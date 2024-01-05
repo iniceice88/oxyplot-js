@@ -2,6 +2,7 @@
   Axis,
   type CreateItemsSeriesOptions,
   DataPoint,
+  DataPoint_Zero,
   type IRenderContext,
   ItemsSeries,
   type ITransposablePlotElement,
@@ -267,7 +268,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
     }
 
     let spn = ScreenPoint.LeftTop
-    let dpn = DataPoint.Zero
+    let dpn = DataPoint_Zero
     let index = -1
 
     let minimumDistance = Number_MAX_VALUE
@@ -330,7 +331,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
     point: ScreenPoint,
   ): TrackerHitResult | undefined {
     let spn = ScreenPoint.LeftTop
-    let dpn = DataPoint.Zero
+    let dpn = DataPoint_Zero
     let index = -1
 
     let minimumDistance = Number_MAX_VALUE

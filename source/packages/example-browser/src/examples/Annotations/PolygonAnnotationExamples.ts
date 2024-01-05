@@ -6,6 +6,7 @@ import {
   HorizontalAlignment,
   LinearAxis,
   LineStyle,
+  newDataPoint,
   PlotModel,
   PlotType,
   PolygonAnnotation,
@@ -21,7 +22,7 @@ function polygonAnnotation(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -10, maximum: 10 }))
   const a1 = new PolygonAnnotation({ text: 'Polygon 1' })
   a1.points.push(
-    ...[new DataPoint(4, -2), new DataPoint(8, -4), new DataPoint(17, 7), new DataPoint(5, 8), new DataPoint(2, 5)],
+    ...[newDataPoint(4, -2), newDataPoint(8, -4), newDataPoint(17, 7), newDataPoint(5, 8), newDataPoint(2, 5)],
   )
   model.annotations.push(a1)
   return model
@@ -36,10 +37,10 @@ function polygonAnnotationTextPosition(): PlotModel {
     text: 'Polygon 1',
     textHorizontalAlignment: HorizontalAlignment.Left,
     textVerticalAlignment: VerticalAlignment.Bottom,
-    textPosition: new DataPoint(4.1, -1.9),
+    textPosition: newDataPoint(4.1, -1.9),
   })
   a1.points.push(
-    ...[new DataPoint(4, -2), new DataPoint(8, -2), new DataPoint(17, 7), new DataPoint(5, 8), new DataPoint(4, 5)],
+    ...[newDataPoint(4, -2), newDataPoint(8, -2), newDataPoint(17, 7), newDataPoint(5, 8), newDataPoint(4, 5)],
   )
   model.annotations.push(a1)
   return model
@@ -70,11 +71,11 @@ function annotationLayerProperty(): PlotModel {
     layer: AnnotationLayer.BelowAxes,
     text: 'Layer = BelowAxes',
     points: [
-      new DataPoint(-11, -2),
-      new DataPoint(-7, -4),
-      new DataPoint(-3, 7),
-      new DataPoint(-10, 8),
-      new DataPoint(-13, 5),
+      newDataPoint(-11, -2),
+      newDataPoint(-7, -4),
+      newDataPoint(-3, 7),
+      newDataPoint(-10, 8),
+      newDataPoint(-13, 5),
     ],
   })
   model.annotations.push(a1)
@@ -82,26 +83,14 @@ function annotationLayerProperty(): PlotModel {
   const a2 = new PolygonAnnotation({
     layer: AnnotationLayer.BelowSeries,
     text: 'Layer = BelowSeries',
-    points: [
-      new DataPoint(4, -2),
-      new DataPoint(8, -4),
-      new DataPoint(12, 7),
-      new DataPoint(5, 8),
-      new DataPoint(2, 5),
-    ],
+    points: [newDataPoint(4, -2), newDataPoint(8, -4), newDataPoint(12, 7), newDataPoint(5, 8), newDataPoint(2, 5)],
   })
   model.annotations.push(a2)
 
   const a3 = new PolygonAnnotation({
     layer: AnnotationLayer.AboveSeries,
     text: 'Layer = AboveSeries',
-    points: [
-      new DataPoint(19, -2),
-      new DataPoint(23, -4),
-      new DataPoint(27, 7),
-      new DataPoint(20, 8),
-      new DataPoint(17, 5),
-    ],
+    points: [newDataPoint(19, -2), newDataPoint(23, -4), newDataPoint(27, 7), newDataPoint(20, 8), newDataPoint(17, 5)],
   })
   model.annotations.push(a3)
 
@@ -122,9 +111,9 @@ function annotationLayerProperty(): PlotModel {
 function kockSnowflakes(): PlotModel {
   function triangle(centre: DataPoint): DataPoint[] {
     return [
-      new DataPoint(centre.x, centre.y + 1),
-      new DataPoint(centre.x + Math.sin((Math.PI * 2) / 3), centre.y + Math.cos((Math.PI * 2) / 3)),
-      new DataPoint(centre.x + Math.sin((Math.PI * 4) / 3), centre.y + Math.cos((Math.PI * 4) / 3)),
+      newDataPoint(centre.x, centre.y + 1),
+      newDataPoint(centre.x + Math.sin((Math.PI * 2) / 3), centre.y + Math.cos((Math.PI * 2) / 3)),
+      newDataPoint(centre.x + Math.sin((Math.PI * 4) / 3), centre.y + Math.cos((Math.PI * 4) / 3)),
     ]
   }
 
@@ -133,17 +122,17 @@ function kockSnowflakes(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -2, maximum: 2 }))
 
   const a1 = new PolygonAnnotation({ text: 'MSL = 4', minimumSegmentLength: 4 })
-  let points = kochFractal(triangle(new DataPoint(-2, 0)), 8, true, true)
+  let points = kochFractal(triangle(newDataPoint(-2, 0)), 8, true, true)
   pushMany(a1.points, points)
   model.annotations.push(a1)
 
   const a2 = new PolygonAnnotation({ text: 'MSL = 2', minimumSegmentLength: 2 })
-  points = kochFractal(triangle(new DataPoint(0, 0)), 8, true, true)
+  points = kochFractal(triangle(newDataPoint(0, 0)), 8, true, true)
   pushMany(a2.points, points)
   model.annotations.push(a2)
 
   const a3 = new PolygonAnnotation({ text: 'MSL = 1', minimumSegmentLength: 1 })
-  points = kochFractal(triangle(new DataPoint(2, 0)), 8, true, true)
+  points = kochFractal(triangle(newDataPoint(2, 0)), 8, true, true)
   pushMany(a3.points, points)
   model.annotations.push(a3)
 
@@ -176,9 +165,9 @@ function kochFractal(seed: DataPoint[], n: number, clockwise: boolean, closed: b
       }
 
       next[j * 4] = p0
-      next[j * 4 + 1] = new DataPoint(p0.x + dx, p0.y + dy)
-      next[j * 4 + 2] = new DataPoint(p0.x + dx + dx2, p0.y + dy + dy2)
-      next[j * 4 + 3] = new DataPoint(p0.x + dx * 2, p0.y + dy * 2)
+      next[j * 4 + 1] = newDataPoint(p0.x + dx, p0.y + dy)
+      next[j * 4 + 2] = newDataPoint(p0.x + dx + dx2, p0.y + dy + dy2)
+      next[j * 4 + 3] = newDataPoint(p0.x + dx * 2, p0.y + dy * 2)
     }
 
     if (!closed) {

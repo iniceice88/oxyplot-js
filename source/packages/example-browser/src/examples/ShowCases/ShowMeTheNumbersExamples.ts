@@ -4,11 +4,11 @@ import {
   BarItem,
   BarSeries,
   CategoryAxis,
-  DataPoint,
   LinearAxis,
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColors,
   OxyThickness,
   PlotModel,
@@ -79,12 +79,12 @@ function graph2(): PlotModel {
   )
   const s1 = new LineSeries({ color: OxyColors.Orange })
   for (let i = 0; i < 12; i++) {
-    s1.points.push(new DataPoint(i, sales1[i]))
+    s1.points.push(newDataPoint(i, sales1[i]))
   }
 
   const s2 = new LineSeries({ color: OxyColors.Gray })
   for (let i = 0; i < 12; i++) {
-    s2.points.push(new DataPoint(i, sales2[i]))
+    s2.points.push(newDataPoint(i, sales2[i]))
   }
 
   pm.series.push(s1)
@@ -288,24 +288,24 @@ function graph7(): PlotModel {
     plotAreaBorderThickness: new OxyThickness(0),
   })
   const values = [
-    new DataPoint(62, 39000),
-    new DataPoint(66, 44000),
-    new DataPoint(64, 50000),
-    new DataPoint(66, 49500),
-    new DataPoint(67, 52000),
-    new DataPoint(68, 50000),
-    new DataPoint(66, 56000),
-    new DataPoint(67, 56000),
-    new DataPoint(72, 56000),
-    new DataPoint(68, 58000),
-    new DataPoint(69, 62000),
-    new DataPoint(71, 63000),
-    new DataPoint(65, 64000),
-    new DataPoint(68, 71000),
-    new DataPoint(72, 72000),
-    new DataPoint(74, 69000),
-    new DataPoint(74, 79000),
-    new DataPoint(77, 81000),
+    newDataPoint(62, 39000),
+    newDataPoint(66, 44000),
+    newDataPoint(64, 50000),
+    newDataPoint(66, 49500),
+    newDataPoint(67, 52000),
+    newDataPoint(68, 50000),
+    newDataPoint(66, 56000),
+    newDataPoint(67, 56000),
+    newDataPoint(72, 56000),
+    newDataPoint(68, 58000),
+    newDataPoint(69, 62000),
+    newDataPoint(71, 63000),
+    newDataPoint(65, 64000),
+    newDataPoint(68, 71000),
+    newDataPoint(72, 72000),
+    newDataPoint(74, 69000),
+    newDataPoint(74, 79000),
+    newDataPoint(77, 81000),
   ]
   pm.axes.push(
     new LinearAxis({

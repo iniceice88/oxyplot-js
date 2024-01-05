@@ -1,10 +1,10 @@
 import {
   AxisPosition,
-  DataPoint,
   InterpolationAlgorithms,
   Legend,
   LinearAxis,
   MarkerType,
+  newDataPoint,
   OxyColors,
   PlotModel,
   PlotModelUtilities,
@@ -45,7 +45,7 @@ function twoColorLineSeries(): PlotModel {
   ]
 
   for (let i = 0; i < temperatures.length; i++) {
-    s1.points.push(new DataPoint(i + 1, temperatures[i]))
+    s1.points.push(newDataPoint(i + 1, temperatures[i]))
   }
 
   model.series.push(s1)

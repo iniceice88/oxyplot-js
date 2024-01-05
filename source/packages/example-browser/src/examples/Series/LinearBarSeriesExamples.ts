@@ -1,4 +1,12 @@
-import { AxisPosition, DataPoint, LinearAxis, LinearBarSeries, LogarithmicAxis, OxyColor, PlotModel } from 'oxyplot-js'
+import {
+  AxisPosition,
+  LinearAxis,
+  LinearBarSeries,
+  LogarithmicAxis,
+  newDataPoint,
+  OxyColor,
+  PlotModel,
+} from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 import { Random } from '../Random'
 
@@ -79,7 +87,7 @@ function _createExampleLinearBarSeries(): LinearBarSeries {
   const r = new Random()
   let y = r.next(10, 31)
   for (let x = 0; x <= 50; x++) {
-    linearBarSeries.points.push(new DataPoint(x, y))
+    linearBarSeries.points.push(newDataPoint(x, y))
     y += r.next(-5, 5)
   }
   return linearBarSeries
@@ -94,7 +102,7 @@ function _createExampleLinearBarSeriesWithNegativeValues(): LinearBarSeries {
   const r = new Random()
   for (let x = 0; x <= 50; x++) {
     const y = -200 + r.next(0, 1000)
-    linearBarSeries.points.push(new DataPoint(x, y))
+    linearBarSeries.points.push(newDataPoint(x, y))
   }
   return linearBarSeries
 }

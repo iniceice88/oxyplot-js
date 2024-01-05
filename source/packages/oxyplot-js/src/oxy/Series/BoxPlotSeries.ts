@@ -1,13 +1,15 @@
 import {
   Axis,
   type CreateXYAxisSeriesOptions,
-  DataPoint,
+  DataPoint_isDefined,
+  DataPoint_Undefined,
   EdgeRenderingMode,
   type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -247,7 +249,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
           result = new TrackerHitResult({
             series: this,
-            dataPoint: new DataPoint(item.x, outlier),
+            dataPoint: newDataPoint(item.x, outlier),
             position: sp,
             item,
             text,
@@ -256,13 +258,13 @@ Mean: ${args.mean!.toFixed(2)}`
         }
       }
 
-      let hitPoint = DataPoint.Undefined
+      let hitPoint = DataPoint_Undefined
 
       // check if we are inside the box rectangle
       const rect = this.getBoxRect(item)
       if (rect.containsPoint(point)) {
         const dp = this.inverseTransform(point)
-        hitPoint = new DataPoint(item.x, dp.y)
+        hitPoint = newDataPoint(item.x, dp.y)
         minimumDistance = 0
       }
 
@@ -277,7 +279,7 @@ Mean: ${args.mean!.toFixed(2)}`
         minimumDistance = d2
       }
 
-      if (hitPoint.isDefined()) {
+      if (DataPoint_isDefined(hitPoint)) {
         const text = this.trackerStringFormatter!({
           item,
           title: this.title,

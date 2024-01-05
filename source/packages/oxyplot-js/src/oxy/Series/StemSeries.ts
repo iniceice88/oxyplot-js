@@ -6,6 +6,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
@@ -60,7 +61,7 @@ export class StemSeries extends LineSeries {
 
     for (let i = 0; i < points.length; i++) {
       const p1 = points[i]
-      const basePoint = new DataPoint(p1.x, this.base)
+      const basePoint = newDataPoint(p1.x, this.base)
       const sp1 = this.transform(p1)
       const sp2 = this.transform(basePoint)
       let u = ScreenPointHelper.findPositionOnLine(point, sp1, sp2)
@@ -81,7 +82,7 @@ export class StemSeries extends LineSeries {
         const text = this.formatDefaultTrackerString(item, p1)
         result = new TrackerHitResult({
           series: this,
-          dataPoint: new DataPoint(p1.x, p1.y),
+          dataPoint: newDataPoint(p1.x, p1.y),
           position: new ScreenPoint(sp1.x, sp1.y),
           item: this.getItem(i),
           index: i,

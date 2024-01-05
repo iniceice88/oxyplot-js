@@ -1,4 +1,4 @@
-import { type CreatePathAnnotationOptions, DataPoint, PathAnnotation, ScreenPoint } from '@/oxyplot'
+import { type CreatePathAnnotationOptions, DataPoint, newDataPoint, PathAnnotation, ScreenPoint } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface CreateFunctionAnnotationOptions extends CreatePathAnnotationOptions {
@@ -63,7 +63,7 @@ export class FunctionAnnotation extends PathAnnotation {
       const dx = (this.actualMaximumX - this.actualMinimumX) / this.resolution
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        points.push(new DataPoint(x, fx(x)))
+        points.push(newDataPoint(x, fx(x)))
         if (x > this.actualMaximumX) {
           break
         }
@@ -77,7 +77,7 @@ export class FunctionAnnotation extends PathAnnotation {
       const dy = (this.actualMaximumY - this.actualMinimumY) / this.resolution
       // eslint-disable-next-line no-constant-condition
       while (true) {
-        points.push(new DataPoint(fy(y), y))
+        points.push(newDataPoint(fy(y), y))
         if (y > this.actualMaximumY) {
           break
         }

@@ -3,11 +3,15 @@ import {
   ColorAxisExtensions,
   type CreateXYAxisSeriesOptions,
   DataPoint,
+  dataPointEquals,
+  DataPoint_isDefined,
+  DataPoint_Undefined,
   EdgeRenderingMode,
   HorizontalAlignment,
   type IColorAxis,
   type IRenderContext,
   type LabelStringFormatterType,
+  newDataPoint,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
@@ -30,7 +34,7 @@ export class RectangleItem {
   /**
    * The undefined rectangle item.
    */
-  static readonly Undefined = new RectangleItem(DataPoint.Undefined, DataPoint.Undefined, Number.NaN)
+  static readonly Undefined = new RectangleItem(DataPoint_Undefined, DataPoint_Undefined, Number.NaN)
 
   /**
    * Initializes a new instance of the RectangleItem class.
@@ -50,8 +54,8 @@ export class RectangleItem {
   constructor(a: DataPoint, b: DataPoint, value: number)
   constructor(a: number | DataPoint, b: number | DataPoint, c: number | DataPoint, d?: number, value?: number) {
     if (typeof a === 'number') {
-      this.a = new DataPoint(a, c as number)
-      this.b = new DataPoint(b as number, d as number)
+      this.a = newDataPoint(a, c as number)
+      this.b = newDataPoint(b as number, d as number)
       this.value = value as number
     } else {
       this.a = a
@@ -92,7 +96,7 @@ export class RectangleItem {
    * @returns true if the value of the other parameter is the same as the value of this instance; otherwise, false.
    */
   equals(other: RectangleItem): boolean {
-    return this.a.equals(other.a) && this.b.equals(other.b) && this.value === other.value
+    return dataPointEquals(this.a, other.a) && dataPointEquals(this.b, other.b) && this.value === other.value
   }
 
   /**
@@ -108,7 +112,7 @@ export class RectangleItem {
    * @returns true if this point is defined; otherwise, false.
    */
   isDefined(): boolean {
-    return this.a.isDefined() && this.b.isDefined() && !isNaN(this.value)
+    return DataPoint_isDefined(this.a) && DataPoint_isDefined(this.b) && !isNaN(this.value)
   }
 }
 

@@ -10,6 +10,7 @@
   HorizontalAndVerticalAxisRenderer,
   type IRenderContext,
   LineStyle,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -920,7 +921,7 @@ export abstract class Axis extends PlotElement {
    * @returns The data point.
    */
   public inverseTransformPoint(x: number, y: number, yaxis: Axis): DataPoint {
-    return new DataPoint(this.inverseTransform(x), yaxis ? yaxis.inverseTransform(y) : 0)
+    return newDataPoint(this.inverseTransform(x), yaxis ? yaxis.inverseTransform(y) : 0)
   }
 
   /**

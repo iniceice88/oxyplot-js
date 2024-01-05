@@ -1,11 +1,14 @@
-import type { CreateLineSeriesOptions, IRenderContext } from '@/oxyplot'
 import {
+  CreateLineSeriesOptions,
   DataPoint,
+  DataPoint_Undefined,
   EdgeRenderingMode,
+  IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
   MarkerType,
+  newDataPoint,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
@@ -109,11 +112,11 @@ export class StairStepSeries extends LineSeries {
       const px = p1.x + u * (p2.x - p1.x)
       const py = p1.y
       const item = this.getItem(i)
-      const text = this.formatDefaultTrackerString(item, new DataPoint(px, py))
+      const text = this.formatDefaultTrackerString(item, newDataPoint(px, py))
 
       result = new TrackerHitResult({
         series: this,
-        dataPoint: new DataPoint(px, py),
+        dataPoint: newDataPoint(px, py),
         position: new ScreenPoint(sx, sy),
         item,
         index: i,
@@ -218,7 +221,7 @@ export class StairStepSeries extends LineSeries {
       if (!valid) break
 
       let transformedPoint = new ScreenPoint(0, 0)
-      let previousPoint = DataPoint.Undefined
+      let previousPoint = DataPoint_Undefined
       let xIncreased = false
       let xDecreased = false
 
@@ -239,7 +242,7 @@ export class StairStepSeries extends LineSeries {
         transformedPoint = this.transform(point)
 
         if (point.y !== previousPoint.y) {
-          if (!isNaN(previousPoint.y)) linePoints.push(this.transform(new DataPoint(point.x, previousPoint.y)))
+          if (!isNaN(previousPoint.y)) linePoints.push(this.transform(newDataPoint(point.x, previousPoint.y)))
 
           linePoints.push(transformedPoint)
 
@@ -253,7 +256,7 @@ export class StairStepSeries extends LineSeries {
       }
 
       if (i < points.length && this.xAxis!.isValidValue(points[i].x)) {
-        linePoints.push(this.transform(new DataPoint(points[i].x, previousPoint.y)))
+        linePoints.push(this.transform(newDataPoint(points[i].x, previousPoint.y)))
       } else {
         linePoints.push(transformedPoint)
       }

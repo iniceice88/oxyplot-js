@@ -1,4 +1,4 @@
-import { DataPoint, DataPointSeries, Legend, MarkerType, OxyColors, PlotModel, StemSeries } from 'oxyplot-js'
+import { DataPointSeries, Legend, MarkerType, newDataPoint, OxyColors, PlotModel, StemSeries } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 /** StemSeries */
@@ -28,7 +28,7 @@ function createExampleModel(series: DataPointSeries): PlotModel {
   model.legends.push(l)
   series.title = 'sin(x)'
   for (let x = 0; x < Math.PI * 2; x += 0.1) {
-    series.points.push(new DataPoint(x, Math.sin(x)))
+    series.points.push(newDataPoint(x, Math.sin(x)))
   }
 
   model.series.push(series)

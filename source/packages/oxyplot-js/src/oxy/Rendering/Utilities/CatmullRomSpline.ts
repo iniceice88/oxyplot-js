@@ -1,4 +1,4 @@
-import { DataPoint, type IInterpolationAlgorithm, ScreenPoint } from '@/oxyplot'
+import { DataPoint, type IInterpolationAlgorithm, newDataPoint, ScreenPoint } from '@/oxyplot'
 
 /**
  * Provides functionality to interpolate a list of points by a Centripetal Catmull–Rom spline.
@@ -74,7 +74,7 @@ export class CatmullRomSpline implements IInterpolationAlgorithm {
     const interpolatedDataPoints: DataPoint[] = []
 
     for (const s of interpolatedScreenPoints) {
-      interpolatedDataPoints.push(new DataPoint(s.x, s.y))
+      interpolatedDataPoints.push(newDataPoint(s.x, s.y))
     }
 
     return interpolatedDataPoints

@@ -1,6 +1,5 @@
 import {
   AxisPosition,
-  DataPoint,
   FunctionSeries,
   Legend,
   LegendOrientation,
@@ -11,6 +10,7 @@ import {
   LineStyle,
   LogarithmicAxis,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyThickness,
@@ -36,7 +36,7 @@ function amdahlsLaw(): PlotModel {
   const createSpeedupCurve = (p: number) => {
     // todo: tracker does not work when smoothing = true (too few points interpolated on the left end of the curve)
     const ls = new LineSeries({ title: p.toFixed(0) })
-    for (let n = 1; n <= 65536; n *= 2) ls.points.push(new DataPoint(n, maxSpeedup(p, n)))
+    for (let n = 1; n <= 65536; n *= 2) ls.points.push(newDataPoint(n, maxSpeedup(p, n)))
     return ls
   }
   model.axes.push(
@@ -104,15 +104,15 @@ function richterMagnitudes(): PlotModel {
     markerStrokeThickness: 3,
   })
 
-  frequencyCurve.points.push(new DataPoint(1.5, 8000 * 365 * 100))
-  frequencyCurve.points.push(new DataPoint(2.5, 1000 * 365 * 100))
-  frequencyCurve.points.push(new DataPoint(3.5, 49000 * 100))
-  frequencyCurve.points.push(new DataPoint(4.5, 6200 * 100))
-  frequencyCurve.points.push(new DataPoint(5.5, 800 * 100))
-  frequencyCurve.points.push(new DataPoint(6.5, 120 * 100))
-  frequencyCurve.points.push(new DataPoint(7.5, 18 * 100))
-  frequencyCurve.points.push(new DataPoint(8.5, 1 * 100))
-  frequencyCurve.points.push(new DataPoint(9.5, (1.0 / 20) * 100))
+  frequencyCurve.points.push(newDataPoint(1.5, 8000 * 365 * 100))
+  frequencyCurve.points.push(newDataPoint(2.5, 1000 * 365 * 100))
+  frequencyCurve.points.push(newDataPoint(3.5, 49000 * 100))
+  frequencyCurve.points.push(newDataPoint(4.5, 6200 * 100))
+  frequencyCurve.points.push(newDataPoint(5.5, 800 * 100))
+  frequencyCurve.points.push(newDataPoint(6.5, 120 * 100))
+  frequencyCurve.points.push(newDataPoint(7.5, 18 * 100))
+  frequencyCurve.points.push(newDataPoint(8.5, 1 * 100))
+  frequencyCurve.points.push(newDataPoint(9.5, (1.0 / 20) * 100))
 
   richterMagnitudes.axes.push(
     new LogarithmicAxis({
@@ -137,15 +137,15 @@ function richterMagnitudes(): PlotModel {
     markerStrokeThickness: 3,
   })
 
-  energyCurve.points.push(new DataPoint(1.5, 11e6))
-  energyCurve.points.push(new DataPoint(2.5, 360e6))
-  energyCurve.points.push(new DataPoint(3.5, 11e9))
-  energyCurve.points.push(new DataPoint(4.5, 360e9))
-  energyCurve.points.push(new DataPoint(5.5, 11e12))
-  energyCurve.points.push(new DataPoint(6.5, 360e12))
-  energyCurve.points.push(new DataPoint(7.5, 11e15))
-  energyCurve.points.push(new DataPoint(8.5, 360e15))
-  energyCurve.points.push(new DataPoint(9.5, 11e18))
+  energyCurve.points.push(newDataPoint(1.5, 11e6))
+  energyCurve.points.push(newDataPoint(2.5, 360e6))
+  energyCurve.points.push(newDataPoint(3.5, 11e9))
+  energyCurve.points.push(newDataPoint(4.5, 360e9))
+  energyCurve.points.push(newDataPoint(5.5, 11e12))
+  energyCurve.points.push(newDataPoint(6.5, 360e12))
+  energyCurve.points.push(newDataPoint(7.5, 11e15))
+  energyCurve.points.push(newDataPoint(8.5, 360e15))
+  energyCurve.points.push(newDataPoint(9.5, 11e18))
 
   energyCurve.yAxisKey = 'energyAxis'
 

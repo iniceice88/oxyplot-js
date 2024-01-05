@@ -1,9 +1,14 @@
-﻿import type { IRenderContext, ITransposablePlotElement } from '@/oxyplot'
-import {
+﻿import {
   DataPoint,
+  DataPoint_isUnDefined,
+  dataPointMinus,
+  dataPointPlus,
+  DataPoint_Undefined,
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
+  IRenderContext,
+  ITransposablePlotElement,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -636,11 +641,15 @@ export class RenderingExtensions {
     if (xaxis.isLogarithmic() || yaxis.isLogarithmic()) {
       let first = false
       let lastWasUndefined = true
-      let last = DataPoint.Undefined
+      let last = DataPoint_Undefined
 
       for (const next of points) {
         // detect and remove invalid points (TODO: replace write a ClipLines method)
-        if (!next.isDefined() || (xaxis.isLogarithmic() && next.x <= 0) || (yaxis.isLogarithmic() && next.y <= 0)) {
+        if (
+          DataPoint_isUnDefined(next) ||
+          (xaxis.isLogarithmic() && next.x <= 0) ||
+          (yaxis.isLogarithmic() && next.y <= 0)
+        ) {
           lastWasUndefined = true
         } else {
           if (lastWasUndefined) {
@@ -650,9 +659,9 @@ export class RenderingExtensions {
             lastWasUndefined = false
             first = true
           } else if (first) {
-            const difference = next.minus(last)
+            const difference = dataPointMinus(next, last)
             this.interpolatePoints(
-              (x) => transposablePlotElement.transform(last.plus(difference.times(x))),
+              (x) => transposablePlotElement.transform(dataPointPlus(last, difference.times(x))),
               screenPoints,
               maxSegmentLength,
               first,
@@ -666,7 +675,7 @@ export class RenderingExtensions {
       let lastWasUndefined = true
 
       for (const dataPoint of points) {
-        if (!dataPoint.isDefined()) {
+        if (DataPoint_isUnDefined(dataPoint)) {
           lastWasUndefined = true
         } else {
           if (lastWasUndefined && screenPoints.length > 0) {

@@ -2,6 +2,7 @@ import {
   AxisPosition,
   CanonicalSpline,
   DataPoint,
+  DataPoint_Undefined,
   Decimator,
   InterpolationAlgorithms,
   Legend,
@@ -11,6 +12,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -290,16 +292,16 @@ function brokenLine(): PlotModel {
   const model: PlotModel = new PlotModel({ title: 'LineSeries with broken lines' })
 
   const s1 = createExampleLineSeries()
-  s1.points[3] = DataPoint.Undefined
-  s1.points[7] = DataPoint.Undefined
+  s1.points[3] = DataPoint_Undefined
+  s1.points[7] = DataPoint_Undefined
   s1.brokenLineColor = OxyColors.Gray
   s1.brokenLineThickness = 0.5
   s1.brokenLineStyle = LineStyle.Solid
   model.series.push(s1)
 
   const s2 = createExampleLineSeries(49)
-  s2.points[3] = DataPoint.Undefined
-  s2.points[7] = DataPoint.Undefined
+  s2.points[3] = DataPoint_Undefined
+  s2.points[7] = DataPoint_Undefined
   s2.brokenLineColor = OxyColors.Automatic
   s2.brokenLineThickness = 1
   s2.brokenLineStyle = LineStyle.Dot
@@ -430,8 +432,6 @@ function markerColorOptions(): PlotModel {
 }
 
 // =======================private
-const Randomizer: Random = new Random(13)
-
 /**
  * Create random points
  * @param numberOfPoints The number of points to create. Defaults to 50.
@@ -442,13 +442,13 @@ function createRandomPoints(numberOfPoints: number = 50): DataPoint[] {
   const result: DataPoint[] = []
   for (let i = 0; i < numberOfPoints; i++) {
     if (i < 5) {
-      result.push(new DataPoint(i, 0.0))
+      result.push(newDataPoint(i, 0.0))
     } else if (i < 10) {
-      result.push(new DataPoint(i, 1.0))
+      result.push(newDataPoint(i, 1.0))
     } else if (i < 12) {
-      result.push(new DataPoint(i, 0.0))
+      result.push(newDataPoint(i, 0.0))
     } else {
-      result.push(new DataPoint(i, r.next()))
+      result.push(newDataPoint(i, r.next()))
     }
   }
   return result
@@ -463,7 +463,7 @@ function createExampleLineSeries(seed: number = 13): LineSeries {
   const r = new Random(seed)
   let y = r.next(10, 30)
   for (let x = 0; x <= 100; x += 10) {
-    lineSeries1.points.push(new DataPoint(x, y))
+    lineSeries1.points.push(newDataPoint(x, y))
     y += r.next(-5, 5)
   }
 
@@ -482,7 +482,7 @@ function createModel(title: string, n: number = 20): PlotModel {
     const s = new LineSeries({ title: 'Series ' + i })
     model.series.push(s)
     for (let x = 0; x < 2 * Math.PI; x += 0.1) {
-      s.points.push(new DataPoint(x, Math.sin(x * i) / (i + 1) + i))
+      s.points.push(newDataPoint(x, Math.sin(x * i) / (i + 1) + i))
     }
   }
 
@@ -498,7 +498,7 @@ function createSeriesSuitableForDecimation(): LineSeries {
 
   const n = 20000
   for (let i = 0; i < n; i++) {
-    s1.points.push(new DataPoint(i / n, Math.sin(i)))
+    s1.points.push(newDataPoint(i / n, Math.sin(i)))
   }
 
   return s1

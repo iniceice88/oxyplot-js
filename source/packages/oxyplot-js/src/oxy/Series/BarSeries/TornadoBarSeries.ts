@@ -1,8 +1,8 @@
-import type {
+import {
   CreateBarItemOptions,
   CreateBarSeriesBaseOptions,
   IRenderContext,
-  LabelStringFormatterType,
+  LabelStringFormatterType, newDataPoint,
   TrackerStringFormatterType,
 } from '@/oxyplot'
 import {
@@ -220,7 +220,7 @@ export class TornadoBarSeries extends BarSeriesBase<TornadoBarItem> {
         const item = this.getItem(this.validItemsIndexInversion.get(i)!) as TornadoBarItem
         const categoryIndex = item.getCategoryIndex(i)
         const value = insideMaximumRectangle ? this.validItems[i].maximum : this.validItems[i].minimum
-        const dp = new DataPoint(categoryIndex, value)
+        const dp = newDataPoint(categoryIndex, value)
         const categoryAxis = this.getCategoryAxis()
         const text = this.trackerStringFormatter!({
           item,

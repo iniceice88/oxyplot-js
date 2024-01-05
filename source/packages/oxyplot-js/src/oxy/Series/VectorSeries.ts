@@ -3,6 +3,8 @@ import {
   ColorAxisExtensions,
   type CreateXYAxisSeriesOptions,
   DataPoint,
+  dataPointMinusVector,
+  dataPointPlus,
   DataVector,
   HorizontalAlignment,
   type IColorAxis,
@@ -21,18 +23,6 @@ import {
   XYAxisSeries,
 } from '@/oxyplot'
 import { maxValueOfArray, minValueOfArray } from '@/patch'
-
-/** Represents an item in a VectorSeries. */
-export interface VectorItem {
-  /** The origin of the vector. */
-  readonly origin: DataPoint
-
-  /** The direction of the vector. */
-  readonly direction: DataVector
-
-  /** The value of the item. */
-  readonly value: number
-}
 
 /** Represents an item in a VectorSeries. */
 export interface VectorItem {
@@ -290,8 +280,8 @@ ${args.colorAxisTitle}: ${args.item!.value}
       vectorColor = this.getSelectableColor(vectorColor, i)
 
       const vector = item.direction
-      const origin = item.origin.minusVector(vector.times(this.arrowStartPosition))
-      const textOrigin = origin.plus(vector.times(this.arrowLabelPosition))
+      const origin = dataPointMinusVector(item.origin, vector.times(this.arrowStartPosition))
+      const textOrigin = dataPointPlus(origin, vector.times(this.arrowLabelPosition))
 
       await this.drawVector(rc, origin, vector, vectorColor)
 
@@ -314,7 +304,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
   }
 
   private async drawVector(rc: IRenderContext, point: DataPoint, vector: DataVector, color: OxyColor): Promise<void> {
-    const points = [point, point.plus(vector)]
+    const points = [point, dataPointPlus(point, vector)]
     const screenPoints: ScreenPoint[] = []
     RenderingExtensions.transformAndInterpolateLines(this, points, screenPoints, this.minimumSegmentLength)
 
@@ -459,10 +449,10 @@ ${args.colorAxisTitle}: ${args.item!.value}
 
     const allDataPoints: DataPoint[] = []
     allDataPoints.push(
-      ...actualItems.map((item) => item.origin.minusVector(item.direction.times(this.arrowStartPosition))),
+      ...actualItems.map((item) => dataPointMinusVector(item.origin, item.direction.times(this.arrowStartPosition))),
     )
     allDataPoints.push(
-      ...actualItems.map((item) => item.origin.plus(item.direction.times(1 - this.arrowStartPosition))),
+      ...actualItems.map((item) => dataPointPlus(item.origin, item.direction.times(1 - this.arrowStartPosition))),
     )
     this.internalUpdateMaxMin(allDataPoints)
 

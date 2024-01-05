@@ -9,7 +9,7 @@ import {
   type LabelStringFormatterType,
   LineJoin,
   LineStyle,
-  LineStyleHelper,
+  LineStyleHelper, newDataPoint,
   OxyColor,
   OxyColors,
   RenderingExtensions,
@@ -201,8 +201,8 @@ export class ContourSeries extends XYAxisSeries {
       contourLevel: number,
     ) => {
       this.segments.push({
-        startPoint: new DataPoint(startX, startY),
-        endPoint: new DataPoint(endX, endY),
+        startPoint: newDataPoint(startX, startY),
+        endPoint: newDataPoint(endX, endY),
         contourLevel,
       })
     }

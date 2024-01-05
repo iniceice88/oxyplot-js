@@ -8,7 +8,7 @@ import {
   type IRenderContext,
   type IStackableSeries,
   LabelPlacement,
-  type LabelStringFormatterType,
+  type LabelStringFormatterType, newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -176,7 +176,7 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
       const item = this.getItem(this.validItemsIndexInversion.get(i)!) as IntervalBarItem
       const categoryIndex = item.getCategoryIndex(i)
       const value = (this.validItems[i].start + this.validItems[i].end) / 2
-      const dp = new DataPoint(categoryIndex, value)
+      const dp = newDataPoint(categoryIndex, value)
       const categoryAxis = this.getCategoryAxis()
       const valueAxis = this.xAxis!
       const text = this.trackerStringFormatter!({

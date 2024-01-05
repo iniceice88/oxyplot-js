@@ -1,12 +1,14 @@
-﻿import type { Axis, CreateLinearAxisOptions } from '@/oxyplot'
-import {
+﻿import {
   AngleAxis,
+  Axis,
   AxisPosition,
+  CreateLinearAxisOptions,
   DataPoint,
   type IRenderContext,
   LinearAxis,
   LineStyle,
   MagnitudeAxisRenderer,
+  newDataPoint,
   OxyRect,
   ScreenPoint,
 } from '@/oxyplot'
@@ -66,7 +68,7 @@ export class MagnitudeAxis extends LinearAxis {
     const r = Math.sqrt(x * x + y * y)
     x = r / this.scale + this.offset
     y = th / angleAxis.scale + (angleAxis.offset * Math.PI) / 180.0
-    return new DataPoint(x, y)
+    return newDataPoint(x, y)
   }
 
   /**

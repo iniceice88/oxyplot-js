@@ -7,7 +7,7 @@ import {
   type IColorAxis,
   ImageFormat,
   type IRenderContext,
-  type LabelStringFormatterType,
+  type LabelStringFormatterType, newDataPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -363,7 +363,7 @@ export class HeatMapSeries extends XYAxisSeries {
         py = j * dy + this.y0
       }
 
-      p = new DataPoint(px, py)
+      p = newDataPoint(px, py)
       point = this.transform(p)
     }
 

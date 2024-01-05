@@ -1,10 +1,10 @@
 import {
-  DataPoint,
   Legend,
   LegendOrientation,
   LegendPlacement,
   LegendPosition,
   LineSeries,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyThickness,
@@ -220,7 +220,7 @@ function createModel(n: number = 20): PlotModel {
     model.series.push(s)
 
     for (let x = 0; x < 2 * Math.PI; x += 0.1) {
-      s.points.push(new DataPoint(x, Math.sin(x * i) / i + i))
+      s.points.push(newDataPoint(x, Math.sin(x * i) / i + i))
     }
   }
 

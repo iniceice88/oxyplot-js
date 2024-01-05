@@ -7,6 +7,7 @@ import {
   CategoryAxis,
   ContourSeries,
   DataPoint,
+  DataPoint_Zero,
   DateTimeAxis,
   DateTimeIntervalType,
   getDateService,
@@ -20,6 +21,7 @@ import {
   LineStyle,
   MagnitudeAxis,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -262,7 +264,7 @@ function sameColorOfLineSeriesAndAxisTitleAndLabels(): PlotModel {
     new LineSeries({
       title: 'LineSeries 1',
       color: color,
-      itemsSource: [new DataPoint(0, 0), new DataPoint(10, 3), new DataPoint(20, 2)],
+      itemsSource: [newDataPoint(0, 0), newDataPoint(10, 3), newDataPoint(20, 2)],
     }),
   )
   return model
@@ -295,11 +297,11 @@ function polarPlotWithArrows(): PlotModel {
       majorGridlineStyle: LineStyle.Dash,
     }),
   )
-  model.series.push(new ArrowSeries549839({ endPoint: new DataPoint(1, 40) }))
-  model.series.push(new ArrowSeries549839({ endPoint: new DataPoint(2, 75) }))
-  model.series.push(new ArrowSeries549839({ endPoint: new DataPoint(3, 110) }))
-  model.series.push(new ArrowSeries549839({ endPoint: new DataPoint(4, 140) }))
-  model.series.push(new ArrowSeries549839({ endPoint: new DataPoint(5, 180) }))
+  model.series.push(new ArrowSeries549839({ endPoint: newDataPoint(1, 40) }))
+  model.series.push(new ArrowSeries549839({ endPoint: newDataPoint(2, 75) }))
+  model.series.push(new ArrowSeries549839({ endPoint: newDataPoint(3, 110) }))
+  model.series.push(new ArrowSeries549839({ endPoint: newDataPoint(4, 140) }))
+  model.series.push(new ArrowSeries549839({ endPoint: newDataPoint(5, 180) }))
   return model
 }
 
@@ -355,14 +357,14 @@ function markerTypeCircleProblem(): PlotModel {
     },
   })
 
-  series1.points.push(new DataPoint(0.1, 0.7))
-  series1.points.push(new DataPoint(0.6, 0.9))
-  series1.points.push(new DataPoint(1.0, 0.85))
-  series1.points.push(new DataPoint(1.4, 0.95))
-  series1.points.push(new DataPoint(1.8, 1.2))
-  series1.points.push(new DataPoint(2.2, 1.7))
-  series1.points.push(new DataPoint(2.6, 1.7))
-  series1.points.push(new DataPoint(3.0, 0.7))
+  series1.points.push(newDataPoint(0.1, 0.7))
+  series1.points.push(newDataPoint(0.6, 0.9))
+  series1.points.push(newDataPoint(1.0, 0.85))
+  series1.points.push(newDataPoint(1.4, 0.95))
+  series1.points.push(newDataPoint(1.8, 1.2))
+  series1.points.push(newDataPoint(2.2, 1.7))
+  series1.points.push(newDataPoint(2.6, 1.7))
+  series1.points.push(newDataPoint(3.0, 0.7))
 
   plotModel.series.push(series1)
 
@@ -372,8 +374,8 @@ function markerTypeCircleProblem(): PlotModel {
 class ArrowSeries549839 extends XYAxisSeries {
   private defaultColor: OxyColor = OxyColors.Undefined
 
-  public startPoint: DataPoint = DataPoint.Zero
-  public endPoint: DataPoint = DataPoint.Zero
+  public startPoint: DataPoint = DataPoint_Zero
+  public endPoint: DataPoint = DataPoint_Zero
   public color: OxyColor
   public strokeThickness: number
 

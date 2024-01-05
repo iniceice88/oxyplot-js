@@ -1,4 +1,4 @@
-import type { Axis, CreateXYAxisSeriesOptions, IRenderContext, TrackerStringFormatterArgs } from '@/oxyplot'
+import { Axis, CreateXYAxisSeriesOptions, IRenderContext, newDataPoint, TrackerStringFormatterArgs } from '@/oxyplot'
 import {
   DataPoint,
   LineJoin,
@@ -248,10 +248,10 @@ Close: ${round(args.close!, 3)}`
 
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i]
-      checkDistance(new DataPoint(item.x, item.high), item, i)
-      checkDistance(new DataPoint(item.x, item.low), item, i)
-      checkDistance(new DataPoint(item.x, item.open), item, i)
-      checkDistance(new DataPoint(item.x, item.close), item, i)
+      checkDistance(newDataPoint(item.x, item.high), item, i)
+      checkDistance(newDataPoint(item.x, item.low), item, i)
+      checkDistance(newDataPoint(item.x, item.open), item, i)
+      checkDistance(newDataPoint(item.x, item.close), item, i)
     }
 
     if (minimumDistance < Number_MAX_VALUE) {

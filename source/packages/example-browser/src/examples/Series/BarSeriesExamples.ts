@@ -14,7 +14,7 @@ import {
   LinearAxis,
   LineSeries,
   LineStyle,
-  LogarithmicAxis,
+  LogarithmicAxis, newDataPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -432,10 +432,10 @@ function mixedWithLineSeries(): PlotModel {
   model.title = 'Mixed with LineSeries'
 
   const s1 = new LineSeries({ title: 'LineSeries 1' })
-  s1.points.push(new DataPoint(25, 0))
-  s1.points.push(new DataPoint(137, 1))
-  s1.points.push(new DataPoint(18, 2))
-  s1.points.push(new DataPoint(40, 3))
+  s1.points.push(newDataPoint(25, 0))
+  s1.points.push(newDataPoint(137, 1))
+  s1.points.push(newDataPoint(18, 2))
+  s1.points.push(newDataPoint(40, 3))
 
   model.series.push(s1)
   return model

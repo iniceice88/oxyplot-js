@@ -1,9 +1,10 @@
-import type { CreateXYAxisSeriesOptions, IRenderContext, TrackerStringFormatterType } from '@/oxyplot'
 import {
-  DataPoint,
+  CreateXYAxisSeriesOptions,
+  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
+  newDataPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -11,6 +12,7 @@ import {
   PlotElementExtensions,
   ScreenPoint,
   TrackerHitResult,
+  TrackerStringFormatterType,
   XYAxisSeries,
 } from '@/oxyplot'
 import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
@@ -585,7 +587,7 @@ export class VolumeSeries extends XYAxisSeries {
     }
     if (match) return undefined
 
-    const text = this.formatDefaultTrackerString(item, new DataPoint(item.x, 0))
+    const text = this.formatDefaultTrackerString(item, newDataPoint(item.x, 0))
     return new TrackerHitResult({
       series: this,
       dataPoint: xy,

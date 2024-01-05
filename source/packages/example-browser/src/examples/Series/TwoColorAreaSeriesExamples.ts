@@ -1,10 +1,10 @@
 import {
   AxisPosition,
-  DataPoint,
   InterpolationAlgorithms,
   Legend,
   LinearAxis,
   MarkerType,
+  newDataPoint,
   OxyColors,
   PlotModel,
   round,
@@ -39,7 +39,7 @@ function twoColorAreaSeries(): PlotModel {
   ]
 
   for (let i = 0; i < temperatures.length; i++) {
-    s1.points.push(new DataPoint(i + 1, temperatures[i]))
+    s1.points.push(newDataPoint(i + 1, temperatures[i]))
   }
 
   model.series.push(s1)
@@ -87,7 +87,7 @@ function twoColorAreaSeries2(): PlotModel {
   ]
 
   for (let i = 0; i < temperatures.length; i++) {
-    s1.points.push(new DataPoint(i + 1, temperatures[i]))
+    s1.points.push(newDataPoint(i + 1, temperatures[i]))
   }
 
   model.series.push(s1)
@@ -140,7 +140,7 @@ function twoColorAreaSeries3(): PlotModel {
   ]
 
   for (let i = 0; i < temperatures.length; i++) {
-    s1.points.push(new DataPoint(i + 1, temperatures[i]))
+    s1.points.push(newDataPoint(i + 1, temperatures[i]))
   }
 
   model.series.push(s1)
@@ -180,10 +180,10 @@ function twoColorAreaSeriesTwoPolygons(): PlotModel {
   })
 
   s1.points.push(
-    ...[new DataPoint(0, 3), new DataPoint(1, 5), new DataPoint(2, 1), new DataPoint(3, 0), new DataPoint(4, 3)],
+    ...[newDataPoint(0, 3), newDataPoint(1, 5), newDataPoint(2, 1), newDataPoint(3, 0), newDataPoint(4, 3)],
   )
   s1.points2.push(
-    ...[new DataPoint(0, -3), new DataPoint(1, -1), new DataPoint(2, 0), new DataPoint(3, -6), new DataPoint(4, -4)],
+    ...[newDataPoint(0, -3), newDataPoint(1, -1), newDataPoint(2, 0), newDataPoint(3, -6), newDataPoint(4, -4)],
   )
 
   model.series.push(s1)

@@ -5,7 +5,7 @@ import {
   DataPoint,
   type IRenderContext,
   LineStyle,
-  LineStyleHelper,
+  LineStyleHelper, newDataPoint,
   OxyColor,
   OxyColors,
   RenderingExtensions,
@@ -320,7 +320,7 @@ export class TwoColorAreaSeries extends AreaSeries {
    * @param source A collection of points to split.
    */
   private splitPoints(source: DataPoint[]): void {
-    const nan = new DataPoint(Number.NaN, Number.NaN)
+    const nan = newDataPoint(Number.NaN, Number.NaN)
     const limit = this.limit
     this.abovePoints = new Array<DataPoint>()
     this.belowPoints = new Array<DataPoint>()
@@ -331,7 +331,7 @@ export class TwoColorAreaSeries extends AreaSeries {
       const isAbove = point.y >= limit
 
       if (lastPoint && isAbove !== lastAbove) {
-        const shared = new DataPoint(this.getInterpolatedX(lastPoint, point, limit), limit)
+        const shared = newDataPoint(this.getInterpolatedX(lastPoint, point, limit), limit)
         this.abovePoints.push(isAbove ? nan : shared)
         this.abovePoints.push(isAbove ? shared : nan)
 
@@ -360,11 +360,11 @@ export class TwoColorAreaSeries extends AreaSeries {
     }
 
     let p1 = this.inverseTransform(source[0])
-    p1 = new DataPoint(p1.x, baseline)
+    p1 = newDataPoint(p1.x, baseline)
     result.push(this.transform(p1))
 
     let p2 = this.inverseTransform(source[source.length - 1])
-    p2 = new DataPoint(p2.x, baseline)
+    p2 = newDataPoint(p2.x, baseline)
     result.push(this.transform(p2))
 
     if (this.reverse2) {

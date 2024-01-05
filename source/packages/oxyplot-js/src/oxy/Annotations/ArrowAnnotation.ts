@@ -1,6 +1,8 @@
 import {
   type CreateTextualAnnotationOptions,
   DataPoint,
+  DataPoint_isDefined,
+  DataPoint_Zero,
   HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
@@ -77,7 +79,7 @@ export class ArrowAnnotation extends TextualAnnotation {
   /**
    * Gets or sets the end point of the arrow.
    */
-  public endPoint: DataPoint = DataPoint.Zero
+  public endPoint: DataPoint = DataPoint_Zero
 
   /**
    * Gets or sets the length of the head (relative to the stroke thickness) (the default value is 10).
@@ -103,7 +105,7 @@ export class ArrowAnnotation extends TextualAnnotation {
    * Gets or sets the start point of the arrow.
    * This property is overridden by the ArrowDirection property, if set.
    */
-  public startPoint: DataPoint = DataPoint.Zero
+  public startPoint: DataPoint = DataPoint_Zero
 
   /**
    * Gets or sets the stroke thickness (the default value is 2).
@@ -169,7 +171,7 @@ export class ArrowAnnotation extends TextualAnnotation {
     let ha: HorizontalAlignment
     let va: VerticalAlignment
 
-    if (this.textPosition.isDefined()) {
+    if (DataPoint_isDefined(this.textPosition)) {
       ;[ha, va] = this.getActualTextAlignment()
     } else {
       const angle = Math.atan2(d.y, d.x)

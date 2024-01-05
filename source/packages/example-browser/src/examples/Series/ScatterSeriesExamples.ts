@@ -6,6 +6,7 @@ import {
   LineAnnotation,
   LinearColorAxis,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyPalette,
@@ -764,7 +765,7 @@ function getNormalDistributedValue(rnd: Random): number {
 }
 
 function createRandomDataPoints(n: number): DataPoint[] {
-  return createRandomScatterPoints(n).map((sp) => new DataPoint(sp.x, sp.y))
+  return createRandomScatterPoints(n).map((sp) => newDataPoint(sp.x, sp.y))
 }
 
 function createRandomScatterPoints(n: number): ScatterPoint[] {

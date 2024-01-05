@@ -1,4 +1,4 @@
-import { type CreateLineSeriesOptions, DataPoint, LineSeries } from '@/oxyplot'
+import { type CreateLineSeriesOptions, DataPoint, LineSeries, newDataPoint } from '@/oxyplot'
 import { assertInteger } from '@/patch'
 
 export interface CreateFunctionSeriesOptions extends CreateLineSeriesOptions {
@@ -115,7 +115,7 @@ export class FunctionSeries extends LineSeries {
    */
   private f1(f: (x: number) => number, x0: number, x1: number, dx: number) {
     for (let x = x0; x <= x1 + dx * 0.5; x += dx) {
-      this.points.push(new DataPoint(x, f(x)))
+      this.points.push(newDataPoint(x, f(x)))
     }
   }
 
@@ -140,7 +140,7 @@ export class FunctionSeries extends LineSeries {
    */
   private f3(fx: (t: number) => number, fy: (t: number) => number, t0: number, t1: number, dt: number) {
     for (let t = t0; t <= t1 + dt * 0.5; t += dt) {
-      this.points.push(new DataPoint(fx(t), fy(t)))
+      this.points.push(newDataPoint(fx(t), fy(t)))
     }
   }
 

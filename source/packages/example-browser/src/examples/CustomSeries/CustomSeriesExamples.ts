@@ -3,13 +3,13 @@ import {
   AxisPosition,
   CategoryAxis,
   type CreateHeatMapSeriesOptions,
-  DataPoint,
   HeatMapSeries,
   Legend,
   LegendPosition,
   LinearAxis,
   LinearColorAxis,
   MagnitudeAxis,
+  newDataPoint,
   OxyColors,
   OxyPalette,
   OxyPalettes,
@@ -59,10 +59,10 @@ function lineSegmentSeries(): PlotModel {
   lss1.title = 'The first series'
 
   // First segment
-  lss1.points.push(new DataPoint(0, 3), new DataPoint(2, 3.2))
+  lss1.points.push(newDataPoint(0, 3), newDataPoint(2, 3.2))
 
   // Second segment
-  lss1.points.push(new DataPoint(2, 2.7), new DataPoint(7, 2.9))
+  lss1.points.push(newDataPoint(2, 2.7), newDataPoint(7, 2.9))
 
   model.series.push(lss1)
 
@@ -70,13 +70,13 @@ function lineSegmentSeries(): PlotModel {
   lss2.title = 'The second series'
 
   // First segment
-  lss2.points.push(new DataPoint(1, -3), new DataPoint(2, 10))
+  lss2.points.push(newDataPoint(1, -3), newDataPoint(2, 10))
 
   // Second segment
-  lss2.points.push(new DataPoint(0, 4.8), new DataPoint(7, 2.3))
+  lss2.points.push(newDataPoint(0, 4.8), newDataPoint(7, 2.3))
 
   // A very short segment
-  lss2.points.push(new DataPoint(6, 4), new DataPoint(6, 4 + 1e-8))
+  lss2.points.push(newDataPoint(6, 4), newDataPoint(6, 4 + 1e-8))
 
   model.series.push(lss2)
 

@@ -2,8 +2,10 @@ import {
   Axis,
   AxisPreference,
   DataPoint,
+  DataPoint_Zero,
   type IPlotView,
   ManipulatorBase,
+  newDataPoint,
   type OxyInputEventArgs,
   ScreenPoint,
 } from '@/oxyplot'
@@ -53,10 +55,10 @@ export abstract class PlotManipulator<T extends OxyInputEventArgs> extends Manip
     }
 
     if (this.yAxis) {
-      return new DataPoint(0, this.yAxis.inverseTransform(y))
+      return newDataPoint(0, this.yAxis.inverseTransform(y))
     }
 
-    return DataPoint.Zero
+    return DataPoint_Zero
   }
 
   /**

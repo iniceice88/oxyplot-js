@@ -1,5 +1,13 @@
-﻿import type { ITransposablePlotElement, IXyAxisPlotElement } from '@/oxyplot'
-import { DataPoint, HorizontalAlignment, ScreenPoint, ScreenVector, VerticalAlignment } from '@/oxyplot'
+﻿import {
+  DataPoint,
+  HorizontalAlignment,
+  ITransposablePlotElement,
+  IXyAxisPlotElement,
+  newDataPoint,
+  ScreenPoint,
+  ScreenVector,
+  VerticalAlignment,
+} from '@/oxyplot'
 
 /**
  * The transposable plot element extensions.
@@ -84,6 +92,6 @@ export class PlotElementExtensions {
    * @returns A screen point.
    */
   public static transform(element: IXyAxisPlotElement, x: number, y: number): ScreenPoint {
-    return element.transform(new DataPoint(x, y))
+    return element.transform(newDataPoint(x, y))
   }
 }

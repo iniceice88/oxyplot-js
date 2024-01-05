@@ -1,5 +1,6 @@
 import {
   DataPoint,
+  DataPoint_Undefined,
   DataPointSeries,
   Legend,
   LegendOrientation,
@@ -7,6 +8,7 @@ import {
   LegendPosition,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColors,
   PlotModel,
   round,
@@ -70,7 +72,7 @@ function stairStepSeriesWithInvalidPoints(): PlotModel {
     subtitle: 'Horizontal lines do not continue',
   })
 
-  populateInvalidPointExampleModel(model, (x) => DataPoint.Undefined)
+  populateInvalidPointExampleModel(model, (x) => DataPoint_Undefined)
 
   return model
 }
@@ -82,7 +84,7 @@ function stairStepSeriesWithInvalidY(): PlotModel {
     subtitle: 'Horizontal lines continue until X of point with invalid Y',
   })
 
-  populateInvalidPointExampleModel(model, (x) => new DataPoint(x, NaN))
+  populateInvalidPointExampleModel(model, (x) => newDataPoint(x, NaN))
 
   return model
 }
@@ -98,7 +100,7 @@ function stairStepSeriesWithNonmonotonicX(): PlotModel {
     markerType: MarkerType.Circle,
     verticalLineStyle: LineStyle.Dash,
     verticalStrokeThickness: 4,
-    points: [new DataPoint(1, 1), new DataPoint(3, 1), new DataPoint(2, 3), new DataPoint(1, 3), new DataPoint(3, 3)],
+    points: [newDataPoint(1, 1), newDataPoint(3, 1), newDataPoint(2, 3), newDataPoint(1, 3), newDataPoint(3, 3)],
   })
   model.series.push(iBeamSeries)
 
@@ -106,7 +108,7 @@ function stairStepSeriesWithNonmonotonicX(): PlotModel {
     markerType: MarkerType.Circle,
     verticalLineStyle: LineStyle.Dash,
     verticalStrokeThickness: 4,
-    points: [new DataPoint(1, 0), new DataPoint(2, 0), new DataPoint(0, 0), new DataPoint(4, 0), new DataPoint(4, 4)],
+    points: [newDataPoint(1, 0), newDataPoint(2, 0), newDataPoint(0, 0), newDataPoint(4, 0), newDataPoint(4, 4)],
   })
   model.series.push(boxBRSeries)
 
@@ -114,7 +116,7 @@ function stairStepSeriesWithNonmonotonicX(): PlotModel {
     markerType: MarkerType.Circle,
     verticalLineStyle: LineStyle.Dash,
     verticalStrokeThickness: 4,
-    points: [new DataPoint(3, 4), new DataPoint(2, 4), new DataPoint(4, 4), new DataPoint(0, 4), new DataPoint(0, 0)],
+    points: [newDataPoint(3, 4), newDataPoint(2, 4), newDataPoint(4, 4), newDataPoint(0, 4), newDataPoint(0, 0)],
   })
   model.series.push(boxTLSeries)
 
@@ -136,7 +138,7 @@ function createExampleModel(series: DataPointSeries): PlotModel {
 
   series.title = 'sin(x)'
   for (let x = 0; x < Math.PI * 2; x += 0.5) {
-    series.points.push(new DataPoint(x, Math.sin(x)))
+    series.points.push(newDataPoint(x, Math.sin(x)))
   }
 
   model.series.push(series)
@@ -155,28 +157,28 @@ function populateInvalidPointExampleModel(model: PlotModel, getInvalidPoint: (x:
   const series1 = new StairStepSeries({
     title: 'Invalid First Point',
     markerType: MarkerType.Circle,
-    points: [getInvalidPoint(0), new DataPoint(1, 3.5), new DataPoint(2, 4.0), new DataPoint(3, 4.5)],
+    points: [getInvalidPoint(0), newDataPoint(1, 3.5), newDataPoint(2, 4.0), newDataPoint(3, 4.5)],
   })
   model.series.push(series1)
 
   const series2 = new StairStepSeries({
     title: 'Invalid Second Point',
     markerType: MarkerType.Circle,
-    points: [new DataPoint(0, 2.0), getInvalidPoint(1), new DataPoint(2, 3.0), new DataPoint(3, 3.5)],
+    points: [newDataPoint(0, 2.0), getInvalidPoint(1), newDataPoint(2, 3.0), newDataPoint(3, 3.5)],
   })
   model.series.push(series2)
 
   const series3 = new StairStepSeries({
     title: 'Invalid Penultimate Point',
     markerType: MarkerType.Circle,
-    points: [new DataPoint(0, 1.0), new DataPoint(1, 1.5), getInvalidPoint(2), new DataPoint(3, 2.5)],
+    points: [newDataPoint(0, 1.0), newDataPoint(1, 1.5), getInvalidPoint(2), newDataPoint(3, 2.5)],
   })
   model.series.push(series3)
 
   const series4 = new StairStepSeries({
     title: 'Invalid Last Point',
     markerType: MarkerType.Circle,
-    points: [new DataPoint(0, 0.0), new DataPoint(1, 0.5), new DataPoint(2, 1.0), getInvalidPoint(3)],
+    points: [newDataPoint(0, 0.0), newDataPoint(1, 0.5), newDataPoint(2, 1.0), getInvalidPoint(3)],
   })
   model.series.push(series4)
 }

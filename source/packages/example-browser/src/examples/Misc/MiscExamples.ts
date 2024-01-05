@@ -1,4 +1,3 @@
-// ===========
 import {
   AreaSeries,
   AxisPosition,
@@ -15,6 +14,7 @@ import {
   LineSeries,
   LineStyle,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyMouseButton,
@@ -195,10 +195,10 @@ Distance from Oslo S: ${args.yValue.toFixed(1)} km`,
       const t = TimeSpanAxis.toDouble(span)
 
       // Add the point to the line
-      series[i].points.push(new DataPoint(t, x))
+      series[i].points.push(newDataPoint(t, x))
 
       // Add the point for the station
-      stations.points.push(new DataPoint(t, x))
+      stations.points.push(newDataPoint(t, x))
     }
   }
 
@@ -220,9 +220,9 @@ Distance from Oslo S: ${args.yValue.toFixed(1)} km`,
         }
 
         const y = s.points[i].y + ((s.points[i + 1].y - s.points[i].y) / (x1 - x0)) * (0 - x0)
-        s.points.splice(i + 1, 0, new DataPoint(x0 < x1 ? 0 : tmidnight, y))
-        s.points.splice(i + 1, 0, new DataPoint(Number.NaN, y))
-        s.points.splice(i + 1, 0, new DataPoint(x0 < x1 ? tmidnight : 0, y))
+        s.points.splice(i + 1, 0, newDataPoint(x0 < x1 ? 0 : tmidnight, y))
+        s.points.splice(i + 1, 0, newDataPoint(Number.NaN, y))
+        s.points.splice(i + 1, 0, newDataPoint(x0 < x1 ? tmidnight : 0, y))
         i += 3
       }
     }
@@ -575,7 +575,7 @@ function euler(f: (t: number, y: number) => number, t0: number, y0: number, t1: 
   const points: DataPoint[] = []
   let y = y0
   for (let t = t0; t < t1 + h / 2; t += h) {
-    points.push(new DataPoint(t, y))
+    points.push(newDataPoint(t, y))
     y += h * f(t, y)
   }
 
@@ -586,7 +586,7 @@ function heun(f: (t: number, y: number) => number, t0: number, y0: number, t1: n
   const points: DataPoint[] = []
   let y = y0
   for (let t = t0; t < t1 + h / 2; t += h) {
-    points.push(new DataPoint(t, y))
+    points.push(newDataPoint(t, y))
     const ytilde = y + h * f(t, y)
     y = y + (h / 2) * (f(t, y) + f(t + h, ytilde))
   }
@@ -598,7 +598,7 @@ function midpoint(f: (t: number, y: number) => number, t0: number, y0: number, t
   const points: DataPoint[] = []
   let y = y0
   for (let t = t0; t < t1 + h / 2; t += h) {
-    points.push(new DataPoint(t, y))
+    points.push(newDataPoint(t, y))
     y += h * f(t + h / 2, y + (h / 2) * f(t, y))
   }
 
@@ -609,7 +609,7 @@ function rungeKutta4(f: (t: number, y: number) => number, t0: number, y0: number
   const points: DataPoint[] = []
   let y = y0
   for (let t = t0; t < t1 + h / 2; t += h) {
-    points.push(new DataPoint(t, y))
+    points.push(newDataPoint(t, y))
     const k1 = h * f(t, y)
     const k2 = h * f(t + h / 2, y + k1 / 2)
     const k3 = h * f(t + h / 2, y + k2 / 2)

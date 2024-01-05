@@ -3,7 +3,6 @@ import {
   BarItem,
   BarSeries,
   CategoryAxis,
-  DataPoint,
   FunctionSeries,
   Legend,
   LegendOrientation,
@@ -11,6 +10,7 @@ import {
   LegendPosition,
   LinearAxis,
   LineSeries,
+  newDataPoint,
   OxyColors,
   PlotModel,
   XkcdRenderingDecorator,
@@ -66,9 +66,9 @@ function test2(): PlotModel {
     const x = x0 + ((x1 - x0) * i) / (n - 1)
     const y1 = 1.5 + 10.0 * ((Math.sin(x) * Math.sin(x)) / Math.sqrt(x)) * Math.exp(-0.5 * (x - 5.0) * (x - 5.0))
     const y2 = 3.0 + 10.0 * ((Math.sin(x) * Math.sin(x)) / Math.sqrt(x)) * Math.exp(-0.5 * (x - 7.0) * (x - 7.0))
-    s1.points.push(new DataPoint(x, y1))
-    s2.points.push(new DataPoint(x, y2))
-    s3.points.push(new DataPoint(x, y2))
+    s1.points.push(newDataPoint(x, y1))
+    s2.points.push(newDataPoint(x, y2))
+    s3.points.push(newDataPoint(x, y2))
   }
 
   model.series.push(s1, s2, s3)

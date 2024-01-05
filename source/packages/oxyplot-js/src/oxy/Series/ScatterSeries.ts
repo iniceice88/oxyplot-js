@@ -6,7 +6,7 @@ import {
   type IColorAxis,
   type IRenderContext,
   type LabelStringFormatterType,
-  MarkerType,
+  MarkerType, newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -210,7 +210,7 @@ export class ScatterSeries extends XYAxisSeries {
         continue
       }
 
-      const sp = this.transform(new DataPoint(p.x, p.y))
+      const sp = this.transform(newDataPoint(p.x, p.y))
       const dx = sp.x - point.x
       const dy = sp.y - point.y
       const d2 = dx * dx + dy * dy
@@ -224,7 +224,7 @@ export class ScatterSeries extends XYAxisSeries {
           zValue = p.value
         }
 
-        const dataPoint = new DataPoint(p.x, p.y)
+        const dataPoint = newDataPoint(p.x, p.y)
         result = new TrackerHitResult({
           series: this,
           dataPoint,
@@ -268,7 +268,7 @@ export class ScatterSeries extends XYAxisSeries {
 
     // Transform all points to screen coordinates
     for (let i = 0; i < n; i++) {
-      const dp = new DataPoint(actualPoints[i].x, actualPoints[i].y)
+      const dp = newDataPoint(actualPoints[i].x, actualPoints[i].y)
 
       // Skip invalid points
       if (!this.isValidPoint(dp)) {
@@ -289,7 +289,7 @@ export class ScatterSeries extends XYAxisSeries {
       }
 
       // Transform from data to screen coordinates
-      const screenPoint = this.transform(new DataPoint(dp.x, dp.y))
+      const screenPoint = this.transform(newDataPoint(dp.x, dp.y))
 
       if (isSelected && this.isItemSelected(i)) {
         selectedPoints.push(screenPoint)
@@ -318,7 +318,7 @@ export class ScatterSeries extends XYAxisSeries {
     }
 
     // Offset of the bins
-    const binOffset = this.transform(new DataPoint(this.minX, this.maxY))
+    const binOffset = this.transform(newDataPoint(this.minX, this.maxY))
 
     if (this.colorAxis) {
       // Draw the grouped (by color defined in ColorAxis) markers
@@ -458,7 +458,7 @@ export class ScatterSeries extends XYAxisSeries {
     let index = -1
     for (const point of actualPoints) {
       index++
-      const dataPoint = new DataPoint(point.x, point.y)
+      const dataPoint = newDataPoint(point.x, point.y)
       if (!this.isValidPoint(dataPoint)) {
         continue
       }

@@ -1,10 +1,10 @@
 import {
   ArrowAnnotation,
   AxisPosition,
-  DataPoint,
   EllipseAnnotation,
   LineAnnotation,
   LinearAxis,
+  newDataPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -67,8 +67,8 @@ function toolTips(): PlotModel {
   )
   model.annotations.push(
     new ArrowAnnotation({
-      startPoint: new DataPoint(8, 4),
-      endPoint: new DataPoint(0, 0),
+      startPoint: newDataPoint(8, 4),
+      endPoint: newDataPoint(0, 0),
       color: OxyColors.Green,
       text: 'ArrowAnnotation',
       toolTip: 'This is a tool tip for the ArrowAnnotation',
@@ -76,7 +76,7 @@ function toolTips(): PlotModel {
   )
   model.annotations.push(
     new TextAnnotation({
-      textPosition: new DataPoint(60, 60),
+      textPosition: newDataPoint(60, 60),
       text: 'TextAnnotation',
       toolTip: 'This is a tool tip for the TextAnnotation',
     }),

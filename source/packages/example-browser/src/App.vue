@@ -188,7 +188,6 @@ async function display(pageExample: PageExample) {
   const plotView = getPlotView()
   ;(plotView as any).model = model
   ;(plotView as any).controller = pageExample.controller
-  plotView.invalidatePlot(true)
 }
 </script>
 

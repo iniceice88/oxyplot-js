@@ -1,4 +1,4 @@
-import { ArrowAnnotation, AxisPosition, DataPoint, LinearAxis, OxyColors, PlotModel, ScreenVector } from 'oxyplot-js'
+import { ArrowAnnotation, AxisPosition, LinearAxis, newDataPoint, OxyColors, PlotModel, ScreenVector } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 function arrowAnnotation() {
@@ -8,8 +8,8 @@ function arrowAnnotation() {
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -10, maximum: 10 }))
   model.annotations.push(
     new ArrowAnnotation({
-      startPoint: new DataPoint(8, 4),
-      endPoint: new DataPoint(0, 0),
+      startPoint: newDataPoint(8, 4),
+      endPoint: newDataPoint(0, 0),
       color: OxyColors.Green,
       text: 'StartPoint and EndPoint',
     }),
@@ -18,7 +18,7 @@ function arrowAnnotation() {
   model.annotations.push(
     new ArrowAnnotation({
       arrowDirection: new ScreenVector(30, 70),
-      endPoint: new DataPoint(40, -3),
+      endPoint: newDataPoint(40, -3),
       color: OxyColors.Blue,
       text: 'ArrowDirection and EndPoint',
     }),
@@ -27,7 +27,7 @@ function arrowAnnotation() {
   model.annotations.push(
     new ArrowAnnotation({
       arrowDirection: new ScreenVector(30, -70),
-      endPoint: new DataPoint(10, -3),
+      endPoint: newDataPoint(10, -3),
       headLength: 14,
       headWidth: 6,
       veeness: 4,

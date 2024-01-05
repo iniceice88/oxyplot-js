@@ -1,11 +1,11 @@
 import {
   ControllerExtensions,
-  DataPoint,
   DelegatePlotCommand,
   FunctionSeries,
   Legend,
   LineSeries,
   MarkerType,
+  newDataPoint,
   OxyColors,
   OxyMouseButton,
   type OxyMouseDownEventArgs,
@@ -44,7 +44,7 @@ function noInterpolation(): PlotModel {
   for (let i = 0; i < 63; i++) {
     const x = Math.round(Math.sqrt(i) * Math.cos(i * 0.1))
     const y = Math.round(Math.sqrt(i) * Math.sin(i * 0.1))
-    s1.points.push(new DataPoint(x, y))
+    s1.points.push(newDataPoint(x, y))
   }
 
   model.series.push(s1)

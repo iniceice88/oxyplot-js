@@ -1,9 +1,11 @@
-import type { CreateTextualAnnotationOptions, IRenderContext } from '@/oxyplot'
 import {
   AnnotationTextOrientation,
+  CreateTextualAnnotationOptions,
+  DataPoint_isDefined,
   HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
+  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -270,7 +272,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
     if (this.text) {
       const textPosition = this.getActualTextPosition(() => position)
 
-      if (this.textPosition.isDefined()) {
+      if (DataPoint_isDefined(this.textPosition)) {
         angle = this.textRotation
       }
 

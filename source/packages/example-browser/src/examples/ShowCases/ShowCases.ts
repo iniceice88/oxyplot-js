@@ -1,11 +1,11 @@
 import {
   AxisPosition,
   CategoryAxis,
-  DataPoint,
   LinearAxis,
   LineLegendPosition,
   LineSeries,
   LineStyle,
+  newDataPoint,
   OxyThickness,
   PlotModel,
   TickStyle,
@@ -63,7 +63,7 @@ export const createNormalDistributionSeries = (
   for (let i = 0; i < n; i++) {
     const x = x0 + ((x1 - x0) * i) / (n - 1)
     const f = (1.0 / Math.sqrt(2 * Math.PI * variance)) * Math.exp((-(x - mean) * (x - mean)) / 2 / variance)
-    ls.points.push(new DataPoint(x, f))
+    ls.points.push(newDataPoint(x, f))
   }
 
   return ls
@@ -110,9 +110,9 @@ function lineLegendPositionAtEnd() {
   const minneapolisTemps = [12.2, 16.5, 28.3, 45.1, 57.1, 66.9, 71.9, 70.2, 60.0, 50.0, 32.4, 18.6]
 
   for (let i = 0; i < 12; i++) {
-    phoenix.points.push(new DataPoint(i, phoenixTemps[i]))
-    raleigh.points.push(new DataPoint(i, raleighTemps[i]))
-    minneapolis.points.push(new DataPoint(i, minneapolisTemps[i]))
+    phoenix.points.push(newDataPoint(i, phoenixTemps[i]))
+    raleigh.points.push(newDataPoint(i, raleighTemps[i]))
+    minneapolis.points.push(newDataPoint(i, minneapolisTemps[i]))
   }
 
   // Add series and axes to the model

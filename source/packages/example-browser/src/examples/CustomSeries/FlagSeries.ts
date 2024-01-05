@@ -1,11 +1,11 @@
 import {
   Axis,
-  DataPoint,
   HorizontalAlignment,
   type IRenderContext,
   ItemsSeries,
   maxValueOfArray,
   minValueOfArray,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -108,7 +108,7 @@ export class FlagSeries extends ItemsSeries {
         })
         return new TrackerHitResult({
           series: this,
-          dataPoint: new DataPoint(v, NaN),
+          dataPoint: newDataPoint(v, NaN),
           position: new ScreenPoint(x, this.symbolPosition - this.symbolSize.height),
           text,
         })

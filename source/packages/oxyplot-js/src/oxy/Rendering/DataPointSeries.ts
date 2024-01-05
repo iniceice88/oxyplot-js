@@ -1,7 +1,9 @@
 ﻿import {
   type CreateXYAxisSeriesOptions,
   DataPoint,
+  isDataPoint,
   isDataPointProvider,
+  newDataPoint,
   ScreenPoint,
   TrackerHitResult,
   XYAxisSeries,
@@ -167,16 +169,15 @@ export abstract class DataPointSeries extends XYAxisSeries {
   protected convertToDataPoint(item: any): DataPoint | undefined {
     if (!item) return undefined
 
-    if (item instanceof DataPoint) {
+    if (isDataPoint(item)) {
       return item
     }
 
     if (this.dataFieldX && this.dataFieldY) {
       const x = this.xAxis ? this.xAxis.itemToDouble(item[this.dataFieldX]) : Number(item[this.dataFieldX])
-
       const y = this.yAxis ? this.yAxis.itemToDouble(item[this.dataFieldY]) : Number(item[this.dataFieldY])
 
-      return new DataPoint(x, y)
+      return newDataPoint(x, y)
     }
 
     if (isDataPointProvider(item)) {

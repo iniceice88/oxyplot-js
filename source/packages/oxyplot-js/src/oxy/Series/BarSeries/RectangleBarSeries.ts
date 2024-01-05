@@ -1,7 +1,7 @@
-import type {
+import {
   CreateXYAxisSeriesOptions,
   IRenderContext,
-  LabelStringFormatterType,
+  LabelStringFormatterType, newDataPoint,
   TrackerStringFormatterType,
 } from '@/oxyplot'
 import {
@@ -177,11 +177,11 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
       if (r.containsPoint(point)) {
         const value = (this.actualItems[i].y0 + this.actualItems[i].y1) / 2
         const sp = point
-        const dp = new DataPoint(i, value)
+        const dp = newDataPoint(i, value)
         const item = this.actualItems[i]
         const text = this.formatDefaultTrackerString(
           item,
-          new DataPoint(this.actualItems[i].x0, this.actualItems[i].y0),
+          newDataPoint(this.actualItems[i].x0, this.actualItems[i].y0),
           (args) => {
             args['x1Value'] = this.xAxis!.getValue(this.actualItems[i].x1)
             args['y1Value'] = this.yAxis!.getValue(this.actualItems[i].y1)

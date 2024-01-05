@@ -5,6 +5,7 @@ import {
   LineSeries,
   LineStyle,
   LineStyleHelper,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -366,7 +367,7 @@ export class AreaSeries extends LineSeries {
         if (!item) continue
         const x = getOrDefault(item, this.dataFieldX2, Number.NaN)
         const y = getOrDefault(item, this.dataFieldY2, Number.NaN)
-        const point = new DataPoint(this.xAxis!.itemToDouble(x), this.yAxis!.itemToDouble(y))
+        const point = newDataPoint(this.xAxis!.itemToDouble(x), this.yAxis!.itemToDouble(y))
         this.itemsSourcePoints2.push(point)
       }
     } else {
@@ -466,8 +467,8 @@ export class AreaSeries extends LineSeries {
       // Use ConstantY2
       const x0 = actualPoints[0].x
       const x1 = actualPoints[actualPoints.length - 1].x
-      points.push(new DataPoint(x0, this.constantY2))
-      points.push(new DataPoint(x1, this.constantY2))
+      points.push(newDataPoint(x0, this.constantY2))
+      points.push(newDataPoint(x1, this.constantY2))
     }
     return points
   }

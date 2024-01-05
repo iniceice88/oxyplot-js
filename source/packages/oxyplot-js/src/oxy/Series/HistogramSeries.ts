@@ -6,7 +6,7 @@ import {
   HorizontalAlignment,
   type IRenderContext,
   LabelPlacement,
-  type LabelStringFormatterType,
+  type LabelStringFormatterType, newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -405,11 +405,11 @@ Count: ${args.item!.count}`
     const allDataPoints: DataPoint[] = []
     pushMany(
       allDataPoints,
-      this.actualItems.map((item) => new DataPoint(item.rangeStart, 0.0)),
+      this.actualItems.map((item) => newDataPoint(item.rangeStart, 0.0)),
     )
     pushMany(
       allDataPoints,
-      this.actualItems.map((item) => new DataPoint(item.rangeEnd, item.height)),
+      this.actualItems.map((item) => newDataPoint(item.rangeEnd, item.height)),
     )
     this.internalUpdateMaxMin(allDataPoints)
 
@@ -453,8 +453,8 @@ Count: ${args.item!.count}`
       const actualStrokeColor = this.getItemStrokeColor(item)
 
       // Transform data points to screen coordinates
-      const p1 = this.transform(new DataPoint(item.rangeStart, clampBase ? yAxis.clipMinimum : this.baseValue))
-      const p2 = this.transform(new DataPoint(item.rangeEnd, item.height))
+      const p1 = this.transform(newDataPoint(item.rangeStart, clampBase ? yAxis.clipMinimum : this.baseValue))
+      const p2 = this.transform(newDataPoint(item.rangeEnd, item.height))
       const rectangle = OxyRect.fromScreenPoints(p1, p2)
       const actualEdgeRenderingMode = RenderingExtensions.getActualEdgeRenderingMode(
         this.edgeRenderingMode,
@@ -522,23 +522,23 @@ Count: ${args.item!.count}`
 
     switch (this.labelPlacement) {
       case LabelPlacement.Inside:
-        dataPoint = new DataPoint(midX, item.value)
+        dataPoint = newDataPoint(midX, item.value)
         verticalAlignment = -sign as VerticalAlignment
         break
       case LabelPlacement.Middle: {
         const p1 = this.inverseTransform(rect.topLeft)
         const p2 = this.inverseTransform(rect.bottomRight)
-        dataPoint = new DataPoint(midX, (p1.y + p2.y) / 2)
+        dataPoint = newDataPoint(midX, (p1.y + p2.y) / 2)
         verticalAlignment = VerticalAlignment.Middle
         break
       }
       case LabelPlacement.Base:
-        dataPoint = new DataPoint(midX, 0)
+        dataPoint = newDataPoint(midX, 0)
         dy = -dy
         verticalAlignment = sign as VerticalAlignment
         break
       case LabelPlacement.Outside:
-        dataPoint = new DataPoint(midX, item.value)
+        dataPoint = newDataPoint(midX, item.value)
         dy = -dy
         verticalAlignment = sign as VerticalAlignment
         break

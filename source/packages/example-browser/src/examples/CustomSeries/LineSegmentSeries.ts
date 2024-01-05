@@ -4,6 +4,7 @@ import {
   LineSeries,
   LineStyle,
   LineStyleHelper,
+  newDataPoint,
   RenderingExtensions,
   ScreenPoint,
   ScreenPointHelper,
@@ -142,7 +143,7 @@ export class LineSegmentSeries extends LineSeries {
 
       if (l2 < minimumDistance) {
         const u = spl.distanceTo(sp1) / sp2.distanceTo(sp1)
-        dpn = new DataPoint(p1.x + u * (p2.x - p1.x), p1.y + u * (p2.y - p1.y))
+        dpn = newDataPoint(p1.x + u * (p2.x - p1.x), p1.y + u * (p2.y - p1.y))
         spn = spl
         minimumDistance = l2
         index = i + u

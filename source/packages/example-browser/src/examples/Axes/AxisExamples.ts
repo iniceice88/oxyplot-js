@@ -2,7 +2,6 @@ import {
   AngleAxis,
   AxisPosition,
   CategoryAxis,
-  DataPoint,
   DateTimeAxis,
   DelegateAnnotation,
   EdgeRenderingMode,
@@ -17,6 +16,7 @@ import {
   LogarithmicAxis,
   MagnitudeAxis,
   MarkerType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyPen,
@@ -596,10 +596,10 @@ function defaultPadding(): PlotModel {
     color: OxyColor.fromArgb(255, 78, 154, 6),
     markerFill: OxyColor.fromArgb(255, 78, 154, 6),
   })
-  lineSeries1.points.push(new DataPoint(10, 4))
-  lineSeries1.points.push(new DataPoint(12, 7))
-  lineSeries1.points.push(new DataPoint(16, 3))
-  lineSeries1.points.push(new DataPoint(20, 9))
+  lineSeries1.points.push(newDataPoint(10, 4))
+  lineSeries1.points.push(newDataPoint(12, 7))
+  lineSeries1.points.push(newDataPoint(16, 3))
+  lineSeries1.points.push(newDataPoint(20, 9))
   plotModel1.series.push(lineSeries1)
   return plotModel1
 }
@@ -616,10 +616,10 @@ function noPadding(): PlotModel {
     color: OxyColor.fromArgb(255, 78, 154, 6),
     markerFill: OxyColor.fromArgb(255, 78, 154, 6),
   })
-  lineSeries1.points.push(new DataPoint(10, 4))
-  lineSeries1.points.push(new DataPoint(12, 7))
-  lineSeries1.points.push(new DataPoint(16, 3))
-  lineSeries1.points.push(new DataPoint(20, 9))
+  lineSeries1.points.push(newDataPoint(10, 4))
+  lineSeries1.points.push(newDataPoint(12, 7))
+  lineSeries1.points.push(newDataPoint(16, 3))
+  lineSeries1.points.push(newDataPoint(20, 9))
   plotModel1.series.push(lineSeries1)
   return plotModel1
 }
@@ -642,10 +642,10 @@ function padding(): PlotModel {
     color: OxyColor.fromArgb(255, 78, 154, 6),
     markerFill: OxyColor.fromArgb(255, 78, 154, 6),
   })
-  lineSeries1.points.push(new DataPoint(10, 4))
-  lineSeries1.points.push(new DataPoint(12, 7))
-  lineSeries1.points.push(new DataPoint(16, 3))
-  lineSeries1.points.push(new DataPoint(20, 9))
+  lineSeries1.points.push(newDataPoint(10, 4))
+  lineSeries1.points.push(newDataPoint(12, 7))
+  lineSeries1.points.push(newDataPoint(16, 3))
+  lineSeries1.points.push(newDataPoint(20, 9))
   plotModel1.series.push(lineSeries1)
   return plotModel1
 }
@@ -662,10 +662,10 @@ function xaxisMinimumPadding(): PlotModel {
     color: OxyColor.fromArgb(255, 78, 154, 6),
     markerFill: OxyColor.fromArgb(255, 78, 154, 6),
   })
-  lineSeries1.points.push(new DataPoint(10, 4))
-  lineSeries1.points.push(new DataPoint(12, 7))
-  lineSeries1.points.push(new DataPoint(16, 3))
-  lineSeries1.points.push(new DataPoint(20, 9))
+  lineSeries1.points.push(newDataPoint(10, 4))
+  lineSeries1.points.push(newDataPoint(12, 7))
+  lineSeries1.points.push(newDataPoint(16, 3))
+  lineSeries1.points.push(newDataPoint(20, 9))
   plotModel1.series.push(lineSeries1)
   return plotModel1
 }
@@ -682,10 +682,10 @@ function xaxisMaximumPadding(): PlotModel {
     color: OxyColor.fromArgb(255, 78, 154, 6),
     markerFill: OxyColor.fromArgb(255, 78, 154, 6),
   })
-  lineSeries1.points.push(new DataPoint(10, 4))
-  lineSeries1.points.push(new DataPoint(12, 7))
-  lineSeries1.points.push(new DataPoint(16, 3))
-  lineSeries1.points.push(new DataPoint(20, 9))
+  lineSeries1.points.push(newDataPoint(10, 4))
+  lineSeries1.points.push(newDataPoint(12, 7))
+  lineSeries1.points.push(newDataPoint(16, 3))
+  lineSeries1.points.push(newDataPoint(20, 9))
   plotModel1.series.push(lineSeries1)
   return plotModel1
 }
@@ -2212,11 +2212,11 @@ function marginsAndPadding(): PlotModel {
 
   const rectangle: LineSeries = new LineSeries()
   rectangle.color = OxyColors.Green
-  rectangle.points.push(new DataPoint(-5.0, 0.0))
-  rectangle.points.push(new DataPoint(-5.0, 20.0))
-  rectangle.points.push(new DataPoint(25.0, 20.0))
-  rectangle.points.push(new DataPoint(25.0, 0.0))
-  rectangle.points.push(new DataPoint(-5.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 20.0))
+  rectangle.points.push(newDataPoint(25.0, 20.0))
+  rectangle.points.push(newDataPoint(25.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 0.0))
   plot.series.push(rectangle)
 
   _addAxisMarginAnnotations(plot)
@@ -2393,11 +2393,11 @@ function marginsAndPaddingAsymmetrical(): PlotModel {
 
   const rectangle: LineSeries = new LineSeries()
   rectangle.color = OxyColors.Green
-  rectangle.points.push(new DataPoint(-5.0, 0.0))
-  rectangle.points.push(new DataPoint(-5.0, 20.0))
-  rectangle.points.push(new DataPoint(25.0, 20.0))
-  rectangle.points.push(new DataPoint(25.0, 0.0))
-  rectangle.points.push(new DataPoint(-5.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 20.0))
+  rectangle.points.push(newDataPoint(25.0, 20.0))
+  rectangle.points.push(newDataPoint(25.0, 0.0))
+  rectangle.points.push(newDataPoint(-5.0, 0.0))
   plot.series.push(rectangle)
 
   _addAxisMarginAnnotations(plot)

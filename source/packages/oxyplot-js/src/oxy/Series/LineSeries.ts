@@ -1,4 +1,4 @@
-﻿import type { CreateDataPointSeriesOptions, LabelStringFormatterType } from '@/oxyplot'
+﻿import { CreateDataPointSeriesOptions, LabelStringFormatterType, newDataPoint } from '@/oxyplot'
 import {
   DataPoint,
   DataPointSeries,
@@ -522,7 +522,7 @@ export class LineSeries extends DataPointSeries {
     broken: ScreenPoint[],
     contiguous: ScreenPoint[],
   ) {
-    let currentPoint = new DataPoint(0, 0)
+    let currentPoint = newDataPoint(0, 0)
     let hasValidPoint = false
 
     // Skip all undefined points

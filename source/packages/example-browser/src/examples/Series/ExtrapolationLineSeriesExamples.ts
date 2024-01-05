@@ -1,6 +1,5 @@
 import {
   AxisPosition,
-  DataPoint,
   DataRange,
   ExtrapolationLineSeries,
   Legend,
@@ -10,6 +9,7 @@ import {
   LogarithmicAxis,
   maxValueOfArray,
   minValueOfArray,
+  newDataPoint,
   OxyColors,
   PlotModel,
   PlotModelUtilities,
@@ -62,7 +62,7 @@ function extrapolatedLineSeries(): PlotModel {
     new DataRange(maxValueOfArray(scatterSeries.points.map((p) => p.x)), Number.POSITIVE_INFINITY),
   )
 
-  const fitPoints = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => new DataPoint(x, slope * x + intercept))
+  const fitPoints = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => newDataPoint(x, slope * x + intercept))
 
   lineSeries.points.push(...fitPoints)
   model.series.push(lineSeries)
@@ -103,8 +103,8 @@ function interpolationStyleLineSeries(): PlotModel {
     return coeff.reduce((acc, coefficient) => acc * x + coefficient, 0)
   }
 
-  const points = Array.from({ length: 100 }, (_, i) => i - 30).map(
-    (x) => new DataPoint(x, polynomialValue(x, coefficients)),
+  const points = Array.from({ length: 100 }, (_, i) => i - 30).map((x) =>
+    newDataPoint(x, polynomialValue(x, coefficients)),
   )
 
   lineSeries.points.push(...points)
@@ -159,8 +159,8 @@ function intersectingIntervals(): PlotModel {
     return coeff.reduce((acc, coefficient) => acc * x + coefficient, 0)
   }
 
-  const points = Array.from({ length: 100 }, (_, i) => i - 30).map(
-    (x) => new DataPoint(x, polynomialValue(x, coefficients)),
+  const points = Array.from({ length: 100 }, (_, i) => i - 30).map((x) =>
+    newDataPoint(x, polynomialValue(x, coefficients)),
   )
 
   lineSeries.points.push(...points)
@@ -196,7 +196,7 @@ function customDashes(): PlotModel {
 
   lineSeries.intervals.push(new DataRange(Number.NEGATIVE_INFINITY, 0))
 
-  const points = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => new DataPoint(x, 5))
+  const points = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => newDataPoint(x, 5))
 
   lineSeries.points.push(...points)
 
@@ -235,7 +235,7 @@ function manyIntervals(): PlotModel {
 
   lineSeries.intervals.push(new DataRange(200000, Number.POSITIVE_INFINITY))
 
-  const points = Array.from({ length: 100000 }, (_, i) => new DataPoint(i, i))
+  const points = Array.from({ length: 100000 }, (_, i) => newDataPoint(i, i))
 
   lineSeries.points.push(...points)
 
@@ -287,8 +287,8 @@ function mooresLaw(): PlotModel {
 
   lineSeries.intervals.push(new DataRange(2015, Number.POSITIVE_INFINITY))
 
-  const fitPoints = Array.from({ length: 55 }, (_, i) => i + 1970).map(
-    (x) => new DataPoint(x, Math.pow(10, slope * x + intercept)),
+  const fitPoints = Array.from({ length: 55 }, (_, i) => i + 1970).map((x) =>
+    newDataPoint(x, Math.pow(10, slope * x + intercept)),
   )
 
   lineSeries.points.push(...fitPoints)

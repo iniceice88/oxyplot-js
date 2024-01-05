@@ -1,9 +1,9 @@
 import {
   AxisPosition,
-  DataPoint,
   LinearAxis,
   LineJoin,
   LineSeries,
+  newDataPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -88,16 +88,16 @@ function rectangleAnnotationHorizontals(): PlotModel {
     }),
   )
   const series1 = new LineSeries({ color: OxyColors.Black, strokeThickness: 6.0, lineJoin: LineJoin.Round })
-  series1.points.push(new DataPoint(0.5, 90.7))
-  series1.points.push(new DataPoint(1.5, 91.2))
-  series1.points.push(new DataPoint(2.5, 91))
-  series1.points.push(new DataPoint(3.5, 89.5))
-  series1.points.push(new DataPoint(4.5, 92.5))
-  series1.points.push(new DataPoint(5.5, 93.1))
-  series1.points.push(new DataPoint(6.5, 94.5))
-  series1.points.push(new DataPoint(7.5, 95.5))
-  series1.points.push(new DataPoint(8.5, 95.7))
-  series1.points.push(new DataPoint(9.5, 96.0))
+  series1.points.push(newDataPoint(0.5, 90.7))
+  series1.points.push(newDataPoint(1.5, 91.2))
+  series1.points.push(newDataPoint(2.5, 91))
+  series1.points.push(newDataPoint(3.5, 89.5))
+  series1.points.push(newDataPoint(4.5, 92.5))
+  series1.points.push(newDataPoint(5.5, 93.1))
+  series1.points.push(newDataPoint(6.5, 94.5))
+  series1.points.push(newDataPoint(7.5, 95.5))
+  series1.points.push(newDataPoint(8.5, 95.7))
+  series1.points.push(newDataPoint(9.5, 96.0))
   model.series.push(series1)
   return model
 }
@@ -155,16 +155,16 @@ function rectangleAnnotationVerticals(): PlotModel {
     strokeThickness: 6.0,
     lineJoin: LineJoin.Round,
   })
-  series1.points.push(new DataPoint(0.5, 90.7))
-  series1.points.push(new DataPoint(1.5, 91.2))
-  series1.points.push(new DataPoint(2.5, 91))
-  series1.points.push(new DataPoint(3.5, 89.5))
-  series1.points.push(new DataPoint(4.5, 92.5))
-  series1.points.push(new DataPoint(5.5, 93.1))
-  series1.points.push(new DataPoint(6.5, 94.5))
-  series1.points.push(new DataPoint(7.5, 95.5))
-  series1.points.push(new DataPoint(8.5, 95.7))
-  series1.points.push(new DataPoint(9.5, 96.0))
+  series1.points.push(newDataPoint(0.5, 90.7))
+  series1.points.push(newDataPoint(1.5, 91.2))
+  series1.points.push(newDataPoint(2.5, 91))
+  series1.points.push(newDataPoint(3.5, 89.5))
+  series1.points.push(newDataPoint(4.5, 92.5))
+  series1.points.push(newDataPoint(5.5, 93.1))
+  series1.points.push(newDataPoint(6.5, 94.5))
+  series1.points.push(newDataPoint(7.5, 95.5))
+  series1.points.push(newDataPoint(8.5, 95.7))
+  series1.points.push(newDataPoint(9.5, 96.0))
   model.series.push(series1)
   return model
 }

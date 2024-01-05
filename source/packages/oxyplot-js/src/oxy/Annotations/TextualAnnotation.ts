@@ -1,6 +1,8 @@
 import {
   type CreateTransposableAnnotationOptions,
   DataPoint,
+  DataPoint_isDefined,
+  DataPoint_Undefined,
   HorizontalAlignment,
   ScreenPoint,
   TransposableAnnotation,
@@ -26,7 +28,7 @@ export abstract class TextualAnnotation extends TransposableAnnotation {
     super(opt)
     this.textHorizontalAlignment = HorizontalAlignment.Center
     this.textVerticalAlignment = VerticalAlignment.Middle
-    this.textPosition = DataPoint.Undefined
+    this.textPosition = DataPoint_Undefined
     this.textRotation = 0
   }
 
@@ -63,7 +65,7 @@ export abstract class TextualAnnotation extends TransposableAnnotation {
    * @returns The actual position of the text, in screen space.
    */
   protected getActualTextPosition(defaultPosition: () => ScreenPoint): ScreenPoint {
-    return this.textPosition.isDefined() ? this.transform(this.textPosition) : defaultPosition()
+    return DataPoint_isDefined(this.textPosition) ? this.transform(this.textPosition) : defaultPosition()
   }
 
   /**

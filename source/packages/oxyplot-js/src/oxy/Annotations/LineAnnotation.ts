@@ -1,4 +1,11 @@
-import { type CreatePathAnnotationOptions, DataPoint, LinearAxis, PathAnnotation, ScreenPoint } from '@/oxyplot'
+import {
+  type CreatePathAnnotationOptions,
+  DataPoint,
+  LinearAxis,
+  newDataPoint,
+  PathAnnotation,
+  ScreenPoint,
+} from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 /**
@@ -98,11 +105,11 @@ export class LineAnnotation extends PathAnnotation {
     if (!isCurvedLine) {
       // we only need to calculate two points if it is a straight line
       if (fx) {
-        points.push(new DataPoint(this.actualMinimumX, fx(this.actualMinimumX)))
-        points.push(new DataPoint(this.actualMaximumX, fx(this.actualMaximumX)))
+        points.push(newDataPoint(this.actualMinimumX, fx(this.actualMinimumX)))
+        points.push(newDataPoint(this.actualMaximumX, fx(this.actualMaximumX)))
       } else if (fy) {
-        points.push(new DataPoint(fy(this.actualMinimumY), this.actualMinimumY))
-        points.push(new DataPoint(fy(this.actualMaximumY), this.actualMaximumY))
+        points.push(newDataPoint(fy(this.actualMinimumY), this.actualMinimumY))
+        points.push(newDataPoint(fy(this.actualMaximumY), this.actualMaximumY))
       } else {
         throw new Error('fx or fy must be non-undefined.')
       }
@@ -113,7 +120,7 @@ export class LineAnnotation extends PathAnnotation {
         const dx = (this.actualMaximumX - this.actualMinimumX) / 100
         for (let i = 0; i <= n; i++) {
           const x = this.actualMinimumX + i * dx
-          points.push(new DataPoint(x, fx(x)))
+          points.push(newDataPoint(x, fx(x)))
         }
       } else if (fy) {
         // todo: the step size should be adaptive
@@ -121,7 +128,7 @@ export class LineAnnotation extends PathAnnotation {
         const dy = (this.actualMaximumY - this.actualMinimumY) / n
         for (let i = 0; i <= n; i++) {
           const y = this.actualMinimumY + i * dy
-          points.push(new DataPoint(fy(y), y))
+          points.push(newDataPoint(fy(y), y))
         }
       }
     }
