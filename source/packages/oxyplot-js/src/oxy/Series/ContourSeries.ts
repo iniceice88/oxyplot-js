@@ -9,11 +9,15 @@ import {
   type LabelStringFormatterType,
   LineJoin,
   LineStyle,
-  LineStyleHelper, newDataPoint,
+  LineStyleHelper,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   RenderingExtensions,
   ScreenPoint,
+  screenPointDistanceToSquared,
+  screenPointMinus,
   TrackerHitResult,
   type TrackerStringFormatterArgs,
   VerticalAlignment,
@@ -264,7 +268,10 @@ export class ContourSeries extends XYAxisSeries {
 
       if (!r) continue
 
-      if (!result || result.position!.distanceToSquared(point) > r.position!.distanceToSquared(point)) {
+      if (
+        !result ||
+        screenPointDistanceToSquared(result.position!, point) > screenPointDistanceToSquared(r.position!, point)
+      ) {
         result = r
         result.text = this.formatDefaultTrackerString(c, r.dataPoint!, (args) => {
           const contourArgs = args as ContourSeriesTrackerStringFormatterArgs
@@ -318,7 +325,7 @@ export class ContourSeries extends XYAxisSeries {
       // measure total contour length
       let contourLength = 0.0
       for (let i = 1; i < transformedPoints.length; i++) {
-        contourLength += transformedPoints[i].minus(transformedPoints[i - 1]).length
+        contourLength += screenPointMinus(transformedPoints[i], transformedPoints[i - 1]).length
       }
 
       // don't add label to contours, if ContourLevel is not close to LabelStep
@@ -357,7 +364,7 @@ export class ContourSeries extends XYAxisSeries {
 
         // find index of contour points where next label should be positioned
         for (let k = intervalIndex; k < transformedPoints.length; k++) {
-          contourPartLength += transformedPoints[k].minus(transformedPoints[k - 1]).length
+          contourPartLength += screenPointMinus(transformedPoints[k], transformedPoints[k - 1]).length
 
           if (contourPartLength > contourPartLengthTarget) {
             labelIndex =
@@ -449,7 +456,7 @@ export class ContourSeries extends XYAxisSeries {
     const x = pts[i0].x + dx * (labelIndex - i0)
     const y = pts[i0].y + dy * (labelIndex - i0)
 
-    const pos = new ScreenPoint(x, y)
+    const pos = newScreenPoint(x, y)
     let angle = (Math.atan2(dy, dx) * 180) / Math.PI
     if (angle > 90) {
       angle -= 180
@@ -625,10 +632,10 @@ export class ContourSeries extends XYAxisSeries {
     const y = cl.position.y
 
     const bpts = [
-      new ScreenPoint(x - size.width * ux - size.height * vx, y - size.width * uy - size.height * vy),
-      new ScreenPoint(x + size.width * ux - size.height * vx, y + size.width * uy - size.height * vy),
-      new ScreenPoint(x + size.width * ux + size.height * vx, y + size.width * uy + size.height * vy),
-      new ScreenPoint(x - size.width * ux + size.height * vx, y - size.width * uy + size.height * vy),
+      newScreenPoint(x - size.width * ux - size.height * vx, y - size.width * uy - size.height * vy),
+      newScreenPoint(x + size.width * ux - size.height * vx, y + size.width * uy - size.height * vy),
+      newScreenPoint(x + size.width * ux + size.height * vx, y + size.width * uy + size.height * vy),
+      newScreenPoint(x - size.width * ux + size.height * vx, y - size.width * uy + size.height * vy),
     ]
     await rc.drawPolygon(bpts, this.labelBackground, OxyColors.Undefined, 0, this.edgeRenderingMode)
   }

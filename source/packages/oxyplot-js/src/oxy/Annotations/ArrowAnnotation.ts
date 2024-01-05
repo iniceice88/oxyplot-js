@@ -15,7 +15,11 @@ import {
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_LeftTop,
   ScreenPointHelper,
+  screenPointMinus,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   TextualAnnotation,
   VerticalAlignment,
@@ -42,12 +46,12 @@ export class ArrowAnnotation extends TextualAnnotation {
   /**
    * The end point in screen coordinates.
    */
-  private screenEndPoint: ScreenPoint = ScreenPoint.LeftTop
+  private screenEndPoint: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * The start point in screen coordinates.
    */
-  private screenStartPoint: ScreenPoint = ScreenPoint.LeftTop
+  private screenStartPoint: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Initializes a new instance of the ArrowAnnotation class.
@@ -121,21 +125,22 @@ export class ArrowAnnotation extends TextualAnnotation {
     this.screenEndPoint = this.transform(this.endPoint)
 
     if (this.arrowDirection.lengthSquared > 0) {
-      this.screenStartPoint = this.screenEndPoint.minusVector(
+      this.screenStartPoint = screenPointMinusVector(
+        this.screenEndPoint,
         PlotElementExtensions.orientateVector(this, this.arrowDirection),
       )
     } else {
       this.screenStartPoint = this.transform(this.startPoint)
     }
 
-    const d = this.screenEndPoint.minus(this.screenStartPoint)
+    const d = screenPointMinus(this.screenEndPoint, this.screenStartPoint)
     d.normalize()
     const n = new ScreenVector(d.y, -d.x)
 
-    const p1 = this.screenEndPoint.minusVector(d.times(this.headLength * this.strokeThickness))
-    const p2 = p1.plus(n.times(this.headWidth * this.strokeThickness))
-    const p3 = p1.minusVector(n.times(this.headWidth * this.strokeThickness))
-    const p4 = p1.plus(d.times(this.veeness * this.strokeThickness))
+    const p1 = screenPointMinusVector(this.screenEndPoint, d.times(this.headLength * this.strokeThickness))
+    const p2 = screenPointPlus(p1, n.times(this.headWidth * this.strokeThickness))
+    const p3 = screenPointMinusVector(p1, n.times(this.headWidth * this.strokeThickness))
+    const p4 = screenPointPlus(p1, d.times(this.veeness * this.strokeThickness))
 
     const MinimumSegmentLength = 0
 
@@ -213,7 +218,7 @@ export class ArrowAnnotation extends TextualAnnotation {
    * @returns The result of the hit test.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (args.point.minus(this.screenStartPoint).length < args.tolerance) {
+    if (screenPointMinus(args.point, this.screenStartPoint).length < args.tolerance) {
       return {
         element: this,
         nearestHitPoint: this.screenStartPoint,
@@ -221,7 +226,7 @@ export class ArrowAnnotation extends TextualAnnotation {
       }
     }
 
-    if (args.point.minus(this.screenEndPoint).length < args.tolerance) {
+    if (screenPointMinus(args.point, this.screenEndPoint).length < args.tolerance) {
       return {
         element: this,
         nearestHitPoint: this.screenEndPoint,
@@ -230,7 +235,7 @@ export class ArrowAnnotation extends TextualAnnotation {
     }
 
     const p = ScreenPointHelper.findPointOnLine(args.point, this.screenStartPoint, this.screenEndPoint)
-    if (p.minus(args.point).length < args.tolerance) {
+    if (screenPointMinus(p, args.point).length < args.tolerance) {
       return {
         element: this,
         nearestHitPoint: p,

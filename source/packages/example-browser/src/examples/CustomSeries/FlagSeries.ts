@@ -6,6 +6,7 @@ import {
   maxValueOfArray,
   minValueOfArray,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -109,7 +110,7 @@ export class FlagSeries extends ItemsSeries {
         return new TrackerHitResult({
           series: this,
           dataPoint: newDataPoint(v, NaN),
-          position: new ScreenPoint(x, this.symbolPosition - this.symbolSize.height),
+          position: newScreenPoint(x, this.symbolPosition - this.symbolSize.height),
           text,
         })
       }
@@ -136,7 +137,7 @@ export class FlagSeries extends ItemsSeries {
 
       const x = this.xAxis.transform(v)
       await rc.drawText(
-        new ScreenPoint(x, this.symbolPosition),
+        newScreenPoint(x, this.symbolPosition),
         this.symbol,
         this.color,
         this.actualFont,

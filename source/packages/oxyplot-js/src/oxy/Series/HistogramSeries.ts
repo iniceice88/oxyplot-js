@@ -6,13 +6,15 @@ import {
   HorizontalAlignment,
   type IRenderContext,
   LabelPlacement,
-  type LabelStringFormatterType, newDataPoint,
+  type LabelStringFormatterType,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
   type TrackerStringFormatterArgs,
@@ -550,9 +552,8 @@ Count: ${args.item!.count}`
     horizontalAlignment = res[0]
     verticalAlignment = res[1]
 
-    const screenPoint = this.transform(dataPoint).plus(
-      PlotElementExtensions.orientateVector(this, new ScreenVector(0, dy)),
-    )
+    const ver = PlotElementExtensions.orientateVector(this, new ScreenVector(0, dy))
+    const screenPoint = screenPointPlus(this.transform(dataPoint), ver)
 
     await rc.drawText(
       screenPoint,

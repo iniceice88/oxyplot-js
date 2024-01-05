@@ -5,6 +5,7 @@ import {
   LineStyle,
   LineStyleHelper,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -525,7 +526,7 @@ export class VolumeSeries extends XYAxisSeries {
 
     if (this.strokeThickness > 0) {
       await rc.drawLine(
-        [new ScreenPoint(xmid, legendBox.top), new ScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
         lineUp,
         this.strokeThickness,
         this.edgeRenderingMode,

@@ -6,12 +6,14 @@ import {
   LineStyle,
   LineStyleHelper,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  screenPointDistanceTo,
   ScreenPointHelper,
   TrackerHitResult,
 } from '@/oxyplot'
@@ -173,8 +175,8 @@ export class AreaSeries extends LineSeries {
 
     let result: TrackerHitResult | undefined
     if (result1 && result2) {
-      const dist1 = result1.position!.distanceTo(point)
-      const dist2 = result2.position!.distanceTo(point)
+      const dist1 = screenPointDistanceTo(result1.position!, point)
+      const dist2 = screenPointDistanceTo(result2.position!, point)
       result = dist1 < dist2 ? result1 : result2
     } else {
       result = result1 ?? result2
@@ -310,8 +312,8 @@ export class AreaSeries extends LineSeries {
     const y1 = legendBox.top * 0.4 + legendBox.bottom * 0.6
     const y2 = legendBox.top * 0.8 + legendBox.bottom * 0.2
 
-    const pts0 = [new ScreenPoint(legendBox.left, y0), new ScreenPoint(legendBox.right, y0)]
-    const pts1 = [new ScreenPoint(legendBox.right, y2), new ScreenPoint(legendBox.left, y1)]
+    const pts0 = [newScreenPoint(legendBox.left, y0), newScreenPoint(legendBox.right, y0)]
+    const pts1 = [newScreenPoint(legendBox.right, y2), newScreenPoint(legendBox.left, y1)]
     const pts = [...pts0, ...pts1]
 
     if (this.strokeThickness > 0 && this.actualLineStyle !== LineStyle.None) {

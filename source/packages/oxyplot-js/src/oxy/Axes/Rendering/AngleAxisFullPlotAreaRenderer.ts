@@ -5,10 +5,12 @@ import {
   HorizontalAlignment,
   type IRenderContext,
   MathRenderingExtensions,
+  newScreenPoint,
   OxyRect,
   PlotModel,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_LeftTop,
   VerticalAlignment,
 } from '@/oxyplot'
 
@@ -154,7 +156,7 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
         x -= axis.axisTickToLabelDistance
       }
 
-      const outsideposition = new ScreenPoint(x, y)
+      const outsideposition = newScreenPoint(x, y)
       await MathRenderingExtensions.drawMathText(
         this.renderContext,
         outsideposition,
@@ -178,7 +180,7 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
     plotArea: OxyRect,
     midPoint: ScreenPoint,
   ): ScreenPoint {
-    let result = new ScreenPoint()
+    let result = ScreenPoint_LeftTop
     let theta = (x - axis.offset) * axis.scale
     theta %= 360.0
     const theta_rad = (theta / 180.0) * Math.PI
@@ -204,8 +206,8 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
         const y_portion = delta_y / _y
         lineend_x = y_portion * _x
         lineend_y = y_portion * _y
-        result = new ScreenPoint(y_portion * _x + midPoint.x, y_portion * _y + midPoint.y)
-      } else result = new ScreenPoint(lineend_x + midPoint.x, lineend_y + midPoint.y)
+        result = newScreenPoint(y_portion * _x + midPoint.x, y_portion * _y + midPoint.y)
+      } else result = newScreenPoint(lineend_x + midPoint.x, lineend_y + midPoint.y)
     }
     return result
   }

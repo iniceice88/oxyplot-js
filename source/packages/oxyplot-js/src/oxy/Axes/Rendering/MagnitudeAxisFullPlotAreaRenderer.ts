@@ -1,9 +1,11 @@
-import type { Axis, IRenderContext } from '@/oxyplot'
 import {
   AngleAxis,
+  Axis,
   AxisRendererBase,
   HorizontalAlignment,
+  IRenderContext,
   MathRenderingExtensions,
+  newScreenPoint,
   OxyPen,
   OxyRect,
   PlotModel,
@@ -435,7 +437,7 @@ export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase {
     const [ha, va] = MagnitudeAxisFullPlotAreaRenderer.getTickTextAligment(actualAngle)
 
     let pt = axis.transformPoint(x, angleAxis.angle, angleAxis)
-    pt = new ScreenPoint(pt.x + dx, pt.y + dy)
+    pt = newScreenPoint(pt.x + dx, pt.y + dy)
 
     const text = axis.formatValue(x)
     await MathRenderingExtensions.drawMathText(

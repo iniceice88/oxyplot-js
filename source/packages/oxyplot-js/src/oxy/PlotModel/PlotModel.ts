@@ -1,5 +1,4 @@
-﻿import type { IPlotModel, IPlotView, PlotElement, Series, TrackerEventArgs } from '@/oxyplot'
-import {
+﻿import {
   AngleAxis,
   Annotation,
   AnnotationLayer,
@@ -14,6 +13,8 @@ import {
   HorizontalAlignment,
   type IBarSeries,
   type IColorAxis,
+  IPlotModel,
+  IPlotView,
   type IRenderContext,
   isBarSeries,
   isBottomLegend,
@@ -29,15 +30,21 @@ import {
   MathRenderingExtensions,
   Model,
   newElementCollection,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   OxySize,
   OxyThickness,
+  PlotElement,
   RenderingExtensions,
   ScreenPoint,
+  screenPointDistanceTo,
+  screenPointPlus,
   ScreenVector,
+  Series,
   toColorAxis,
+  TrackerEventArgs,
   TrackerHitResult,
   VerticalAlignment,
   XYAxisSeries,
@@ -719,7 +726,7 @@ export class PlotModel extends Model implements IPlotModel {
       }
 
       // find distance to this point on the screen
-      const dist = point.distanceTo(thr.position)
+      const dist = screenPointDistanceTo(point, thr.position)
       if (dist < mindist) {
         nearestSeries = series
         mindist = dist
@@ -1259,11 +1266,11 @@ export class PlotModel extends Model implements IPlotModel {
     errorMessage: string,
     fontSize: number = 12,
   ): Promise<void> {
-    const p0 = new ScreenPoint(10, 10)
+    const p0 = newScreenPoint(10, 10)
     await rc.drawText(p0, title, this.textColor, undefined, fontSize, FontWeights.Bold)
     await RenderingExtensions.drawMultilineText(
       rc,
-      p0.plus(new ScreenVector(0, fontSize * 1.5)),
+      screenPointPlus(p0, new ScreenVector(0, fontSize * 1.5)),
       errorMessage,
       this.textColor,
       undefined,
@@ -1581,7 +1588,7 @@ export class PlotModel extends Model implements IPlotModel {
 
       await MathRenderingExtensions.drawMathText(
         rc,
-        new ScreenPoint(x, y),
+        newScreenPoint(x, y),
         this.title,
         this.titleColor.getActualColor(this.textColor),
         this.actualTitleFont,
@@ -1600,7 +1607,7 @@ export class PlotModel extends Model implements IPlotModel {
     if (this.subtitle) {
       await MathRenderingExtensions.drawMathText(
         rc,
-        new ScreenPoint(x, y),
+        newScreenPoint(x, y),
         this.subtitle,
         this.subtitleColor.getActualColor(this.textColor),
         this.actualSubtitleFont,

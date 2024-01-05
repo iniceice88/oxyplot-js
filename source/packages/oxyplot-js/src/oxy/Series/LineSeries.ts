@@ -1,21 +1,26 @@
-﻿import { CreateDataPointSeriesOptions, LabelStringFormatterType, newDataPoint } from '@/oxyplot'
-import {
+﻿import {
+  CreateDataPointSeriesOptions,
   DataPoint,
   DataPointSeries,
   HorizontalAlignment,
   type IInterpolationAlgorithm,
   type IRenderContext,
+  LabelStringFormatterType,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   MarkerType,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_LeftTop,
   ScreenPointHelper,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
   VerticalAlignment,
@@ -355,7 +360,7 @@ export class LineSeries extends DataPointSeries {
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
     const xmid = (legendBox.left + legendBox.right) / 2
     const ymid = (legendBox.top + legendBox.bottom) / 2
-    const pts = [new ScreenPoint(legendBox.left, ymid), new ScreenPoint(legendBox.right, ymid)]
+    const pts = [newScreenPoint(legendBox.left, ymid), newScreenPoint(legendBox.right, ymid)]
     await rc.drawLine(
       pts,
       this.getSelectableColor(this.actualColor),
@@ -364,7 +369,7 @@ export class LineSeries extends DataPointSeries {
       this.actualDashArray,
     )
 
-    const midpt = new ScreenPoint(xmid, ymid)
+    const midpt = newScreenPoint(xmid, ymid)
     await RenderingExtensions.drawMarker(
       rc,
       midpt,
@@ -602,7 +607,7 @@ export class LineSeries extends DataPointSeries {
         continue
       }
 
-      const pt = this.transform(point).plus(new ScreenVector(0, -this.labelMargin))
+      const pt = screenPointPlus(this.transform(point), new ScreenVector(0, -this.labelMargin))
 
       const item = this.getItem(index)
       const s = this.labelStringFormatter(item, [point.x, point.y])
@@ -653,7 +658,8 @@ export class LineSeries extends DataPointSeries {
     const res = PlotElementExtensions.orientateAlignment(this, ha, va)
     ha = res[0]
     va = res[1]
-    const pt = this.transform(point).plus(PlotElementExtensions.orientateVector(this, new ScreenVector(dx, 0)))
+    const ver = PlotElementExtensions.orientateVector(this, new ScreenVector(dx, 0))
+    const pt = screenPointPlus(this.transform(point), ver)
 
     // Render the legend
     await rc.drawText(
@@ -689,7 +695,7 @@ export class LineSeries extends DataPointSeries {
 
     if (this.markerType !== MarkerType.None) {
       const markerBinOffset =
-        this.markerResolution > 0 ? PlotElementExtensions.transform(this, this.minX, this.minY) : ScreenPoint.LeftTop
+        this.markerResolution > 0 ? PlotElementExtensions.transform(this, this.minX, this.minY) : ScreenPoint_LeftTop
 
       await RenderingExtensions.drawMarkers(
         rc,

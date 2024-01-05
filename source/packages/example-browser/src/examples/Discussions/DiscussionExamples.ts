@@ -29,6 +29,9 @@ import {
   OxyThickness,
   PlotModel,
   PlotType,
+  screenPointMinus,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   StairStepSeries,
   TickStyle,
@@ -403,12 +406,12 @@ class ArrowSeries549839 extends XYAxisSeries {
     const p0 = this.transform(this.startPoint)
     const p1 = this.transform(this.endPoint)
 
-    const direction = p1.minus(p0)
+    const direction = screenPointMinus(p1, p0)
     const normal = new ScreenVector(direction.y, -direction.x)
 
     // the end points of the arrow head, scaled by length of arrow
-    const p2 = p1.minusVector(direction.times(0.2)).plus(normal.times(0.1))
-    const p3 = p1.minusVector(direction.times(0.2)).minusVector(normal.times(0.1))
+    const p2 = screenPointPlus(screenPointMinusVector(p1, direction.times(0.2)), normal.times(0.1))
+    const p3 = screenPointMinusVector(screenPointMinusVector(p1, direction.times(0.2)), normal.times(0.1))
 
     // draw the line segments
     await rc.drawLineSegments([p0, p1, p1, p2, p1, p3], this.actualColor, this.strokeThickness, this.edgeRenderingMode)

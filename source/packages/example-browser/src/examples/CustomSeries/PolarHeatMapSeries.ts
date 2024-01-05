@@ -7,6 +7,7 @@ import {
   type IRenderContext,
   maxValueOfArray,
   minValueOfArray,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyImage,
@@ -204,7 +205,7 @@ export class PolarHeatMapSeries extends XYAxisSeries {
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         // transform from screen to magnitude/angle
-        const sp = new ScreenPoint(dest.left + x, dest.top + y)
+        const sp = newScreenPoint(dest.left + x, dest.top + y)
         const xy = this.inverseTransform(sp)
         let angle
         let magnitude

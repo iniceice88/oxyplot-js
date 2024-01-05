@@ -9,6 +9,7 @@ import {
   LineJoin,
   LineStyle,
   LineStyleHelper,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -17,6 +18,8 @@ import {
   RenderingExtensions,
   ScreenPoint,
   ScreenPointHelper,
+  screenPointMinus,
+  screenPointPlus,
   ScreenVector,
   TextAnnotation,
   TextualAnnotation,
@@ -262,7 +265,8 @@ export abstract class PathAnnotation extends TextualAnnotation {
       f = 0
     }
 
-    position = position.plus(
+    position = screenPointPlus(
+      position,
       new ScreenVector(
         f * this.textPadding * Math.cos(angleInRadians),
         f * this.textPadding * Math.sin(angleInRadians),
@@ -322,7 +326,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
     }
 
     const nearestPoint = ScreenPointHelper.findNearestPointOnPolyline(args.point, this.screenPoints)
-    const dist = args.point.minus(nearestPoint).length
+    const dist = screenPointMinus(args.point, nearestPoint).length
     if (dist < args.tolerance) {
       return {
         element: this,
@@ -382,19 +386,19 @@ export abstract class PathAnnotation extends TextualAnnotation {
 
     let length = 0
     for (let i = 1; i < pts.length; i++) {
-      length += pts[i].minus(pts[i - 1]).length
+      length += screenPointMinus(pts[i], pts[i - 1]).length
     }
 
     const l = length * p + margin
     const eps = 1e-8
     length = 0
     for (let i = 1; i < pts.length; i++) {
-      const dl = pts[i].minus(pts[i - 1]).length
+      const dl = screenPointMinus(pts[i], pts[i - 1]).length
       if (l >= length - eps && l <= length + dl + eps) {
         const f = (l - length) / dl
         const x = pts[i].x * f + pts[i - 1].x * (1 - f)
         const y = pts[i].y * f + pts[i - 1].y * (1 - f)
-        const position = new ScreenPoint(x, y)
+        const position = newScreenPoint(x, y)
         const dx = pts[i].x - pts[i - 1].x
         const dy = pts[i].y - pts[i - 1].y
         const angle = (Math.atan2(dy, dx) / Math.PI) * 180

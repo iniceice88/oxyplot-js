@@ -1,4 +1,4 @@
-import { ScreenPoint, Series, TrackerHitResult } from '@/oxyplot'
+import { ScreenPoint, screenPointDistanceTo, Series, TrackerHitResult } from '@/oxyplot'
 
 /**
  * Provides helper methods for tracker functionality.
@@ -51,6 +51,6 @@ export class TrackerHelper {
     firesDistance: number,
   ): boolean {
     if (!result?.position) return false
-    return result.position.distanceTo(point) < firesDistance
+    return screenPointDistanceTo(result.position, point) < firesDistance
   }
 }

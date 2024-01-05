@@ -13,6 +13,7 @@ import {
   LineStyle,
   MarkerType,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   PlotModel,
@@ -148,7 +149,7 @@ function customMarkers(): PlotModel {
   for (let i = 0; i < N; i++) {
     const th = Math.PI * ((4.0 * i) / (N - 1) - 0.5)
     const R = 1
-    customMarkerOutline[i] = new ScreenPoint(Math.cos(th) * R, Math.sin(th) * R)
+    customMarkerOutline[i] = newScreenPoint(Math.cos(th) * R, Math.sin(th) * R)
   }
 
   const s1 = createExampleLineSeries(39)

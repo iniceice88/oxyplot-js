@@ -1,6 +1,7 @@
 import {
   type IRenderContext,
   LineJoin,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -114,28 +115,28 @@ export class ErrorSeries extends XYAxisSeries {
       const d = 4
 
       if (errorx > 0) {
-        const p0 = new ScreenPoint(sp.x - errorx * 0.5, sp.y)
-        const p1 = new ScreenPoint(sp.x + errorx * 0.5, sp.y)
+        const p0 = newScreenPoint(sp.x - errorx * 0.5, sp.y)
+        const p1 = newScreenPoint(sp.x + errorx * 0.5, sp.y)
         segments.push(
           p0,
           p1,
-          new ScreenPoint(p0.x, p0.y - d),
-          new ScreenPoint(p0.x, p0.y + d),
-          new ScreenPoint(p1.x, p1.y - d),
-          new ScreenPoint(p1.x, p1.y + d),
+          newScreenPoint(p0.x, p0.y - d),
+          newScreenPoint(p0.x, p0.y + d),
+          newScreenPoint(p1.x, p1.y - d),
+          newScreenPoint(p1.x, p1.y + d),
         )
       }
 
       if (errory > 0) {
-        const p0 = new ScreenPoint(sp.x, sp.y - errory * 0.5)
-        const p1 = new ScreenPoint(sp.x, sp.y + errory * 0.5)
+        const p0 = newScreenPoint(sp.x, sp.y - errory * 0.5)
+        const p1 = newScreenPoint(sp.x, sp.y + errory * 0.5)
         segments.push(
           p0,
           p1,
-          new ScreenPoint(p0.x - d, p0.y),
-          new ScreenPoint(p0.x + d, p0.y),
-          new ScreenPoint(p1.x - d, p1.y),
-          new ScreenPoint(p1.x + d, p1.y),
+          newScreenPoint(p0.x - d, p0.y),
+          newScreenPoint(p0.x + d, p0.y),
+          newScreenPoint(p1.x - d, p1.y),
+          newScreenPoint(p1.x + d, p1.y),
         )
       }
     }
@@ -164,19 +165,19 @@ export class ErrorSeries extends XYAxisSeries {
     const xmid = (legendBox.left + legendBox.right) / 2
     const ymid = (legendBox.top + legendBox.bottom) / 2
     const pts: ScreenPoint[] = [
-      new ScreenPoint(legendBox.left, ymid),
-      new ScreenPoint(legendBox.right, ymid),
-      new ScreenPoint(legendBox.left, ymid - 2),
-      new ScreenPoint(legendBox.left, ymid + 3),
-      new ScreenPoint(legendBox.right, ymid - 2),
-      new ScreenPoint(legendBox.right, ymid + 3),
+      newScreenPoint(legendBox.left, ymid),
+      newScreenPoint(legendBox.right, ymid),
+      newScreenPoint(legendBox.left, ymid - 2),
+      newScreenPoint(legendBox.left, ymid + 3),
+      newScreenPoint(legendBox.right, ymid - 2),
+      newScreenPoint(legendBox.right, ymid + 3),
 
-      new ScreenPoint(xmid, legendBox.top),
-      new ScreenPoint(xmid, legendBox.bottom),
-      new ScreenPoint(xmid - 2, legendBox.top),
-      new ScreenPoint(xmid + 3, legendBox.top),
-      new ScreenPoint(xmid - 2, legendBox.bottom),
-      new ScreenPoint(xmid + 3, legendBox.bottom),
+      newScreenPoint(xmid, legendBox.top),
+      newScreenPoint(xmid, legendBox.bottom),
+      newScreenPoint(xmid - 2, legendBox.top),
+      newScreenPoint(xmid + 3, legendBox.top),
+      newScreenPoint(xmid - 2, legendBox.bottom),
+      newScreenPoint(xmid + 3, legendBox.bottom),
     ]
     await rc.drawLineSegments(
       pts,

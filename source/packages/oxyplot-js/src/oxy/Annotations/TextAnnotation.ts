@@ -13,6 +13,7 @@ import {
   PlotElementExtensions,
   ScreenPoint,
   ScreenPointHelper,
+  screenPointPlus,
   ScreenVector,
   TextualAnnotation,
   VerticalAlignment,
@@ -85,7 +86,10 @@ export class TextAnnotation extends TextualAnnotation {
       throw new Error(`text must be non-undefined before rendering.`)
     }
 
-    const position = this.transform(this.textPosition).plus(PlotElementExtensions.orientateVector(this, this.offset))
+    const position = screenPointPlus(
+      this.transform(this.textPosition),
+      PlotElementExtensions.orientateVector(this, this.offset),
+    )
 
     const textSize = rc.measureText(this.text, this.actualFont, this.actualFontSize, this.actualFontWeight)
     const [ha, va] = this.getActualTextAlignment()
@@ -181,10 +185,16 @@ export class TextAnnotation extends TextualAnnotation {
     const u = new ScreenVector(cost, sint)
     const v = new ScreenVector(-sint, cost)
     const polygon = new Array<ScreenPoint>(4)
-    polygon[0] = position.plus(u.times(left - padding.left)).plus(v.times(top - padding.top))
-    polygon[1] = position.plus(u.times(right + padding.right)).plus(v.times(top - padding.top))
-    polygon[2] = position.plus(u.times(right + padding.right)).plus(v.times(bottom + padding.bottom))
-    polygon[3] = position.plus(u.times(left - padding.left)).plus(v.times(bottom + padding.bottom))
+    polygon[0] = screenPointPlus(screenPointPlus(position, u.times(left - padding.left)), v.times(top - padding.top))
+    polygon[1] = screenPointPlus(screenPointPlus(position, u.times(right + padding.right)), v.times(top - padding.top))
+    polygon[2] = screenPointPlus(
+      screenPointPlus(position, u.times(right + padding.right)),
+      v.times(bottom + padding.bottom),
+    )
+    polygon[3] = screenPointPlus(
+      screenPointPlus(position, u.times(left - padding.left)),
+      v.times(bottom + padding.bottom),
+    )
     return polygon
   }
 }

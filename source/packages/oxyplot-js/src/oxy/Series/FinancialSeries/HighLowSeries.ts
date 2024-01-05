@@ -1,16 +1,23 @@
-import { Axis, CreateXYAxisSeriesOptions, IRenderContext, newDataPoint, TrackerStringFormatterArgs } from '@/oxyplot'
 import {
+  Axis,
+  CreateXYAxisSeriesOptions,
   DataPoint,
+  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   ScreenPoint,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
+  TrackerStringFormatterArgs,
   XYAxisSeries,
 } from '@/oxyplot'
 import { getOrDefault, Number_MAX_VALUE, removeUndef, round } from '@/patch'
@@ -325,7 +332,7 @@ Close: ${round(args.close!, 3)}`
         const tickVector = PlotElementExtensions.orientateVector(this, new ScreenVector(this.tickLength, 0))
         if (!isNaN(v.open)) {
           const open = transform(this, v.x, v.open)
-          const openTick = open.minusVector(tickVector)
+          const openTick = screenPointMinusVector(open, tickVector)
           await rc.drawLine(
             [open, openTick],
             actualColor,
@@ -338,7 +345,7 @@ Close: ${round(args.close!, 3)}`
 
         if (!isNaN(v.close)) {
           const close = transform(this, v.x, v.close)
-          const closeTick = close.plus(tickVector)
+          const closeTick = screenPointPlus(close, tickVector)
           await rc.drawLine(
             [close, closeTick],
             actualColor,
@@ -366,7 +373,7 @@ Close: ${round(args.close!, 3)}`
 
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await rc.drawLine(
-        [new ScreenPoint(xmid, legendBox.top), new ScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
         color,
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -374,7 +381,7 @@ Close: ${round(args.close!, 3)}`
         LineJoin.Miter,
       )
       await rc.drawLine(
-        [new ScreenPoint(xmid - this.tickLength, yopen), new ScreenPoint(xmid, yopen)],
+        [newScreenPoint(xmid - this.tickLength, yopen), newScreenPoint(xmid, yopen)],
         color,
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -382,7 +389,7 @@ Close: ${round(args.close!, 3)}`
         LineJoin.Miter,
       )
       await rc.drawLine(
-        [new ScreenPoint(xmid + this.tickLength, yclose), new ScreenPoint(xmid, yclose)],
+        [newScreenPoint(xmid + this.tickLength, yclose), newScreenPoint(xmid, yclose)],
         color,
         this.strokeThickness,
         this.edgeRenderingMode,

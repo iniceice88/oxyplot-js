@@ -3,7 +3,7 @@
   HorizontalAlignment,
   ITransposablePlotElement,
   IXyAxisPlotElement,
-  newDataPoint,
+  newDataPoint, newScreenPoint,
   ScreenPoint,
   ScreenVector,
   VerticalAlignment,
@@ -21,7 +21,7 @@ export class PlotElementExtensions {
    * @returns A data point.
    */
   public static inverseTransform(element: IXyAxisPlotElement, x: number, y: number): DataPoint {
-    return element.inverseTransform(new ScreenPoint(x, y))
+    return element.inverseTransform(newScreenPoint(x, y))
   }
 
   /**
@@ -40,7 +40,7 @@ export class PlotElementExtensions {
    * @returns The oriented point.
    */
   public static orientate(element: ITransposablePlotElement, point: ScreenPoint): ScreenPoint {
-    return PlotElementExtensions.isTransposed(element) ? new ScreenPoint(point.y, point.x) : point
+    return PlotElementExtensions.isTransposed(element) ? newScreenPoint(point.y, point.x) : point
   }
 
   /**

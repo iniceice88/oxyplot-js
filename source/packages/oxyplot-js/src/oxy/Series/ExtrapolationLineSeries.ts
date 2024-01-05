@@ -4,6 +4,7 @@ import {
   LineSeries,
   LineStyle,
   LineStyleHelper,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -190,7 +191,7 @@ export class ExtrapolationLineSeries extends LineSeries {
     const xmid = (legendBox.left + legendBox.right) / 2
     const ymid = (legendBox.top + legendBox.bottom) / 2
 
-    let pts = [new ScreenPoint(legendBox.left, ymid), new ScreenPoint(xmid, ymid)]
+    let pts = [newScreenPoint(legendBox.left, ymid), newScreenPoint(xmid, ymid)]
 
     await rc.drawLine(
       pts,
@@ -200,7 +201,7 @@ export class ExtrapolationLineSeries extends LineSeries {
       this.actualDashArray,
     )
 
-    pts = [new ScreenPoint(xmid, ymid), new ScreenPoint(legendBox.right, ymid)]
+    pts = [newScreenPoint(xmid, ymid), newScreenPoint(legendBox.right, ymid)]
 
     await rc.drawLine(
       pts,
@@ -210,7 +211,7 @@ export class ExtrapolationLineSeries extends LineSeries {
       this.actualExtrapolationDashArray,
     )
 
-    const midpt = new ScreenPoint(xmid, ymid)
+    const midpt = newScreenPoint(xmid, ymid)
 
     await RenderingExtensions.drawMarker(
       rc,

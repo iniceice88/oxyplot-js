@@ -3,6 +3,7 @@ import {
   type CreateAnnotationOptions,
   DataPoint,
   type ITransposablePlotElement,
+  newScreenPoint,
   OxyRect,
   PlotElementExtensions,
   PlotElementUtilities,
@@ -10,7 +11,7 @@ import {
   setTransposablePlotElement,
 } from '@/oxyplot'
 
-export interface CreateTransposableAnnotationOptions extends CreateAnnotationOptions {}
+export type CreateTransposableAnnotationOptions = CreateAnnotationOptions
 
 /**
  * Provides an abstract base class for transposable annotations.
@@ -43,8 +44,8 @@ export abstract class TransposableAnnotation extends Annotation implements ITran
       maxY = PlotElementExtensions.orientate(this, axisRect.bottomRight).y
     }
 
-    const minPoint = PlotElementExtensions.orientate(this, new ScreenPoint(minX, minY))
-    const maxPoint = PlotElementExtensions.orientate(this, new ScreenPoint(maxX, maxY))
+    const minPoint = PlotElementExtensions.orientate(this, newScreenPoint(minX, minY))
+    const maxPoint = PlotElementExtensions.orientate(this, newScreenPoint(maxX, maxY))
 
     const axisClipRect = OxyRect.fromScreenPoints(minPoint, maxPoint)
     return rect.clip(axisClipRect)

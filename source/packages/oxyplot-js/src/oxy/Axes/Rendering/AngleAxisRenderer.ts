@@ -1,4 +1,4 @@
-﻿import type { IRenderContext } from '@/oxyplot'
+﻿import { IRenderContext, newScreenPoint } from '@/oxyplot'
 import {
   AngleAxis,
   Axis,
@@ -101,7 +101,7 @@ export class AngleAxisRenderer extends AxisRendererBase {
       // add some margin
       x += Math.cos(angle) * axis.axisTickToLabelDistance
       y += Math.sin(angle) * axis.axisTickToLabelDistance
-      pt = new ScreenPoint(x, y)
+      pt = newScreenPoint(x, y)
 
       // Convert to degrees
       let angleInDegrees = (angle * 180) / Math.PI

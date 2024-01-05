@@ -1,4 +1,12 @@
-﻿import { HorizontalAlignment, OxyRect, OxySize, ScreenPoint, ScreenVector, VerticalAlignment } from '@/oxyplot'
+﻿import {
+  HorizontalAlignment,
+  OxyRect,
+  OxySize,
+  ScreenPoint,
+  screenPointPlus,
+  ScreenVector,
+  VerticalAlignment,
+} from '@/oxyplot'
 
 declare module './OxySize' {
   interface OxySize {
@@ -113,6 +121,11 @@ export class OxySizeExtensions {
       p3 = rotate(p3)
     }
 
-    return [origin.plus(p0), origin.plus(p1), origin.plus(p2), origin.plus(p3)]
+    return [
+      screenPointPlus(origin, p0),
+      screenPointPlus(origin, p1),
+      screenPointPlus(origin, p2),
+      screenPointPlus(origin, p3),
+    ]
   }
 }

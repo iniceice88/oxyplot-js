@@ -1,16 +1,18 @@
 import {
   type CreateLineSeriesOptions,
-  DataPoint,
   EdgeRenderingMode,
   type IRenderContext,
   LineSeries,
   LineStyle,
   MarkerType,
   newDataPoint,
+  newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
   ScreenPointHelper,
+  screenPointMinus,
+  screenPointPlus,
   TrackerHitResult,
 } from '@/oxyplot'
 import { Number_MAX_VALUE } from '@/patch'
@@ -74,8 +76,8 @@ export class StemSeries extends LineSeries {
         u = 1 // we are outside the line, snap to the end
       }
 
-      const sp = sp1.plus(sp2.minus(sp1).times(u))
-      const distance = point.minus(sp).lengthSquared
+      const sp = screenPointPlus(sp1, screenPointMinus(sp2, sp1).times(u))
+      const distance = screenPointMinus(point, sp).lengthSquared
 
       if (distance < minimumDistance) {
         const item = this.getItem(i)
@@ -83,7 +85,7 @@ export class StemSeries extends LineSeries {
         result = new TrackerHitResult({
           series: this,
           dataPoint: newDataPoint(p1.x, p1.y),
-          position: new ScreenPoint(sp1.x, sp1.y),
+          position: newScreenPoint(sp1.x, sp1.y),
           item: this.getItem(i),
           index: i,
           text,

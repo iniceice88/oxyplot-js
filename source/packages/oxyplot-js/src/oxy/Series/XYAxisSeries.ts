@@ -10,7 +10,10 @@
   PlotElementExtensions,
   PlotElementUtilities,
   ScreenPoint,
+  ScreenPoint_isUndefined,
+  ScreenPoint_LeftTop,
   ScreenPointHelper,
+  screenPointMinus,
   setTransposablePlotElement,
   TrackerHitResult,
   type TrackerStringFormatterArgs,
@@ -267,7 +270,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
       return undefined
     }
 
-    let spn = ScreenPoint.LeftTop
+    let spn = ScreenPoint_LeftTop
     let dpn = DataPoint_Zero
     let index = -1
 
@@ -286,16 +289,16 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
       // Find the nearest point on the line segment.
       const spl = ScreenPointHelper.findPointOnLine(point, sp1, sp2)
 
-      if (ScreenPoint.isUndefined(spl)) {
+      if (ScreenPoint_isUndefined(spl)) {
         // P1 && P2 coincident
         continue
       }
 
-      const l2 = point.minus(spl).lengthSquared
+      const l2 = screenPointMinus(point, spl).lengthSquared
 
       if (l2 < minimumDistance) {
-        const segmentLength = sp2.minus(sp1).length
-        const u = segmentLength > 0 ? spl.minus(sp1).length / segmentLength : 0
+        const segmentLength = screenPointMinus(sp2, sp1).length
+        const u = segmentLength > 0 ? screenPointMinus(spl, sp1).length / segmentLength : 0
         dpn = this.inverseTransform(spl)
         spn = spl
         minimumDistance = l2
@@ -330,7 +333,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
     startIdx: number,
     point: ScreenPoint,
   ): TrackerHitResult | undefined {
-    let spn = ScreenPoint.LeftTop
+    let spn = ScreenPoint_LeftTop
     let dpn = DataPoint_Zero
     let index = -1
 
@@ -343,7 +346,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
       }
 
       const sp = PlotElementExtensions.transform(this, p.x, p.y)
-      const d2 = sp.minus(point).lengthSquared
+      const d2 = screenPointMinus(sp, point).lengthSquared
 
       if (d2 < minimumDistance) {
         dpn = p

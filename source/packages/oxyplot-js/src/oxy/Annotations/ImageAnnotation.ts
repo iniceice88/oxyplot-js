@@ -5,6 +5,7 @@ import {
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
+  newScreenPoint,
   OxyImage,
   OxyRect,
   PlotElementExtensions,
@@ -12,6 +13,8 @@ import {
   PlotLengthUnit,
   RenderingExtensions,
   ScreenPoint,
+  screenPointMinus,
+  screenPointPlus,
   ScreenVector,
   TransposableAnnotation,
   VerticalAlignment,
@@ -121,7 +124,7 @@ export class ImageAnnotation extends TransposableAnnotation {
 
     const p = this.getPoint(this.x, this.y, this.plotModel)
     const o = this.getVector(this.offsetX, this.offsetY, this.plotModel)
-    const position = p.plus(o)
+    const position = screenPointPlus(p, o)
 
     const s = this.getVector(this.width, this.height, this.plotModel)
 
@@ -230,7 +233,7 @@ export class ImageAnnotation extends TransposableAnnotation {
         throw new Error('Invalid unit')
     }
 
-    return new ScreenPoint(xd, yd)
+    return newScreenPoint(xd, yd)
   }
 
   public getVector(x: PlotLength, y: PlotLength, model: any): ScreenVector {
@@ -240,7 +243,8 @@ export class ImageAnnotation extends TransposableAnnotation {
     if (x.unit === PlotLengthUnit.Data || y.unit === PlotLengthUnit.Data) {
       const dataX = x.unit === PlotLengthUnit.Data ? x.value : NaN
       const dataY = y.unit === PlotLengthUnit.Data ? y.value : NaN
-      const v = PlotElementExtensions.transform(this, dataX, dataY).minus(this.transform(DataPoint_Zero))
+      const sp = PlotElementExtensions.transform(this, dataX, dataY)
+      const v = screenPointMinus(sp, this.transform(DataPoint_Zero))
       xd = v.x
       yd = v.y
     }

@@ -9,6 +9,7 @@ import {
   LineJoin,
   LineStyle,
   MathRenderingExtensions,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyPen,
@@ -37,10 +38,10 @@ function drawTextColors(): PlotModel {
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Black', OxyColors.Black, Font, FontSize, FontWeight)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Red', OxyColors.Red, Font, FontSize, FontWeight)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Green', OxyColors.Green, Font, FontSize, FontWeight)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Blue', OxyColors.Blue, Font, FontSize, FontWeight)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Black', OxyColors.Black, Font, FontSize, FontWeight)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Red', OxyColors.Red, Font, FontSize, FontWeight)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Green', OxyColors.Green, Font, FontSize, FontWeight)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Blue', OxyColors.Blue, Font, FontSize, FontWeight)
 
       await RenderingExtensions.fillRectangle(
         rc,
@@ -49,7 +50,7 @@ function drawTextColors(): PlotModel {
         EdgeRenderingMode.Adaptive,
       )
       await rc.drawText(
-        new ScreenPoint(X, y + D),
+        newScreenPoint(X, y + D),
         'Yellow 50%',
         OxyColor.fromAColor(128, OxyColors.Yellow),
         Font,
@@ -75,13 +76,13 @@ function drawTextFonts(): PlotModel {
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Default font', OxyColors.Black, undefined, FontSize)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Helvetica', OxyColors.Black, 'Helvetica', FontSize)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Arial', OxyColors.Black, 'Arial', FontSize)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Courier', OxyColors.Black, 'Courier', FontSize)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Courier New', OxyColors.Black, 'Courier New', FontSize)
-      await rc.drawText(new ScreenPoint(X, (y += D)), 'Times', OxyColors.Black, 'Times', FontSize)
-      await rc.drawText(new ScreenPoint(X, y + D), 'Times New Roman', OxyColors.Black, 'Times New Roman', FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Default font', OxyColors.Black, undefined, FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Helvetica', OxyColors.Black, 'Helvetica', FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Arial', OxyColors.Black, 'Arial', FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Courier', OxyColors.Black, 'Courier', FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Courier New', OxyColors.Black, 'Courier New', FontSize)
+      await rc.drawText(newScreenPoint(X, (y += D)), 'Times', OxyColors.Black, 'Times', FontSize)
+      await rc.drawText(newScreenPoint(X, y + D), 'Times New Roman', OxyColors.Black, 'Times New Roman', FontSize)
     }),
   )
 
@@ -101,8 +102,8 @@ function drawTextFontSizes(): PlotModel {
     new DelegateAnnotation(async (rc) => {
       // Font sizes
       for (const size of [10, 16, 24, 36, 48]) {
-        await rc.drawText(new ScreenPoint(X, y), `${size}pt`, OxyColors.Black, 'Arial', size)
-        await rc.drawText(new ScreenPoint(X + 200, y), `${size}pt`, OxyColors.Black, 'Arial', size, FontWeights.Bold)
+        await rc.drawText(newScreenPoint(X, y), `${size}pt`, OxyColors.Black, 'Arial', size)
+        await rc.drawText(newScreenPoint(X + 200, y), `${size}pt`, OxyColors.Black, 'Arial', size, FontWeights.Bold)
         y += size * 1.6
       }
     }),
@@ -119,7 +120,7 @@ function drawTextRotation(): PlotModel {
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
-      const origin = new ScreenPoint(200, 200)
+      const origin = newScreenPoint(200, 200)
       await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
 
       for (let rotation = 0; rotation < 360; rotation += 45) {
@@ -143,7 +144,7 @@ function drawTextAlignment(): PlotModel {
     new DelegateAnnotation(async (rc) => {
       for (let ha = HorizontalAlignment.Left; ha <= HorizontalAlignment.Right; ha++) {
         for (let va = VerticalAlignment.Top; va <= VerticalAlignment.Bottom; va++) {
-          const origin = new ScreenPoint((ha + 1) * 200 + 20, (va + 1) * fontSize * 3 + 20)
+          const origin = newScreenPoint((ha + 1) * 200 + 20, (va + 1) * fontSize * 3 + 20)
           await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
           const haText = getEnumName(HorizontalAlignment, ha)
           const vaText = getEnumName(VerticalAlignment, va)
@@ -172,7 +173,7 @@ function drawTextMultiLineAlignment(): PlotModel {
           const vaStr = getEnumName(VerticalAlignment, va)
           const x = (ha + 1) * 200 + 20
           const y = (va + 1) * FontSize * 6 + 20
-          const origin = new ScreenPoint(x, y)
+          const origin = newScreenPoint(x, y)
 
           await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
           await rc.drawText(origin, `${haStr}\n${vaStr}`, OxyColors.Black, undefined, FontSize, undefined, 0, ha, va)
@@ -196,8 +197,8 @@ function mathTextRotation(): PlotModel {
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
-      const origin = new ScreenPoint(200, 200)
-      const origin2 = new ScreenPoint(400, 200)
+      const origin = newScreenPoint(200, 200)
+      const origin2 = newScreenPoint(400, 200)
       await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
 
       for (let rotation = 0; rotation < 360; rotation += 45) {
@@ -267,7 +268,7 @@ function drawMathTextAlignment() {
     new DelegateAnnotation(async (rc) => {
       for (let ha = HorizontalAlignment.Left; ha <= HorizontalAlignment.Right; ha++) {
         for (let va = VerticalAlignment.Top; va <= VerticalAlignment.Bottom; va++) {
-          const origin = new ScreenPoint((ha + 1) * 200 + 20, (va + 1) * fontSize * 3 + 20)
+          const origin = newScreenPoint((ha + 1) * 200 + 20, (va + 1) * fontSize * 3 + 20)
           await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
           await MathRenderingExtensions.drawMathText(
             rc,
@@ -302,7 +303,7 @@ function drawTextAlignmentRotation(): PlotModel {
         for (let va = VerticalAlignment.Top; va <= VerticalAlignment.Bottom; va++) {
           const x = (ha + 2) * 130
           const y = (va + 2) * 130
-          const origin = new ScreenPoint(x, y)
+          const origin = newScreenPoint(x, y)
           await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
           for (let rotation = 0; rotation < 360; rotation += 90) {
             await rc.drawText(
@@ -340,7 +341,7 @@ function drawMultilineTextAlignmentRotation(): PlotModel {
           const vaStr = getEnumName(VerticalAlignment, va)
           const x = (ha + 2) * 170
           const y = (va + 2) * 170
-          const origin = new ScreenPoint(x, y)
+          const origin = newScreenPoint(x, y)
           await RenderingExtensions.fillCircle(rc, origin, 3, OxyColors.Blue, EdgeRenderingMode.Adaptive)
           for (let rotation = 0; rotation < 360; rotation += 90) {
             await rc.drawText(
@@ -382,7 +383,7 @@ function drawTextMaxSize(): PlotModel {
     new DelegateAnnotation(async (rc) => {
       for (const text of testStrings) {
         const maxSize = rc.measureText(text, Font, FontSize, FontWeight)
-        const p = new ScreenPoint(X, y)
+        const p = newScreenPoint(X, y)
         await rc.drawText(
           p,
           text,
@@ -398,7 +399,7 @@ function drawTextMaxSize(): PlotModel {
         const rect = new OxyRect(p.x, p.y, maxSize.width, maxSize.height)
         await rc.drawRectangle(rect, OxyColors.Undefined, OxyColors.Black, 1, EdgeRenderingMode.Adaptive)
 
-        const p2 = new ScreenPoint(X2, y)
+        const p2 = newScreenPoint(X2, y)
         const maxSize2 = new OxySize(maxSize.width / 2, maxSize.height / 2)
         await rc.drawText(
           p2,
@@ -451,7 +452,7 @@ function measureText(): PlotModel {
             1,
             EdgeRenderingMode.Adaptive,
           )
-          await rc.drawText(new ScreenPoint(x, y), s, OxyColors.Black, font, fontSize)
+          await rc.drawText(newScreenPoint(x, y), s, OxyColors.Black, font, fontSize)
           y += size.height + 20
         }
 
@@ -529,7 +530,7 @@ const clipping = (): PlotModel => {
       }
 
       const DrawDescription = async (text: string) => {
-        const p = new ScreenPoint(clipRectMargin + clipRectSize + testCaseMargin + descriptionMargin, currentLine)
+        const p = newScreenPoint(clipRectMargin + clipRectSize + testCaseMargin + descriptionMargin, currentLine)
         await rc.drawText(
           p,
           text,
@@ -544,7 +545,7 @@ const clipping = (): PlotModel => {
       }
 
       const DrawTestCase = async (text: string) => {
-        const p = new ScreenPoint(clipRectMargin + clipRectSize + testCaseMargin, currentLine)
+        const p = newScreenPoint(clipRectMargin + clipRectSize + testCaseMargin, currentLine)
         await rc.drawText(
           p,
           text,
@@ -559,7 +560,7 @@ const clipping = (): PlotModel => {
       }
 
       const DrawHeader = async (text: string, offset: number) => {
-        await rc.drawText(new ScreenPoint(offset, 15), text, OxyColors.Black, undefined, 12, 700)
+        await rc.drawText(newScreenPoint(offset, 15), text, OxyColors.Black, undefined, 12, 700)
       }
 
       const NextLine = () => {
@@ -716,7 +717,7 @@ const rectangles = (): PlotModel => {
         const left = OFFSET_LEFT + i * GRID_SIZE + TILE_SIZE / 2
         const strokeThickness = i * THICKNESS_STEP
         await rc.drawText(
-          new ScreenPoint(left, OFFSET_TOP / 2),
+          newScreenPoint(left, OFFSET_TOP / 2),
           strokeThickness.toString(),
           OxyColors.Black,
           undefined,
@@ -732,7 +733,7 @@ const rectangles = (): PlotModel => {
       for (const edgeRenderingMode of edgeRenderingModes) {
         const top = OFFSET_TOP + edgeRenderingMode * GRID_SIZE
         await rc.drawText(
-          new ScreenPoint(10, top + 10),
+          newScreenPoint(10, top + 10),
           EdgeRenderingMode[edgeRenderingMode],
           OxyColors.Black,
           undefined,
@@ -764,7 +765,7 @@ const lines = (): PlotModel => {
         const left = OFFSET_LEFT + i * GRID_SIZE + TILE_SIZE / 2
         const strokeThickness = i * THICKNESS_STEP
         await rc.drawText(
-          new ScreenPoint(left, OFFSET_TOP / 2),
+          newScreenPoint(left, OFFSET_TOP / 2),
           strokeThickness.toString(),
           OxyColors.Black,
           undefined,
@@ -780,7 +781,7 @@ const lines = (): PlotModel => {
       for (const edgeRenderingMode of edgeRenderingModes) {
         const top = OFFSET_TOP + edgeRenderingMode * GRID_SIZE
         await rc.drawText(
-          new ScreenPoint(10, top + 10),
+          newScreenPoint(10, top + 10),
           EdgeRenderingMode[edgeRenderingMode],
           OxyColors.Black,
           undefined,
@@ -792,11 +793,11 @@ const lines = (): PlotModel => {
         )
         for (let i = 0; i < THICKNESS_STEPS; i++) {
           const left = OFFSET_LEFT + i * GRID_SIZE
-          const topLeft = new ScreenPoint(left, top)
-          const bottomLeft = new ScreenPoint(left, top + TILE_SIZE)
-          const topRight = new ScreenPoint(left + TILE_SIZE, top)
-          const bottomRight = new ScreenPoint(left + TILE_SIZE, top + TILE_SIZE)
-          const middleLeft = new ScreenPoint(left, top + TILE_SIZE / 2)
+          const topLeft = newScreenPoint(left, top)
+          const bottomLeft = newScreenPoint(left, top + TILE_SIZE)
+          const topRight = newScreenPoint(left + TILE_SIZE, top)
+          const bottomRight = newScreenPoint(left + TILE_SIZE, top + TILE_SIZE)
+          const middleLeft = newScreenPoint(left, top + TILE_SIZE / 2)
           const strokeThickness = i * THICKNESS_STEP
 
           await rc.drawLine([bottomLeft, topLeft, topRight], OxyColors.Black, strokeThickness, edgeRenderingMode)
@@ -825,7 +826,7 @@ const polygons = (): PlotModel => {
         const left = OFFSET_LEFT + i * GRID_SIZE + TILE_SIZE / 2
         const strokeThickness = i * THICKNESS_STEP
         await rc.drawText(
-          new ScreenPoint(left, OFFSET_TOP / 2),
+          newScreenPoint(left, OFFSET_TOP / 2),
           strokeThickness.toString(),
           OxyColors.Black,
           undefined,
@@ -841,7 +842,7 @@ const polygons = (): PlotModel => {
       for (const edgeRenderingMode of edgeRenderingModes) {
         const top = OFFSET_TOP + edgeRenderingMode * GRID_SIZE
         await rc.drawText(
-          new ScreenPoint(10, top + 10),
+          newScreenPoint(10, top + 10),
           EdgeRenderingMode[edgeRenderingMode],
           OxyColors.Black,
           undefined,
@@ -854,11 +855,11 @@ const polygons = (): PlotModel => {
         for (let i = 0; i < THICKNESS_STEPS; i++) {
           const left = OFFSET_LEFT + i * GRID_SIZE
           const points = [
-            new ScreenPoint(left + TILE_SIZE * 0.4, top),
-            new ScreenPoint(left + TILE_SIZE, top + TILE_SIZE * 0.2),
-            new ScreenPoint(left + TILE_SIZE * 0.9, top + TILE_SIZE * 0.8),
-            new ScreenPoint(left + TILE_SIZE * 0.5, top + TILE_SIZE),
-            new ScreenPoint(left, top + TILE_SIZE * 0.6),
+            newScreenPoint(left + TILE_SIZE * 0.4, top),
+            newScreenPoint(left + TILE_SIZE, top + TILE_SIZE * 0.2),
+            newScreenPoint(left + TILE_SIZE * 0.9, top + TILE_SIZE * 0.8),
+            newScreenPoint(left + TILE_SIZE * 0.5, top + TILE_SIZE),
+            newScreenPoint(left, top + TILE_SIZE * 0.6),
           ]
 
           const strokeThickness = i * THICKNESS_STEP
@@ -880,7 +881,7 @@ const ellipses = (): PlotModel => {
         const left = OFFSET_LEFT + i * GRID_SIZE + TILE_SIZE / 2
         const strokeThickness = i * THICKNESS_STEP
         await rc.drawText(
-          new ScreenPoint(left, OFFSET_TOP / 2),
+          newScreenPoint(left, OFFSET_TOP / 2),
           strokeThickness.toString(),
           OxyColors.Black,
           undefined,
@@ -896,7 +897,7 @@ const ellipses = (): PlotModel => {
       for (const edgeRenderingMode of edgeRenderingModes) {
         const top = OFFSET_TOP + edgeRenderingMode * GRID_SIZE
         await rc.drawText(
-          new ScreenPoint(10, top + 10),
+          newScreenPoint(10, top + 10),
           EdgeRenderingMode[edgeRenderingMode],
           OxyColors.Black,
           undefined,
@@ -936,7 +937,7 @@ const lineJoins = (): PlotModel => {
       let rowCounter = 0
       const lineJoins = getEnumKeys(LineJoin)
       for (const lineJoin of lineJoins) {
-        const p = new ScreenPoint(COL_WIDTH * (colCounter + 0.5) + ROW_HEADER_WIDTH, COL_HEADER_HEIGHT / 2)
+        const p = newScreenPoint(COL_WIDTH * (colCounter + 0.5) + ROW_HEADER_WIDTH, COL_HEADER_HEIGHT / 2)
         await rc.drawText(
           p,
           LineJoin[lineJoin],
@@ -958,15 +959,15 @@ const lineJoins = (): PlotModel => {
         const dx = Math.sin(halfAngle) * LINE_LENGTH
         const dy = Math.cos(halfAngle) * LINE_LENGTH
 
-        const textP = new ScreenPoint(15, y)
+        const textP = newScreenPoint(15, y)
         await rc.drawText(textP, angle.toString() + '°', OxyColors.Black, undefined, 12)
 
         for (const lineJoin of lineJoins) {
           const x = COL_WIDTH * (colCounter + 0.5) + ROW_HEADER_WIDTH
 
-          const pMid = new ScreenPoint(x, y)
-          const p1 = new ScreenPoint(x - dx, y + dy)
-          const p2 = new ScreenPoint(x + dx, y + dy)
+          const pMid = newScreenPoint(x, y)
+          const p1 = newScreenPoint(x - dx, y + dy)
+          const p2 = newScreenPoint(x + dx, y + dy)
 
           await rc.drawLine(
             [p1, pMid, p2],
@@ -1009,13 +1010,13 @@ const ellipseDrawing = (): PlotModel => {
       const ry = (rect.bottom - rect.top) / 2
       for (let i = 0; i < n; i++) {
         const a = (Math.PI * 2 * i) / (n - 1)
-        points[i] = new ScreenPoint(cx + rx * Math.cos(a), cy + ry * Math.sin(a))
+        points[i] = newScreenPoint(cx + rx * Math.cos(a), cy + ry * Math.sin(a))
       }
 
       await rc.drawPolygon(points, OxyColors.Undefined, OxyColors.Black, 4, EdgeRenderingMode.PreferGeometricAccuracy)
       await rc.drawEllipse(rect, OxyColors.Undefined, OxyColors.White, 2, EdgeRenderingMode.PreferGeometricAccuracy)
       await rc.drawText(
-        new ScreenPoint(CENTER_X, CENTER_Y),
+        newScreenPoint(CENTER_X, CENTER_Y),
         'The white ellipse (drawn by Renderer) should match the black ellipse (drawn as Path).',
         OxyColors.Black,
         undefined,

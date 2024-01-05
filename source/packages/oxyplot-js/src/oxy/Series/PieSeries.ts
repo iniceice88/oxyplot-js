@@ -6,6 +6,7 @@ import {
   type IRenderContext,
   ItemsSeries,
   LineJoin,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -252,7 +253,7 @@ export class PieSeries extends ItemsSeries {
     const innerRadius = radius * this.innerDiameter
 
     let angle = this.startAngle
-    const midPoint = new ScreenPoint(
+    const midPoint = newScreenPoint(
       (this.plotModel.plotArea.left + this.plotModel.plotArea.right) * 0.5,
       (this.plotModel.plotArea.top + this.plotModel.plotArea.bottom) * 0.5,
     )
@@ -267,7 +268,7 @@ export class PieSeries extends ItemsSeries {
 
       const midAngle = angle + sliceAngle / 2
       const midAngleRadians = (midAngle * Math.PI) / 180
-      const mp = new ScreenPoint(
+      const mp = newScreenPoint(
         midPoint.x + explodedRadius * Math.cos(midAngleRadians),
         midPoint.y + explodedRadius * Math.sin(midAngleRadians),
       )
@@ -282,9 +283,9 @@ export class PieSeries extends ItemsSeries {
         }
 
         const a = (angle * Math.PI) / 180
-        const op = new ScreenPoint(mp.x + outerRadius * Math.cos(a), mp.y + outerRadius * Math.sin(a))
+        const op = newScreenPoint(mp.x + outerRadius * Math.cos(a), mp.y + outerRadius * Math.sin(a))
         outerPoints.push(op)
-        const ip = new ScreenPoint(mp.x + innerRadius * Math.cos(a), mp.y + innerRadius * Math.sin(a))
+        const ip = newScreenPoint(mp.x + innerRadius * Math.cos(a), mp.y + innerRadius * Math.sin(a))
         if (innerRadius + explodedRadius > 0) {
           innerPoints.push(ip)
         }
@@ -324,21 +325,21 @@ export class PieSeries extends ItemsSeries {
         const sign = Math.sign(Math.cos(midAngleRadians))
 
         // tick points
-        const tp0 = new ScreenPoint(
+        const tp0 = newScreenPoint(
           mp.x + (outerRadius + this.tickDistance) * Math.cos(midAngleRadians),
           mp.y + (outerRadius + this.tickDistance) * Math.sin(midAngleRadians),
         )
-        const tp1 = new ScreenPoint(
+        const tp1 = newScreenPoint(
           tp0.x + this.tickRadialLength * Math.cos(midAngleRadians),
           tp0.y + this.tickRadialLength * Math.sin(midAngleRadians),
         )
-        const tp2 = new ScreenPoint(tp1.x + this.tickHorizontalLength * sign, tp1.y)
+        const tp2 = newScreenPoint(tp1.x + this.tickHorizontalLength * sign, tp1.y)
 
         // draw the tick line with the same color as the text
         await rc.drawLine([tp0, tp1, tp2], this.actualTextColor, 1, this.edgeRenderingMode, undefined, LineJoin.Bevel)
 
         // label
-        const labelPosition = new ScreenPoint(tp2.x + this.tickLabelDistance * sign, tp2.y)
+        const labelPosition = newScreenPoint(tp2.x + this.tickLabelDistance * sign, tp2.y)
         await rc.drawText(
           labelPosition,
           label,
@@ -357,7 +358,7 @@ export class PieSeries extends ItemsSeries {
         const label = this.insideLabelFormatter(slice, (slice.value / this.total) * 100)
 
         const r = innerRadius * (1 - this.insideLabelPosition) + outerRadius * this.insideLabelPosition
-        const labelPosition = new ScreenPoint(
+        const labelPosition = newScreenPoint(
           mp.x + r * Math.cos(midAngleRadians),
           mp.y + r * Math.sin(midAngleRadians),
         )

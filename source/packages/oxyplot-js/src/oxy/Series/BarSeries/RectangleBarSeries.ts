@@ -1,13 +1,11 @@
 import {
   CreateXYAxisSeriesOptions,
-  IRenderContext,
-  LabelStringFormatterType, newDataPoint,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
-import {
-  DataPoint,
   EdgeRenderingMode,
   HorizontalAlignment,
+  IRenderContext,
+  LabelStringFormatterType,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -15,6 +13,7 @@ import {
   RenderingExtensions,
   ScreenPoint,
   TrackerHitResult,
+  TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
@@ -255,7 +254,7 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
       if (this.labelStringFormatter) {
         const s = this.labelStringFormatter(this.getItem(i), [item.x0, item.x1, item.y0, item.y1, item.title])
 
-        const pt = new ScreenPoint((rectangle.left + rectangle.right) / 2, (rectangle.top + rectangle.bottom) / 2)
+        const pt = newScreenPoint((rectangle.left + rectangle.right) / 2, (rectangle.top + rectangle.bottom) / 2)
 
         await rc.drawText(
           pt,

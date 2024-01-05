@@ -14,9 +14,9 @@ import {
   MarkerType,
   maxValueOfArray,
   minValueOfArray,
+  newScreenPoint,
   OxyColors,
   PlotModel,
-  ScreenPoint,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 import { Random } from '../Random'
@@ -139,10 +139,10 @@ function outlierTypeCustom(): PlotModel {
   const boxPlotSeries = model.series[0] as BoxPlotSeries
   boxPlotSeries.outlierType = MarkerType.Custom
   boxPlotSeries.outlierOutline = [
-    new ScreenPoint(-1, -1),
-    new ScreenPoint(1, 1),
-    new ScreenPoint(-1, 1),
-    new ScreenPoint(1, -1),
+    newScreenPoint(-1, -1),
+    newScreenPoint(1, 1),
+    newScreenPoint(-1, 1),
+    newScreenPoint(1, -1),
   ]
   return model
 }

@@ -7,6 +7,9 @@ import {
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_LeftTop,
+  screenPointDistanceTo,
+  screenPointPlus,
   ScreenVector,
   ShapeAnnotation,
   VerticalAlignment,
@@ -29,7 +32,7 @@ export class PointAnnotation extends ShapeAnnotation {
   /**
    * The position transformed to screen coordinates.
    */
-  private screenPosition: ScreenPoint = ScreenPoint.LeftTop
+  private screenPosition: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Initializes a new instance of the PointAnnotation class.
@@ -98,7 +101,7 @@ export class PointAnnotation extends ShapeAnnotation {
       const [ha, va] = this.getActualTextAlignment()
       const dx = -Number(ha) * (this.size + this.textMargin)
       const dy = -Number(va) * (this.size + this.textMargin)
-      const textPosition = this.screenPosition.plus(new ScreenVector(dx, dy))
+      const textPosition = screenPointPlus(this.screenPosition, new ScreenVector(dx, dy))
       await rc.drawText(
         textPosition,
         this.text,
@@ -117,7 +120,7 @@ export class PointAnnotation extends ShapeAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (this.screenPosition.distanceTo(args.point) < this.size) {
+    if (screenPointDistanceTo(this.screenPosition, args.point) < this.size) {
       return {
         element: this,
         nearestHitPoint: this.screenPosition,

@@ -1,9 +1,9 @@
 ﻿import {
   DataPoint,
   DataPoint_isUnDefined,
+  DataPoint_Undefined,
   dataPointMinus,
   dataPointPlus,
-  DataPoint_Undefined,
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
@@ -13,6 +13,7 @@
   LineStyle,
   LineStyleHelper,
   MarkerType,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyImage,
@@ -21,6 +22,9 @@
   OxySize,
   OxyThickness,
   ScreenPoint,
+  ScreenPoint_LeftTop,
+  ScreenPoint_Undefined,
+  screenPointDistanceToSquared,
   StringHelper,
   VerticalAlignment,
 } from '@/oxyplot'
@@ -198,7 +202,7 @@ export class RenderingExtensions {
   ): Promise<void> {
     const lines = StringHelper.splitLines(text)
     for (let i = 0; i < lines.length; i++) {
-      await rc.drawText(new ScreenPoint(point.x, point.y + i * dy), lines[i], color, undefined, fontSize, fontWeight)
+      await rc.drawText(newScreenPoint(point.x, point.y + i * dy), lines[i], color, undefined, fontSize, fontWeight)
     }
   }
 
@@ -226,7 +230,7 @@ export class RenderingExtensions {
     }
 
     await rc.drawLine(
-      [new ScreenPoint(x0, y0), new ScreenPoint(x1, y1)],
+      [newScreenPoint(x0, y0), newScreenPoint(x1, y1)],
       pen.color,
       pen.thickness,
       edgeRenderingMode,
@@ -306,7 +310,7 @@ export class RenderingExtensions {
     markerStrokeThickness: number,
     edgeRenderingMode: EdgeRenderingMode,
     resolution: number = 0,
-    binOffset: ScreenPoint = new ScreenPoint(),
+    binOffset: ScreenPoint = ScreenPoint_LeftTop,
   ): Promise<void> {
     if (markerType === MarkerType.None) {
       return
@@ -465,10 +469,10 @@ export class RenderingExtensions {
     const adjustedTop = rect.top - thickness.top / 2 + 0.5
     const adjustedBottom = rect.bottom + thickness.bottom / 2 - 0.5
 
-    const pointsTop = [new ScreenPoint(adjustedLeft, rect.top), new ScreenPoint(adjustedRight, rect.top)]
-    const pointsRight = [new ScreenPoint(rect.right, adjustedTop), new ScreenPoint(rect.right, adjustedBottom)]
-    const pointsBottom = [new ScreenPoint(adjustedLeft, rect.bottom), new ScreenPoint(adjustedRight, rect.bottom)]
-    const pointsLeft = [new ScreenPoint(rect.left, adjustedTop), new ScreenPoint(rect.left, adjustedBottom)]
+    const pointsTop = [newScreenPoint(adjustedLeft, rect.top), newScreenPoint(adjustedRight, rect.top)]
+    const pointsRight = [newScreenPoint(rect.right, adjustedTop), newScreenPoint(rect.right, adjustedBottom)]
+    const pointsBottom = [newScreenPoint(adjustedLeft, rect.bottom), newScreenPoint(adjustedRight, rect.bottom)]
+    const pointsLeft = [newScreenPoint(rect.left, adjustedTop), newScreenPoint(rect.left, adjustedBottom)]
 
     await rc.drawLine(pointsTop, stroke, thickness.top, edgeRenderingMode, undefined, LineJoin.Miter)
     await rc.drawLine(pointsRight, stroke, thickness.right, edgeRenderingMode, undefined, LineJoin.Miter)
@@ -534,7 +538,7 @@ export class RenderingExtensions {
         throw new Error("The outline should be set when MarkerType is 'Custom'.")
       }
 
-      const poly = outline.map((o) => new ScreenPoint(p.x + o.x * size, p.y + o.y * size))
+      const poly = outline.map((o) => newScreenPoint(p.x + o.x * size, p.y + o.y * size))
       polygons.push(poly)
       return
     }
@@ -548,25 +552,25 @@ export class RenderingExtensions {
         break
       case MarkerType.Diamond:
         polygons.push([
-          new ScreenPoint(p.x, p.y - this.M2 * size),
-          new ScreenPoint(p.x + this.M2 * size, p.y),
-          new ScreenPoint(p.x, p.y + this.M2 * size),
-          new ScreenPoint(p.x - this.M2 * size, p.y),
+          newScreenPoint(p.x, p.y - this.M2 * size),
+          newScreenPoint(p.x + this.M2 * size, p.y),
+          newScreenPoint(p.x, p.y + this.M2 * size),
+          newScreenPoint(p.x - this.M2 * size, p.y),
         ])
         break
       case MarkerType.Triangle:
         polygons.push([
-          new ScreenPoint(p.x - size, p.y + this.M1 * size),
-          new ScreenPoint(p.x + size, p.y + this.M1 * size),
-          new ScreenPoint(p.x, p.y - this.M2 * size),
+          newScreenPoint(p.x - size, p.y + this.M1 * size),
+          newScreenPoint(p.x + size, p.y + this.M1 * size),
+          newScreenPoint(p.x, p.y - this.M2 * size),
         ])
         break
       case MarkerType.Plus:
       case MarkerType.Star:
-        lines.push(new ScreenPoint(p.x - size, p.y))
-        lines.push(new ScreenPoint(p.x + size, p.y))
-        lines.push(new ScreenPoint(p.x, p.y - size))
-        lines.push(new ScreenPoint(p.x, p.y + size))
+        lines.push(newScreenPoint(p.x - size, p.y))
+        lines.push(newScreenPoint(p.x + size, p.y))
+        lines.push(newScreenPoint(p.x, p.y - size))
+        lines.push(newScreenPoint(p.x, p.y + size))
         break
     }
 
@@ -574,10 +578,10 @@ export class RenderingExtensions {
     switch (type) {
       case MarkerType.Cross:
       case MarkerType.Star:
-        lines.push(new ScreenPoint(p.x - size * m3, p.y - size * m3))
-        lines.push(new ScreenPoint(p.x + size * m3, p.y + size * m3))
-        lines.push(new ScreenPoint(p.x - size * m3, p.y + size * m3))
-        lines.push(new ScreenPoint(p.x + size * m3, p.y - size * m3))
+        lines.push(newScreenPoint(p.x - size * m3, p.y - size * m3))
+        lines.push(newScreenPoint(p.x + size * m3, p.y + size * m3))
+        lines.push(newScreenPoint(p.x - size * m3, p.y + size * m3))
+        lines.push(newScreenPoint(p.x + size * m3, p.y - size * m3))
         break
     }
   }
@@ -616,7 +620,7 @@ export class RenderingExtensions {
       const dy = sc1.y - points[lastPointIndex].y
 
       if (dx * dx + dy * dy > minDistSquared || i === n - 1) {
-        outputBuffer.push(new ScreenPoint(sc1.x, sc1.y))
+        outputBuffer.push(newScreenPoint(sc1.x, sc1.y))
         lastPointIndex = i
       }
     }
@@ -654,7 +658,7 @@ export class RenderingExtensions {
         } else {
           if (lastWasUndefined) {
             if (screenPoints.length > 0) {
-              screenPoints.push(ScreenPoint.Undefined)
+              screenPoints.push(ScreenPoint_Undefined)
             }
             lastWasUndefined = false
             first = true
@@ -679,7 +683,7 @@ export class RenderingExtensions {
           lastWasUndefined = true
         } else {
           if (lastWasUndefined && screenPoints.length > 0) {
-            screenPoints.push(ScreenPoint.Undefined)
+            screenPoints.push(ScreenPoint_Undefined)
           }
 
           screenPoints.push(transposablePlotElement.transform(dataPoint))
@@ -720,7 +724,7 @@ export class RenderingExtensions {
       let next = candidates[candidates.length - 1]
       let nextPoint = candidatePoints[candidatePoints.length - 1]
 
-      if (nextPoint.distanceToSquared(lastPoint) < minLengthSquared) {
+      if (screenPointDistanceToSquared(nextPoint, lastPoint) < minLengthSquared) {
         last = next
         lastPoint = nextPoint
         screenPoints.push(nextPoint)

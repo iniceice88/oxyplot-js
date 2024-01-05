@@ -7,7 +7,9 @@ import {
   type IColorAxis,
   ImageFormat,
   type IRenderContext,
-  type LabelStringFormatterType, newDataPoint,
+  type LabelStringFormatterType,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -284,10 +286,10 @@ export class HeatMapSeries extends XYAxisSeries {
         for (let j = 0; j < n; j++) {
           const rectcolor = getColor(this.colorAxis, this.data[i][j])
 
-          const pointa = orientate(this, new ScreenPoint(s00Orientated.x + i * sdx, s00Orientated.y + j * sdy)) // re-orientate
+          const pointa = orientate(this, newScreenPoint(s00Orientated.x + i * sdx, s00Orientated.y + j * sdy)) // re-orientate
           const pointb = orientate(
             this,
-            new ScreenPoint(s00Orientated.x + (i + 1) * sdx, s00Orientated.y + (j + 1) * sdy),
+            newScreenPoint(s00Orientated.x + (i + 1) * sdx, s00Orientated.y + (j + 1) * sdy),
           ) // re-orientate
           const rectrect = OxyRect.fromScreenPoints(pointa, pointb)
 
@@ -497,7 +499,7 @@ export class HeatMapSeries extends XYAxisSeries {
     const getColor = ColorAxisExtensions.getColor
     for (let i = 0; i < m; i++) {
       for (let j = 0; j < n; j++) {
-        const point = orientate(this, new ScreenPoint(s00.x + i * sdx, s00.y + j * sdy)) // re-orientate
+        const point = orientate(this, newScreenPoint(s00.x + i * sdx, s00.y + j * sdy)) // re-orientate
         const v = HeatMapSeries.getValue(this.data, i, j)
         const color = getColor(this.colorAxis!, v)
         const hsv = OxyColorExtensions.toHsv(color)

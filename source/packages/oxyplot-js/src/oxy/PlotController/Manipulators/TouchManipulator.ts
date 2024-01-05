@@ -1,4 +1,4 @@
-import { type IPlotView, type OxyTouchEventArgs, PlotManipulator } from '@/oxyplot'
+import { type IPlotView, type OxyTouchEventArgs, PlotManipulator, screenPointMinusVector } from '@/oxyplot'
 
 /**
  * Provides a manipulator for panning and scaling by touch events.
@@ -52,7 +52,7 @@ export class TouchManipulator extends PlotManipulator<OxyTouchEventArgs> {
     }
 
     const newPosition = e.position
-    const previousPosition = newPosition.minusVector(e.deltaTranslation)
+    const previousPosition = screenPointMinusVector(newPosition, e.deltaTranslation)
 
     if (this.xAxis) {
       this.xAxis.pan(previousPosition, newPosition)

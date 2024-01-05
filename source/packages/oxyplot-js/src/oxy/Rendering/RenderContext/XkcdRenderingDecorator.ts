@@ -3,12 +3,16 @@ import {
   HorizontalAlignment,
   type IRenderContext,
   LineJoin,
+  newScreenPoint,
   OxyColor,
   OxyImage,
   OxyRect,
   OxySize,
   RenderContextBase,
   ScreenPoint,
+  ScreenPoint_LeftTop,
+  screenPointMinus,
+  screenPointPlus,
   ScreenVector,
   VerticalAlignment,
 } from '@/oxyplot'
@@ -225,12 +229,12 @@ export class XkcdRenderingDecorator extends RenderContextBase {
         continue
       }
 
-      const tangent = interpolated[i + 1].minus(interpolated[i - 1])
+      const tangent = screenPointMinus(interpolated[i + 1], interpolated[i - 1])
       tangent.normalize()
       const normal = new ScreenVector(tangent.y, -tangent.x)
 
       const delta = normal.times(randomNumbers[i] * d - d2)
-      result[i] = interpolated[i].plus(delta)
+      result[i] = screenPointPlus(interpolated[i], delta)
     }
 
     return result
@@ -279,7 +283,7 @@ export class XkcdRenderingDecorator extends RenderContextBase {
    * @returns The interpolated points.
    */
   private interpolate(input: ScreenPoint[], dist: number): ScreenPoint[] {
-    let p0: ScreenPoint = ScreenPoint.LeftTop
+    let p0: ScreenPoint = ScreenPoint_LeftTop
     let l = -1
     let nl = dist
     const result: ScreenPoint[] = []
@@ -291,13 +295,13 @@ export class XkcdRenderingDecorator extends RenderContextBase {
         continue
       }
 
-      const dp = p1.minus(p0)
+      const dp = screenPointMinus(p1, p0)
       const l1 = dp.length
 
       if (l1 > 0) {
         while (nl >= l && nl <= l + l1) {
           const f = (nl - l) / l1
-          result.push(new ScreenPoint(p0.x * (1 - f) + p1.x * f, p0.y * (1 - f) + p1.y * f))
+          result.push(newScreenPoint(p0.x * (1 - f) + p1.x * f, p0.y * (1 - f) + p1.y * f))
           nl += dist
         }
       }

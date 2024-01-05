@@ -1,4 +1,4 @@
-﻿import type { CreatePlotElementOptions, IRenderContext, IXyAxisPlotElement } from '@/oxyplot'
+﻿import { CreatePlotElementOptions, IRenderContext, IXyAxisPlotElement, newScreenPoint } from '@/oxyplot'
 import { AnnotationLayer, Axis, DataPoint, OxyRect, PlotElement, PlotElementUtilities, ScreenPoint } from '@/oxyplot'
 
 export interface CreateAnnotationOptions extends CreatePlotElementOptions {
@@ -107,8 +107,8 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
       maxY = axisRect.bottomRight.y
     }
 
-    const minPoint = new ScreenPoint(minX, minY)
-    const maxPoint = new ScreenPoint(maxX, maxY)
+    const minPoint = newScreenPoint(minX, minY)
+    const maxPoint = newScreenPoint(maxX, maxY)
 
     const axisClipRect = OxyRect.fromScreenPoints(minPoint, maxPoint)
     return rect.clip(axisClipRect)

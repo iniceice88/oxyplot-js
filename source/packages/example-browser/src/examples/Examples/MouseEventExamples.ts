@@ -26,6 +26,7 @@ import {
   RectangleAnnotation,
   round,
   ScatterSeries,
+  screenPointMinus,
   TextAnnotation,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -129,7 +130,7 @@ function mouseDownEvent(): PlotModel {
       const nearestPoint = s1.transform(s1.points[indexOfNearestPoint])
 
       // Check if we are near a point
-      if (nearestPoint.minus(e.position).length < 10) {
+      if (screenPointMinus(nearestPoint, e.position).length < 10) {
         // Start editing this point
         indexOfPointToMove = indexOfNearestPoint
       } else {

@@ -1,4 +1,4 @@
-import { DataPoint, type IInterpolationAlgorithm, newDataPoint, ScreenPoint } from '@/oxyplot'
+import { DataPoint, type IInterpolationAlgorithm, newDataPoint, newScreenPoint, ScreenPoint } from '@/oxyplot'
 
 /**
  * Provides functionality to interpolate a list of points by a canonical spline.
@@ -48,7 +48,7 @@ export class CanonicalSpline implements IInterpolationAlgorithm {
     isClosed: boolean,
     tolerance: number,
   ): DataPoint[] {
-    const screenPoints = points.map((p) => new ScreenPoint(p.x, p.y))
+    const screenPoints = points.map((p) => newScreenPoint(p.x, p.y))
     const interpolatedScreenPoints = CanonicalSpline.createSpline(screenPoints, tension, tensions, isClosed, tolerance)
     const interpolatedDataPoints: DataPoint[] = []
 
@@ -160,7 +160,7 @@ export class CanonicalSpline implements IInterpolationAlgorithm {
 
     for (let i = 1; i < num; i++) {
       const t = i / (num - 1)
-      const pt = new ScreenPoint(ax * t * t * t + bx * t * t + cx * t + dx, ay * t * t * t + by * t * t + cy * t + dy)
+      const pt = newScreenPoint(ax * t * t * t + bx * t * t + cx * t + dx, ay * t * t * t + by * t * t + cy * t + dy)
       points.push(pt)
     }
   }

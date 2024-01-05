@@ -1,4 +1,11 @@
-﻿import { ScreenPoint } from '@/oxyplot'
+﻿import {
+  newScreenPoint,
+  ScreenPoint,
+  ScreenPoint_isUndefined,
+  ScreenPoint_LeftTop,
+  screenPointDistanceToSquared,
+  screenPointMinus,
+} from '@/oxyplot'
 import { Number_MAX_VALUE } from '@/patch'
 
 /**
@@ -18,23 +25,23 @@ export class ScreenPointHelper {
     }
 
     let minimumDistance = Number_MAX_VALUE
-    let nearestPoint = ScreenPoint.LeftTop
+    let nearestPoint = ScreenPoint_LeftTop
 
     for (let i = 0; i + 1 < points.length; i++) {
       const p1 = points[i]
       const p2 = points[i + 1]
-      if (ScreenPoint.isUndefined(p1) || ScreenPoint.isUndefined(p2)) {
+      if (ScreenPoint_isUndefined(p1) || ScreenPoint_isUndefined(p2)) {
         continue
       }
 
       // Find the nearest point on the line segment.
       const nearestPointOnSegment = ScreenPointHelper.findPointOnLine(point, p1, p2)
 
-      if (ScreenPoint.isUndefined(nearestPointOnSegment)) {
+      if (ScreenPoint_isUndefined(nearestPointOnSegment)) {
         continue
       }
 
-      const l2 = point.minus(nearestPointOnSegment).lengthSquared
+      const l2 = screenPointMinus(point, nearestPointOnSegment).lengthSquared
 
       if (l2 < minimumDistance) {
         nearestPoint = nearestPointOnSegment
@@ -70,7 +77,7 @@ export class ScreenPointHelper {
       u = 1
     }
 
-    return new ScreenPoint(p1.x + u * dx, p1.y + u * dy)
+    return newScreenPoint(p1.x + u * dx, p1.y + u * dy)
   }
 
   /**
@@ -133,7 +140,7 @@ export class ScreenPointHelper {
       result.push(allPoints[0])
       let i0 = 0
       for (let i = 1; i < n; i++) {
-        const distSquared = allPoints[i0].distanceToSquared(allPoints[i])
+        const distSquared = screenPointDistanceToSquared(allPoints[i0], allPoints[i])
         if (distSquared < minimumSquaredDistance && i !== n - 1) {
           continue
         }
@@ -167,6 +174,6 @@ export class ScreenPointHelper {
     a *= 0.5
     cx /= 6 * a
     cy /= 6 * a
-    return new ScreenPoint(cx, cy)
+    return newScreenPoint(cx, cy)
   }
 }

@@ -12,7 +12,7 @@ import {
   LegendPlacement,
   LegendPosition,
   LegendSymbolPlacement,
-  MathRenderingExtensions,
+  MathRenderingExtensions, newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -350,7 +350,7 @@ export class Legend extends LegendBase {
     rc.setToolTip(s.toolTip)
     const textSize = await MathRenderingExtensions.drawMathText(
       rc,
-      new ScreenPoint(x, y),
+      newScreenPoint(x, y),
       s.title || '',
       legendTextColor.getActualColor(this.plotModel.textColor),
       this.legendFont ?? this.plotModel.defaultFont,
@@ -363,7 +363,7 @@ export class Legend extends LegendBase {
       true,
     )
 
-    this.seriesPosMap.set(s, OxyRect.fromScreenPointAndSize(new ScreenPoint(x, y), textSize))
+    this.seriesPosMap.set(s, OxyRect.fromScreenPointAndSize(newScreenPoint(x, y), textSize))
     let x0 = x
     switch (actualItemAlignment) {
       case HorizontalAlignment.Center:
@@ -449,7 +449,7 @@ export class Legend extends LegendBase {
       } else {
         titleSize = await MathRenderingExtensions.drawMathText(
           rc,
-          new ScreenPoint(rect.left + x, rect.top + top),
+          newScreenPoint(rect.left + x, rect.top + top),
           this.legendTitle,
           this.legendTitleColor.getActualColor(this.plotModel.textColor),
           this.legendTitleFont ?? this.plotModel.defaultFont,
@@ -513,7 +513,7 @@ export class Legend extends LegendBase {
           else xpos -= groupNameTextSize.width + this.legendItemSpacing / 2
           await MathRenderingExtensions.drawMathText(
             rc,
-            new ScreenPoint(xpos, ypos),
+            newScreenPoint(xpos, ypos),
             series.seriesGroupName,
             this.legendTitleColor.getActualColor(this.plotModel.textColor),
             this.groupNameFont ?? this.plotModel.defaultFont,

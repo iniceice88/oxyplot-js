@@ -1,4 +1,11 @@
-import { DataPoint, type IInterpolationAlgorithm, newDataPoint, ScreenPoint } from '@/oxyplot'
+import {
+  DataPoint,
+  type IInterpolationAlgorithm,
+  newDataPoint,
+  newScreenPoint,
+  ScreenPoint,
+  screenPointEquals,
+} from '@/oxyplot'
 
 /**
  * Provides functionality to interpolate a list of points by a Centripetal Catmull–Rom spline.
@@ -63,7 +70,7 @@ export class CatmullRomSpline implements IInterpolationAlgorithm {
     tolerance: number,
     maxSegments: number,
   ): DataPoint[] {
-    const screenPoints: ScreenPoint[] = points.map((p) => new ScreenPoint(p.x, p.y))
+    const screenPoints: ScreenPoint[] = points.map((p) => newScreenPoint(p.x, p.y))
     const interpolatedScreenPoints: ScreenPoint[] = this.createSpline(
       screenPoints,
       alpha,
@@ -169,16 +176,16 @@ export class CatmullRomSpline implements IInterpolationAlgorithm {
     tolerance: number,
     maxSegments: number,
   ): void {
-    if (pt1.equals(pt2)) {
+    if (screenPointEquals(pt1, pt2)) {
       points.push(pt1)
       return
     }
 
-    if (pt0.equals(pt1)) {
+    if (screenPointEquals(pt0, pt1)) {
       pt0 = this.prev(pt1, pt2)
     }
 
-    if (pt2.equals(pt3)) {
+    if (screenPointEquals(pt2, pt3)) {
       pt3 = this.prev(pt2, pt1)
     }
 
@@ -211,7 +218,7 @@ export class CatmullRomSpline implements IInterpolationAlgorithm {
   }
 
   private static mult(d: number, s: ScreenPoint): ScreenPoint {
-    return new ScreenPoint(s.x * d, s.y * d)
+    return newScreenPoint(s.x * d, s.y * d)
   }
 
   private static equals(a: ScreenPoint, b: ScreenPoint): boolean {
@@ -219,10 +226,10 @@ export class CatmullRomSpline implements IInterpolationAlgorithm {
   }
 
   private static prev(s0: ScreenPoint, s1: ScreenPoint): ScreenPoint {
-    return new ScreenPoint(s0.x - 0.0001 * (s1.x - s0.x), s0.y - 0.0001 * (s1.y - s0.y))
+    return newScreenPoint(s0.x - 0.0001 * (s1.x - s0.x), s0.y - 0.0001 * (s1.y - s0.y))
   }
 
   private static sum(a: ScreenPoint, b: ScreenPoint): ScreenPoint {
-    return new ScreenPoint(a.x + b.x, a.y + b.y)
+    return newScreenPoint(a.x + b.x, a.y + b.y)
   }
 }

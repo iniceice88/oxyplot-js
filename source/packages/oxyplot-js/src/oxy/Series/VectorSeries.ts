@@ -16,6 +16,10 @@ import {
   OxyColors,
   RenderingExtensions,
   ScreenPoint,
+  screenPointDistanceToSquared,
+  screenPointMinus,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
   type TrackerStringFormatterArgs,
@@ -312,7 +316,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
       await this.drawArrow(
         rc,
         screenPoints,
-        screenPoints[screenPoints.length - 1].minus(screenPoints[screenPoints.length - 2]),
+        screenPointMinus(screenPoints[screenPoints.length - 1], screenPoints[screenPoints.length - 2]),
         color,
       )
     }
@@ -332,12 +336,15 @@ ${args.colorAxisTitle}: ${args.item!.value}
     const actualHeadLength = this.arrowHeadLength * this.strokeThickness
     const actualHeadWidth = this.arrowHeadWidth * this.strokeThickness
 
-    const endPoint = points[points.length - 1].minusVector(d.times(actualHeadLength * this.arrowHeadPosition))
+    const endPoint = screenPointMinusVector(
+      points[points.length - 1],
+      d.times(actualHeadLength * this.arrowHeadPosition),
+    )
 
     const veeness = d.times(this.arrowVeeness * this.strokeThickness)
-    const p1 = endPoint.plus(d.times(actualHeadLength))
-    const p2 = endPoint.plus(n.times(actualHeadWidth)).minusVector(veeness)
-    const p3 = endPoint.minusVector(n.times(actualHeadWidth)).minusVector(veeness)
+    const p1 = screenPointPlus(endPoint, d.times(actualHeadLength))
+    const p2 = screenPointMinusVector(screenPointPlus(endPoint, n.times(actualHeadWidth)), veeness)
+    const p3 = screenPointMinusVector(screenPointMinusVector(endPoint, n.times(actualHeadWidth)), veeness)
 
     const lineStyle = this.actualLineStyle
     const dashArray = LineStyleHelper.getDashArray(lineStyle)
@@ -347,7 +354,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
       // crop elements from points which would introduce on the head, and re-include end-point if necessary
       const cropDistanceSquared = actualHeadLength * this.arrowHeadPosition * actualHeadLength * this.arrowHeadPosition
       for (let i = points.length - 1; i >= 0; i--) {
-        if (points[i].distanceToSquared(p1) <= cropDistanceSquared) points.splice(i, 1)
+        if (screenPointDistanceToSquared(points[i], p1) <= cropDistanceSquared) points.splice(i, 1)
       }
 
       if (points.length > 0) {
@@ -371,7 +378,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
       return undefined
     }
 
-    const item = argMin(this.ActualItems, (i) => this.transform(i.origin).distanceToSquared(point))
+    const item = argMin(this.ActualItems, (i) => screenPointDistanceToSquared(this.transform(i.origin), point))
     const p = item.origin
     const trackerText = this.formatDefaultTrackerString(item, p, (args) => {
       const vectorArgs = args as VectorSeriesTrackerStringFormatterArgs

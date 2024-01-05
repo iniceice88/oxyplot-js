@@ -10,6 +10,8 @@ import {
   OxyRect,
   OxySize,
   ScreenPoint,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   StringHelper,
   SvgWriter,
@@ -233,29 +235,26 @@ export class SvgRenderContext extends ClippingRenderContext {
             : 1.0 - lines.length / 2.0
       valign = VerticalAlignment.Bottom
 
-      p = p.plus(lineOffset.times(offsetRatio))
+      p = screenPointPlus(p, lineOffset.times(offsetRatio))
 
       for (const line of lines) {
-        const size = this.measureText(line, fontFamily, fontSize, fontWeight)
         this.w.writeText(p, line, c, fontFamily, fontSize, fontWeight, rotate, halign, valign)
 
-        p = p.plus(lineOffset)
+        p = screenPointPlus(p, lineOffset)
       }
     } else {
       if (valign === VerticalAlignment.Bottom) {
         for (let i = lines.length - 1; i >= 0; i--) {
           const line = lines[i]
-          const size = this.measureText(line, fontFamily, fontSize, fontWeight)
           this.w.writeText(p, line, c, fontFamily, fontSize, fontWeight, rotate, halign, valign)
 
-          p = p.minusVector(lineOffset)
+          p = screenPointMinusVector(p, lineOffset)
         }
       } else {
         for (const line of lines) {
-          const size = this.measureText(line, fontFamily, fontSize, fontWeight)
           this.w.writeText(p, line, c, fontFamily, fontSize, fontWeight, rotate, halign, valign)
 
-          p = p.plus(lineOffset)
+          p = screenPointPlus(p, lineOffset)
         }
       }
     }

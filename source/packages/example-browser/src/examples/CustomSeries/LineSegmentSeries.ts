@@ -5,8 +5,12 @@ import {
   LineStyle,
   LineStyleHelper,
   newDataPoint,
+  newScreenPoint,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_isUndefined,
+  screenPointDistanceTo,
+  screenPointDistanceToSquared,
   ScreenPointHelper,
   TrackerHitResult,
 } from 'oxyplot-js'
@@ -55,9 +59,9 @@ export class LineSegmentSeries extends LineSeries {
     const verticalLines: ScreenPoint[] = []
 
     for (let i = 0; i < screenPoints.length; i += 2) {
-      if (screenPoints[i].distanceToSquared(screenPoints[i + 1]) < this.strokeThickness) {
-        screenPoints[i] = new ScreenPoint(screenPoints[i].x - this.strokeThickness * 0.5, screenPoints[i].y)
-        screenPoints[i + 1] = new ScreenPoint(screenPoints[i].x + this.strokeThickness * 0.5, screenPoints[i].y)
+      if (screenPointDistanceToSquared(screenPoints[i], screenPoints[i + 1]) < this.strokeThickness) {
+        screenPoints[i] = newScreenPoint(screenPoints[i].x - this.strokeThickness * 0.5, screenPoints[i].y)
+        screenPoints[i + 1] = newScreenPoint(screenPoints[i].x + this.strokeThickness * 0.5, screenPoints[i].y)
       }
 
       if (this.showVerticals && i > 0 && Math.abs(screenPoints[i - 1].x - screenPoints[i].x) < this.epsilon) {
@@ -134,15 +138,15 @@ export class LineSegmentSeries extends LineSeries {
       // Find the nearest point on the line segment.
       const spl = ScreenPointHelper.findPointOnLine(point, sp1, sp2)
 
-      if (ScreenPoint.isUndefined(spl)) {
+      if (ScreenPoint_isUndefined(spl)) {
         // P1 && P2 coincident
         continue
       }
 
-      const l2 = point.distanceToSquared(spl)
+      const l2 = screenPointDistanceToSquared(point, spl)
 
       if (l2 < minimumDistance) {
-        const u = spl.distanceTo(sp1) / sp2.distanceTo(sp1)
+        const u = screenPointDistanceTo(spl, sp1) / screenPointDistanceTo(sp2, sp1)
         dpn = newDataPoint(p1.x + u * (p2.x - p1.x), p1.y + u * (p2.y - p1.y))
         spn = spl
         minimumDistance = l2

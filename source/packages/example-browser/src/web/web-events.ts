@@ -1,17 +1,17 @@
 import {
   CursorType,
+  newScreenPoint,
   OxyModifierKeys,
   OxyMouseButton,
   type OxyMouseDownEventArgs,
   type OxyMouseEventArgs,
   type OxyMouseWheelEventArgs,
-  ScreenPoint,
 } from 'oxyplot-js'
 import { WebPlotViewBase } from './WebPlotViewBase.ts'
 
 export function toOxyMouseEventArgs(e: MouseEvent): OxyMouseEventArgs {
   return {
-    position: new ScreenPoint(e.offsetX, e.offsetY),
+    position: newScreenPoint(e.offsetX, e.offsetY),
     modifierKeys: convertModifiers(e),
     handled: false,
   } as OxyMouseEventArgs

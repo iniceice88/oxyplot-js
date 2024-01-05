@@ -8,8 +8,10 @@ import {
   LineStyle,
   MagnitudeAxis,
   MagnitudeAxisFullPlotAreaRenderer,
+  newScreenPoint,
   OxyRect,
   ScreenPoint,
+  screenPointDistanceTo,
   type TickValuesType,
 } from '@/oxyplot'
 
@@ -69,10 +71,10 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
 
   public getTickValues(): TickValuesType {
     const axisRect = OxyRect.fromScreenPoints(this.screenMin, this.screenMax)
-    const distanceTopLeft = axisRect.topLeft.distanceTo(this.midPoint)
-    const distanceTopRight = axisRect.topRight.distanceTo(this.midPoint)
-    const distanceBottomRight = axisRect.bottomRight.distanceTo(this.midPoint)
-    const distanceBottomLeft = axisRect.bottomLeft.distanceTo(this.midPoint)
+    const distanceTopLeft = screenPointDistanceTo(axisRect.topLeft, this.midPoint)
+    const distanceTopRight = screenPointDistanceTo(axisRect.topRight, this.midPoint)
+    const distanceBottomRight = screenPointDistanceTo(axisRect.bottomRight, this.midPoint)
+    const distanceBottomLeft = screenPointDistanceTo(axisRect.bottomLeft, this.midPoint)
 
     let maxDistance = Math.max(distanceTopLeft, distanceTopRight)
     maxDistance = Math.max(maxDistance, distanceBottomRight)
@@ -103,10 +105,10 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
     const y0 = bounds.bottom
     const y1 = bounds.top
 
-    this.screenMin = new ScreenPoint(x0, y1)
-    this.screenMax = new ScreenPoint(x1, y0)
+    this.screenMin = newScreenPoint(x0, y1)
+    this.screenMax = newScreenPoint(x1, y0)
 
-    this.midPoint = new ScreenPoint(
+    this.midPoint = newScreenPoint(
       (x0 + x1) / 2 + this.midShiftH * bounds.width,
       (y0 + y1) / 2 + this.midShiftV * bounds.height,
     )

@@ -1,4 +1,12 @@
-﻿import type { HorizontalAlignment, IRenderContext, OxyColor, OxyRect, OxySize, VerticalAlignment } from '@/oxyplot'
+﻿import {
+  HorizontalAlignment,
+  IRenderContext,
+  newScreenPoint,
+  OxyColor,
+  OxyRect,
+  OxySize,
+  VerticalAlignment,
+} from '@/oxyplot'
 import { EdgeRenderingMode, LineJoin, OxyImage, ScreenPoint } from '@/oxyplot'
 
 /**
@@ -315,7 +323,7 @@ export abstract class RenderContextBase implements IRenderContext {
     const points: ScreenPoint[] = new Array(n)
     for (let i = 0; i < n; i++) {
       const t = (Math.PI * 2 * i) / n
-      points[i] = new ScreenPoint(cx + Math.cos(t) * dx, cy + Math.sin(t) * dy)
+      points[i] = newScreenPoint(cx + Math.cos(t) * dx, cy + Math.sin(t) * dy)
     }
 
     return points
@@ -328,10 +336,10 @@ export abstract class RenderContextBase implements IRenderContext {
    */
   protected static createRectangle(rect: OxyRect): ScreenPoint[] {
     return [
-      new ScreenPoint(rect.left, rect.top),
-      new ScreenPoint(rect.left, rect.bottom),
-      new ScreenPoint(rect.right, rect.bottom),
-      new ScreenPoint(rect.right, rect.top),
+      newScreenPoint(rect.left, rect.top),
+      newScreenPoint(rect.left, rect.bottom),
+      newScreenPoint(rect.right, rect.bottom),
+      newScreenPoint(rect.right, rect.top),
     ]
   }
 

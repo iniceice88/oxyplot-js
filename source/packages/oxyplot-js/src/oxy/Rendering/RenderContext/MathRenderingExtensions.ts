@@ -1,4 +1,4 @@
-﻿import type { IRenderContext } from '@/oxyplot'
+﻿import { IRenderContext, newScreenPoint } from '@/oxyplot'
 import { HorizontalAlignment, OxyColor, OxyColors, OxySize, ScreenPoint, VerticalAlignment } from '@/oxyplot'
 import { indexOfAny, round, substring } from '@/patch'
 
@@ -200,7 +200,7 @@ export class MathRenderingExtensions {
       if (!measureOnly) {
         const xr = x + (xb - x + dx) * cosAngle - (yb - y + dy) * sinAngle
         const yr = y + (xb - x + dx) * sinAngle + (yb - y + dy) * cosAngle
-        await rc.drawText(new ScreenPoint(xr, yr), text, textColor, fontFamily, fSize, fontWeight, angle)
+        await rc.drawText(newScreenPoint(xr, yr), text, textColor, fontFamily, fSize, fontWeight, angle)
       }
 
       const flatSize = rc.measureText(text, fontFamily, fSize, fontWeight)

@@ -1,9 +1,12 @@
-﻿import type { BarItemBase, BarSeriesManager, CreateXYAxisSeriesOptions, IBarSeries } from '@/oxyplot'
-import {
+﻿import {
   Axis,
   BarItem,
+  BarItemBase,
+  BarSeriesManager,
   CategoryAxis,
+  CreateXYAxisSeriesOptions,
   HorizontalAlignment,
+  IBarSeries,
   IntervalBarItem,
   type IRenderContext,
   LabelPlacement,
@@ -12,6 +15,7 @@ import {
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  screenPointPlus,
   ScreenVector,
   TornadoBarItem,
   VerticalAlignment,
@@ -279,7 +283,7 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
     }
 
     const orientate = PlotElementExtensions.orientateVector
-    pt = pt.plus(orientate(this, marginVector)).plus(orientate(this, centreVector))
+    pt = screenPointPlus(screenPointPlus(pt, orientate(this, marginVector)), orientate(this, centreVector))
 
     await rc.drawText(
       pt,

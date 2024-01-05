@@ -9,6 +9,7 @@
   OxyRect,
   PlotElement,
   ScreenPoint,
+  screenPointDistanceTo,
   TrackerHitResult,
 } from '@/oxyplot'
 
@@ -177,7 +178,7 @@ export abstract class Series extends PlotElement {
     const thr = this.getNearestPoint(args.point, true) || this.getNearestPoint(args.point, false)
 
     if (thr?.position) {
-      const distance = thr.position.distanceTo(args.point)
+      const distance = screenPointDistanceTo(thr.position, args.point)
       if (distance > args.tolerance) {
         return undefined
       }

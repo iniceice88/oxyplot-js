@@ -1,10 +1,13 @@
-import { CreateHighLowSeriesOptions, HighLowItem, IRenderContext, newDataPoint } from '@/oxyplot'
 import {
-  DataPoint,
+  CreateHighLowSeriesOptions,
+  HighLowItem,
   HighLowSeries,
+  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
+  newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColorExtensions,
   OxyColors,
@@ -186,7 +189,7 @@ export class CandleStickSeries extends HighLowSeries {
 
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await rc.drawLine(
-        [new ScreenPoint(xmid, legendBox.top), new ScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
         this.getSelectableColor(this.actualColor),
         this.strokeThickness,
         this.edgeRenderingMode,

@@ -8,10 +8,11 @@ import {
   LineStyle,
   LineStyleHelper,
   MarkerType,
-  newDataPoint,
+  newDataPoint, newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  screenPointDistanceToSquared,
   TrackerHitResult,
 } from '@/oxyplot'
 import { Number_MAX_VALUE, removeUndef } from '@/patch'
@@ -64,7 +65,7 @@ export class StairStepSeries extends LineSeries {
 
     // snap to the nearest point
     let result = this.getNearestPointInternal(this.actualPoints, 0, point)
-    if (!interpolate && result && result.position!.distanceToSquared(point) < minimumDistanceSquared) {
+    if (!interpolate && result && screenPointDistanceToSquared(result.position!, point) < minimumDistanceSquared) {
       result.text = this.formatDefaultTrackerString(result.item, result.dataPoint!)
       return result
     }
@@ -117,7 +118,7 @@ export class StairStepSeries extends LineSeries {
       result = new TrackerHitResult({
         series: this,
         dataPoint: newDataPoint(px, py),
-        position: new ScreenPoint(sx, sy),
+        position: newScreenPoint(sx, sy),
         item,
         index: i,
         text: text,
@@ -220,7 +221,7 @@ export class StairStepSeries extends LineSeries {
       const { valid, validOffset, endOffset } = this.findNextValidSegment(points, i, xClipMax)
       if (!valid) break
 
-      let transformedPoint = new ScreenPoint(0, 0)
+      let transformedPoint = newScreenPoint(0, 0)
       let previousPoint = DataPoint_Undefined
       let xIncreased = false
       let xDecreased = false

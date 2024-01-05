@@ -1,17 +1,18 @@
 import {
   Axis,
   type CreateXYAxisSeriesOptions,
-  DataPoint,
   HorizontalAlignment,
   type IColorAxis,
   type IRenderContext,
   type LabelStringFormatterType,
-  MarkerType, newDataPoint,
+  MarkerType,
+  newDataPoint, newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   RenderingExtensions,
   ScreenPoint,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
   VerticalAlignment,
@@ -386,7 +387,7 @@ export class ScatterSeries extends XYAxisSeries {
     const xmid = (legendBox.left + legendBox.right) / 2
     const ymid = (legendBox.top + legendBox.bottom) / 2
 
-    const midpt = new ScreenPoint(xmid, ymid)
+    const midpt = newScreenPoint(xmid, ymid)
 
     await RenderingExtensions.drawMarker(
       rc,
@@ -463,7 +464,7 @@ export class ScatterSeries extends XYAxisSeries {
         continue
       }
 
-      const pt = this.transform(dataPoint).plus(new ScreenVector(0, -this.labelMargin))
+      const pt = screenPointPlus(this.transform(dataPoint), new ScreenVector(0, -this.labelMargin))
 
       if (!clippingRect.containsPoint(pt)) {
         continue

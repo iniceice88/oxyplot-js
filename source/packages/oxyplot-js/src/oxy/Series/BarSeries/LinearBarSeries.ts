@@ -11,6 +11,8 @@ import {
   PlotElementExtensions,
   RenderingExtensions,
   ScreenPoint,
+  screenPointMinusVector,
+  screenPointPlus,
   ScreenVector,
   TrackerHitResult,
 } from '@/oxyplot'
@@ -275,10 +277,9 @@ export class LinearBarSeries extends DataPointSeries {
         continue
       }
 
-      const screenPoint = this.transform(actualPoint).minusVector(widthVector)
-      const basePoint = this.transform(
-        newDataPoint(actualPoint.x, clampBase ? this.yAxis!.clipMinimum : this.baseValue),
-      ).plus(widthVector)
+      const screenPoint = screenPointMinusVector(this.transform(actualPoint), widthVector)
+      const spBase = this.transform(newDataPoint(actualPoint.x, clampBase ? this.yAxis!.clipMinimum : this.baseValue))
+      const basePoint = screenPointPlus(spBase, widthVector)
       const rectangle = OxyRect.fromScreenPoints(basePoint, screenPoint)
       this.rectangles.push(rectangle)
       this.rectanglesPointIndexes.push(pointIndex)

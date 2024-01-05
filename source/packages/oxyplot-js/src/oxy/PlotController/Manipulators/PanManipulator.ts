@@ -1,4 +1,11 @@
-import { CursorType, type IPlotView, MouseManipulator, type OxyMouseEventArgs, ScreenPoint } from '@/oxyplot'
+import {
+  CursorType,
+  type IPlotView,
+  MouseManipulator,
+  type OxyMouseEventArgs,
+  ScreenPoint,
+  ScreenPoint_LeftTop,
+} from '@/oxyplot'
 
 /**
  * Provides a manipulator for panning functionality.
@@ -15,7 +22,7 @@ export class PanManipulator extends MouseManipulator {
   /**
    * Gets or sets the previous position.
    */
-  private previousPosition: ScreenPoint = ScreenPoint.LeftTop
+  private previousPosition: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Gets or sets a value indicating whether panning is enabled.

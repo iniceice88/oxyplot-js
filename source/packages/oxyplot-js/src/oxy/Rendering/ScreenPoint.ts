@@ -5,128 +5,89 @@
  *
  * @remarks The rendering methods transforms `DataPoint`s to `ScreenPoint`s.
  */
-export class ScreenPoint {
-  /**
-   * The undefined point.
-   */
-  public static readonly Undefined = new ScreenPoint(NaN, NaN)
-
-  /**
-   * The left-top point.
-   */
-  public static readonly LeftTop = new ScreenPoint(0, 0)
-
+export interface ScreenPoint {
   /**
    * The x-coordinate.
    */
-  private readonly _x: number
-
+  x: number
   /**
    * The y-coordinate.
    */
-  private readonly _y: number
+  y: number
+}
 
-  /**
-   * Initializes a new instance of the `ScreenPoint` struct.
-   * @param x The x-coordinate.
-   * @param y The y-coordinate.
-   */
-  constructor(x?: number, y?: number) {
-    this._x = x || 0
-    this._y = y || 0
-  }
+/**
+ * The undefined point.
+ */
+export const ScreenPoint_Undefined = Object.freeze({ x: NaN, y: NaN }) as ScreenPoint
 
-  /**
-   * Gets the x-coordinate.
-   */
-  get x(): number {
-    return this._x
-  }
+/**
+ * The left-top point.
+ */
+export const ScreenPoint_LeftTop = Object.freeze({ x: 0, y: 0 }) as ScreenPoint
 
-  /**
-   * Gets the y-coordinate.
-   */
-  get y(): number {
-    return this._y
-  }
+export function newScreenPoint(x: number, y: number): ScreenPoint {
+  return { x, y }
+}
 
-  /**
-   * Determines whether the specified point is undefined.
-   * @param point The point.
-   * @returns `true` if the specified point is undefined; otherwise, `false`.
-   */
-  static isUndefined(point: ScreenPoint): boolean {
-    return isNaN(point._x) && isNaN(point._y)
-  }
+/**
+ * Translates a ScreenPoint by a ScreenVector.
+ * @returns The translated point.
+ */
+export function screenPointPlus(p1: ScreenPoint, p2: ScreenVector): ScreenPoint {
+  return newScreenPoint(p1.x + p2.x, p1.y + p2.y)
+}
 
-  /**
-   * Translates a ScreenPoint by a ScreenVector.
-   * @param p2 The vector.
-   * @returns The translated point.
-   */
-  public plus(p2: ScreenVector): ScreenPoint {
-    const p1 = this
-    return new ScreenPoint(p1.x + p2.x, p1.y + p2.y)
-  }
+/**
+ * Subtracts a ScreenPoint from a ScreenPoint
+ * and returns the result as a ScreenVector.
+ * @returns A ScreenVector structure that represents the difference between p1 and p2.
+ */
+export function screenPointMinus(p1: ScreenPoint, p2: ScreenPoint): ScreenVector {
+  return new ScreenVector(p1.x - p2.x, p1.y - p2.y)
+}
 
-  /**
-   * Subtracts a ScreenPoint from a ScreenPoint
-   * and returns the result as a ScreenVector.
-   * @param p2 The point to subtract from p1.
-   * @returns A ScreenVector structure that represents the difference between p1 and p2.
-   */
-  public minus(p2: ScreenPoint): ScreenVector {
-    const p1 = this
-    return new ScreenVector(p1.x - p2.x, p1.y - p2.y)
-  }
+/**
+ * Subtracts a ScreenVector from a ScreenPoint
+ * and returns the result as a ScreenPoint.
+ * @returns A ScreenPoint that represents point translated by the negative vector.
+ */
+export function screenPointMinusVector(point: ScreenPoint, vector: ScreenVector): ScreenPoint {
+  return newScreenPoint(point.x - vector.x, point.y - vector.y)
+}
 
-  /**
-   * Subtracts a ScreenVector from a ScreenPoint
-   * and returns the result as a ScreenPoint.
-   * @param vector The vector to subtract from p1.
-   * @returns A ScreenPoint that represents point translated by the negative vector.
-   */
-  public minusVector(vector: ScreenVector): ScreenPoint {
-    const point = this
-    return new ScreenPoint(point.x - vector.x, point.y - vector.y)
-  }
+/**
+ * Gets the distance to the specified point.
+ * @returns The distance.
+ */
+export function screenPointDistanceTo(point: ScreenPoint, other: ScreenPoint): number {
+  const dx = other.x - point.x
+  const dy = other.y - point.y
+  return Math.sqrt(dx * dx + dy * dy)
+}
 
-  /**
-   * Gets the distance to the specified point.
-   * @param point The point.
-   * @returns The distance.
-   */
-  distanceTo(point: ScreenPoint): number {
-    const dx = point._x - this._x
-    const dy = point._y - this._y
-    return Math.sqrt(dx * dx + dy * dy)
-  }
+/**
+ * Gets the squared distance to the specified point.
+ * @returns The squared distance.
+ */
+export function screenPointDistanceToSquared(point: ScreenPoint, other: ScreenPoint): number {
+  const dx = other.x - point.x
+  const dy = other.y - point.y
+  return dx * dx + dy * dy
+}
 
-  /**
-   * Gets the squared distance to the specified point.
-   * @param point The point.
-   * @returns The squared distance.
-   */
-  distanceToSquared(point: ScreenPoint): number {
-    const dx = point._x - this._x
-    const dy = point._y - this._y
-    return dx * dx + dy * dy
-  }
+/**
+ * Determines whether the specified point is undefined.
+ * @returns `true` if the specified point is undefined; otherwise, `false`.
+ */
+export function ScreenPoint_isUndefined(point: ScreenPoint): boolean {
+  return isNaN(point.x) && isNaN(point.y)
+}
 
-  /**
-   * Returns a `string` that represents this instance.
-   * @returns A `string` that represents this instance.
-   */
-  toString(): string {
-    return `${this._x} ${this._y}`
-  }
-
-  /**
-   * Determines whether this instance and another specified `ScreenPoint` object have the same value.
-   * @param other The point to compare to this instance.
-   * @returns `true` if the value of the `other` parameter is the same as the value of this instance; otherwise, `false`.
-   */
-  equals(other: ScreenPoint): boolean {
-    return this._x === other._x && this._y === other._y
-  }
+/**
+ * Determines whether this instance and another specified `ScreenPoint` object have the same value.
+ * @returns `true` if the value of the `other` parameter is the same as the value of this instance; otherwise, `false`.
+ */
+export function screenPointEquals(a: ScreenPoint, b: ScreenPoint): boolean {
+  return a.x === b.x && a.y === b.y
 }

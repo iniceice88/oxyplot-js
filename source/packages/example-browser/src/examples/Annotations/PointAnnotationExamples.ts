@@ -4,10 +4,10 @@ import {
   HorizontalAlignment,
   LinearAxis,
   MarkerType,
+  newScreenPoint,
   OxyColors,
   PlotModel,
   PointAnnotation,
-  ScreenPoint,
   VerticalAlignment,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -77,7 +77,7 @@ function pointAnnotationShapes(): PlotModel {
       y: 60,
       text: 'Custom',
       shape: MarkerType.Custom,
-      customOutline: [new ScreenPoint(-1, -1), new ScreenPoint(1, 1), new ScreenPoint(-1, 1), new ScreenPoint(1, -1)],
+      customOutline: [newScreenPoint(-1, -1), newScreenPoint(1, 1), newScreenPoint(-1, 1), newScreenPoint(1, -1)],
       stroke: OxyColors.Black,
       fill: OxyColors.CadetBlue,
       strokeThickness: 1,

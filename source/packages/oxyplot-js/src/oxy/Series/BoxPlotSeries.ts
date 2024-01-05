@@ -10,6 +10,7 @@ import {
   LineStyleHelper,
   MarkerType,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -17,6 +18,7 @@ import {
   RenderingExtensions,
   ScreenPoint,
   ScreenPointHelper,
+  screenPointMinus,
   TrackerHitResult,
   type TrackerStringFormatterArgs,
   XYAxisSeries,
@@ -237,7 +239,7 @@ Mean: ${args.mean!.toFixed(2)}`
     for (const item of this.actualItems) {
       for (const outlier of item.outliers) {
         const sp = PlotElementExtensions.transform(this, item.x, outlier)
-        const d = sp.minus(point).lengthSquared
+        const d = screenPointMinus(sp, point).lengthSquared
         if (d < minimumDistance) {
           const text = this.outlierTrackerStringFormatter({
             item,
@@ -273,7 +275,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
       // check if we are near the line
       const p = ScreenPointHelper.findPointOnLine(point, topWhisker, bottomWhisker)
-      const d2 = p.minus(point).lengthSquared
+      const d2 = screenPointMinus(p, point).lengthSquared
       if (d2 < minimumDistance) {
         hitPoint = this.inverseTransform(p)
         minimumDistance = d2
@@ -499,7 +501,7 @@ Mean: ${args.mean!.toFixed(2)}`
     )
 
     await rc.drawLine(
-      [new ScreenPoint(xmid, legendBox.top), new ScreenPoint(xmid, ytop)],
+      [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, ytop)],
       strokeColor,
       LegendStrokeThickness,
       actualEdgeRenderingMode,
@@ -508,7 +510,7 @@ Mean: ${args.mean!.toFixed(2)}`
     )
 
     await rc.drawLine(
-      [new ScreenPoint(xmid, ybottom), new ScreenPoint(xmid, legendBox.bottom)],
+      [newScreenPoint(xmid, ybottom), newScreenPoint(xmid, legendBox.bottom)],
       strokeColor,
       LegendStrokeThickness,
       actualEdgeRenderingMode,
@@ -519,8 +521,8 @@ Mean: ${args.mean!.toFixed(2)}`
     if (this.whiskerWidth > 0) {
       await rc.drawLine(
         [
-          new ScreenPoint(xmid - halfWhiskerWidth, legendBox.bottom),
-          new ScreenPoint(xmid + halfWhiskerWidth, legendBox.bottom),
+          newScreenPoint(xmid - halfWhiskerWidth, legendBox.bottom),
+          newScreenPoint(xmid + halfWhiskerWidth, legendBox.bottom),
         ],
         strokeColor,
         LegendStrokeThickness,
@@ -531,8 +533,8 @@ Mean: ${args.mean!.toFixed(2)}`
 
       await rc.drawLine(
         [
-          new ScreenPoint(xmid - halfWhiskerWidth, legendBox.top),
-          new ScreenPoint(xmid + halfWhiskerWidth, legendBox.top),
+          newScreenPoint(xmid - halfWhiskerWidth, legendBox.top),
+          newScreenPoint(xmid + halfWhiskerWidth, legendBox.top),
         ],
         strokeColor,
         LegendStrokeThickness,
@@ -554,7 +556,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
     if (!this.showMedianAsDot) {
       await rc.drawLine(
-        [new ScreenPoint(xmid - halfBoxWidth, ymid), new ScreenPoint(xmid + halfBoxWidth, ymid)],
+        [newScreenPoint(xmid - halfBoxWidth, ymid), newScreenPoint(xmid + halfBoxWidth, ymid)],
         strokeColor,
         LegendStrokeThickness * this.medianThickness,
         actualEdgeRenderingMode,

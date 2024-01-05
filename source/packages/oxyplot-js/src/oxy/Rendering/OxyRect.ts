@@ -1,5 +1,4 @@
-﻿import type { OxySize, OxyThickness } from '@/oxyplot'
-import { ScreenPoint } from '@/oxyplot'
+﻿import { newScreenPoint, OxySize, OxyThickness, ScreenPoint } from '@/oxyplot'
 import { isNegativeInfinity, isPositiveInfinity } from '@/patch'
 
 /**
@@ -129,7 +128,7 @@ export class OxyRect {
    * @value The center.
    */
   public get center(): ScreenPoint {
-    return new ScreenPoint(this._left + this._width * 0.5, this._top + this._height * 0.5)
+    return newScreenPoint(this._left + this._width * 0.5, this._top + this._height * 0.5)
   }
 
   /**
@@ -137,7 +136,7 @@ export class OxyRect {
    * @value The top left corner.
    */
   public get topLeft(): ScreenPoint {
-    return new ScreenPoint(this.left, this.top)
+    return newScreenPoint(this.left, this.top)
   }
 
   /**
@@ -145,7 +144,7 @@ export class OxyRect {
    * @value The top right corner.
    */
   public get topRight(): ScreenPoint {
-    return new ScreenPoint(this.right, this.top)
+    return newScreenPoint(this.right, this.top)
   }
 
   /**
@@ -153,7 +152,7 @@ export class OxyRect {
    * @value The bottom left corner.
    */
   public get bottomLeft(): ScreenPoint {
-    return new ScreenPoint(this.left, this.bottom)
+    return newScreenPoint(this.left, this.bottom)
   }
 
   /**
@@ -161,7 +160,7 @@ export class OxyRect {
    * @value The bottom right corner.
    */
   public get bottomRight(): ScreenPoint {
-    return new ScreenPoint(this.right, this.bottom)
+    return newScreenPoint(this.right, this.bottom)
   }
 
   /**

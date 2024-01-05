@@ -1,4 +1,4 @@
-import { ScreenPoint } from '@/oxyplot'
+import { newScreenPoint, ScreenPoint } from '@/oxyplot'
 
 /**
  * Provides functionality to decimate lines.
@@ -64,14 +64,14 @@ export class Decimator {
     minY: number,
     maxY: number,
   ): void {
-    result.push(new ScreenPoint(x, firstY))
+    result.push(newScreenPoint(x, firstY))
     if (firstY === minY) {
       if (minY !== maxY) {
-        result.push(new ScreenPoint(x, maxY))
+        result.push(newScreenPoint(x, maxY))
       }
 
       if (maxY !== lastY) {
-        result.push(new ScreenPoint(x, lastY))
+        result.push(newScreenPoint(x, lastY))
       }
 
       return
@@ -79,11 +79,11 @@ export class Decimator {
 
     if (firstY === maxY) {
       if (maxY !== minY) {
-        result.push(new ScreenPoint(x, minY))
+        result.push(newScreenPoint(x, minY))
       }
 
       if (minY !== lastY) {
-        result.push(new ScreenPoint(x, lastY))
+        result.push(newScreenPoint(x, lastY))
       }
 
       return
@@ -91,16 +91,16 @@ export class Decimator {
 
     if (lastY === minY) {
       if (minY !== maxY) {
-        result.push(new ScreenPoint(x, maxY))
+        result.push(newScreenPoint(x, maxY))
       }
     } else if (lastY === maxY) {
       if (maxY !== minY) {
-        result.push(new ScreenPoint(x, minY))
+        result.push(newScreenPoint(x, minY))
       }
     } else {
-      result.push(new ScreenPoint(x, minY))
-      result.push(new ScreenPoint(x, maxY))
+      result.push(newScreenPoint(x, minY))
+      result.push(newScreenPoint(x, maxY))
     }
-    result.push(new ScreenPoint(x, lastY))
+    result.push(newScreenPoint(x, lastY))
   }
 }

@@ -9,8 +9,10 @@
   LineStyle,
   MagnitudeAxisRenderer,
   newDataPoint,
+  newScreenPoint,
   OxyRect,
   ScreenPoint,
+  ScreenPoint_LeftTop,
 } from '@/oxyplot'
 
 export interface CreateMagnitudeAxisOptions extends CreateLinearAxisOptions {
@@ -28,7 +30,7 @@ export class MagnitudeAxis extends LinearAxis {
    * The midpoint (screen coordinates) of the plot area. This is used by polar coordinate systems.
    * @internal
    */
-  midPoint: ScreenPoint = ScreenPoint.LeftTop
+  midPoint: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Initializes a new instance of the MagnitudeAxis class.
@@ -106,7 +108,7 @@ export class MagnitudeAxis extends LinearAxis {
     const r = (x - this.offset) * this.scale
     const theta = (y - angleAxis.offset) * angleAxis.scale
 
-    return new ScreenPoint(
+    return newScreenPoint(
       this.midPoint.x + r * Math.cos((theta / 180) * Math.PI),
       this.midPoint.y - r * Math.sin((theta / 180) * Math.PI),
     )
@@ -122,10 +124,10 @@ export class MagnitudeAxis extends LinearAxis {
     const y0 = bounds.bottom
     const y1 = bounds.top
 
-    this.screenMin = new ScreenPoint(x0, y1)
-    this.screenMax = new ScreenPoint(x1, y0)
+    this.screenMin = newScreenPoint(x0, y1)
+    this.screenMax = newScreenPoint(x1, y0)
 
-    this.midPoint = new ScreenPoint((x0 + x1) / 2, (y0 + y1) / 2)
+    this.midPoint = newScreenPoint((x0 + x1) / 2, (y0 + y1) / 2)
 
     const r = Math.min(Math.abs(x1 - x0), Math.abs(y1 - y0))
 

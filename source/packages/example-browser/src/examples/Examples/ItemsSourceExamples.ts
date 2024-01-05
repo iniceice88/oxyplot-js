@@ -1,4 +1,12 @@
-import { DataPoint, type IDataPointProvider, LineSeries, newDataPoint, PlotModel, ScreenPoint } from 'oxyplot-js'
+import {
+  DataPoint,
+  type IDataPointProvider,
+  LineSeries,
+  newDataPoint,
+  newScreenPoint,
+  PlotModel,
+  ScreenPoint,
+} from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 const n = 100000
@@ -83,14 +91,6 @@ class PointType1 implements IDataPointProvider {
 
 class PointType2 {
   constructor(public abscissa: number, public ordinate: number) {}
-}
-
-class ItemType3 {
-  readonly point: ScreenPoint
-
-  constructor(x: number, y: number) {
-    this.point = new ScreenPoint(x, y)
-  }
 }
 
 /**

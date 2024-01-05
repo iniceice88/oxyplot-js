@@ -8,6 +8,7 @@
   type IRenderContext,
   LinearAxis,
   LineStyle,
+  newScreenPoint,
   OxyRect,
   ScreenPoint,
   TickStyle,
@@ -118,8 +119,8 @@ export class AngleAxis extends LinearAxis {
     const y0 = bounds.bottom
     const y1 = bounds.top
 
-    this.screenMin = new ScreenPoint(x0, y1)
-    this.screenMax = new ScreenPoint(x1, y0)
+    this.screenMin = newScreenPoint(x0, y1)
+    this.screenMax = newScreenPoint(x1, y0)
 
     const newScale = (this.endAngle - this.startAngle) / (this.actualMaximum - this.actualMinimum)
     const newOffset = this.actualMinimum - this.startAngle / newScale

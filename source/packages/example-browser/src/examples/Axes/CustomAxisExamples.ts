@@ -3,6 +3,7 @@ import {
   type IRenderContext,
   LinearAxis,
   LineStyle,
+  newScreenPoint,
   OxyColors,
   OxyThickness,
   PlotModel,
@@ -26,15 +27,15 @@ export class ArrowAxis extends LinearAxis {
     const points: ScreenPoint[] = []
     if (this.isHorizontal()) {
       const xmax = this.transform(this.actualMaximum)
-      points.push(new ScreenPoint(xmax + 4, this.plotModel.plotArea.bottom - 4))
-      points.push(new ScreenPoint(xmax + 18, this.plotModel.plotArea.bottom))
-      points.push(new ScreenPoint(xmax + 4, this.plotModel.plotArea.bottom + 4))
+      points.push(newScreenPoint(xmax + 4, this.plotModel.plotArea.bottom - 4))
+      points.push(newScreenPoint(xmax + 18, this.plotModel.plotArea.bottom))
+      points.push(newScreenPoint(xmax + 4, this.plotModel.plotArea.bottom + 4))
       // etc.
     } else {
       const ymax = this.transform(this.actualMaximum)
-      points.push(new ScreenPoint(this.plotModel.plotArea.left - 4, ymax - 4))
-      points.push(new ScreenPoint(this.plotModel.plotArea.left, ymax - 18))
-      points.push(new ScreenPoint(this.plotModel.plotArea.left + 4, ymax - 4))
+      points.push(newScreenPoint(this.plotModel.plotArea.left - 4, ymax - 4))
+      points.push(newScreenPoint(this.plotModel.plotArea.left, ymax - 18))
+      points.push(newScreenPoint(this.plotModel.plotArea.left + 4, ymax - 4))
       // etc.
     }
 

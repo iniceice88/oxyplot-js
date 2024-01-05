@@ -11,6 +11,7 @@
   type IRenderContext,
   LineStyle,
   newDataPoint,
+  newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
@@ -19,6 +20,7 @@
   PlotElement,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_Undefined,
   TickStyle,
 } from '@/oxyplot'
 import { isInfinity, isNullOrUndef, Number_MAX_VALUE, Number_MIN_VALUE, pettyNumber } from '@/patch'
@@ -675,7 +677,7 @@ export abstract class Axis extends PlotElement {
     return this._scale
   }
 
-  private _screenMax: ScreenPoint = ScreenPoint.Undefined
+  private _screenMax: ScreenPoint = ScreenPoint_Undefined
   /**
    * Gets or sets the screen coordinate of the maximum end of the axis.
    */
@@ -687,7 +689,7 @@ export abstract class Axis extends PlotElement {
     this._screenMax = value
   }
 
-  private _screenMin: ScreenPoint = ScreenPoint.Undefined
+  private _screenMin: ScreenPoint = ScreenPoint_Undefined
   /**
    * Gets or sets the screen coordinate of the minimum end of the axis.
    */
@@ -1268,7 +1270,7 @@ export abstract class Axis extends PlotElement {
       throw new Error('Y axis should not be null when transforming.')
     }
 
-    return new ScreenPoint(this.transform(x), yaxis.transform(y))
+    return newScreenPoint(this.transform(x), yaxis.transform(y))
   }
 
   /**
@@ -1529,11 +1531,11 @@ export abstract class Axis extends PlotElement {
     }
 
     if (this.isHorizontal()) {
-      this.screenMin = new ScreenPoint(a0, y1)
-      this.screenMax = new ScreenPoint(a1, y0)
+      this.screenMin = newScreenPoint(a0, y1)
+      this.screenMax = newScreenPoint(a1, y0)
     } else if (this.isVertical()) {
-      this.screenMin = new ScreenPoint(x0, a1)
-      this.screenMax = new ScreenPoint(x1, a0)
+      this.screenMin = newScreenPoint(x0, a1)
+      this.screenMax = newScreenPoint(x1, a0)
     }
 
     if (this.minimumDataMargin > 0) {

@@ -1,15 +1,17 @@
-﻿import type { IRenderContext } from '@/oxyplot'
-import {
+﻿import {
   Axis,
   AxisPosition,
   AxisRendererBase,
   EdgeRenderingMode,
   HorizontalAlignment,
+  IRenderContext,
   MathRenderingExtensions,
+  newScreenPoint,
   OxySize,
   PlotModel,
   RenderingExtensions,
   ScreenPoint,
+  ScreenPoint_LeftTop,
   TickStyle,
   VerticalAlignment,
 } from '@/oxyplot'
@@ -195,26 +197,26 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
       )
     }
 
-    let point = ScreenPoint.LeftTop
+    let point = ScreenPoint_LeftTop
     switch (axis.position) {
       case AxisPosition.Left:
-        point = new ScreenPoint(titlePosition, middle)
+        point = newScreenPoint(titlePosition, middle)
         break
       case AxisPosition.Right:
         valign = VerticalAlignment.Bottom
-        point = new ScreenPoint(titlePosition, middle)
+        point = newScreenPoint(titlePosition, middle)
         break
       case AxisPosition.Top:
         halign = HorizontalAlignment.Center
         valign = VerticalAlignment.Top
         angle = 0
-        point = new ScreenPoint(middle, titlePosition)
+        point = newScreenPoint(middle, titlePosition)
         break
       case AxisPosition.Bottom:
         halign = HorizontalAlignment.Center
         valign = VerticalAlignment.Bottom
         angle = 0
-        point = new ScreenPoint(middle, titlePosition)
+        point = newScreenPoint(middle, titlePosition)
         break
       default:
         throw new Error('Invalid axis position')
@@ -339,11 +341,11 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
 
       if (axis.tickStyle != TickStyle.None && axis.majorTickSize > 0) {
         if (isHorizontal) {
-          majorTickSegments.push(new ScreenPoint(transformedValue, axisPosition + a0))
-          majorTickSegments.push(new ScreenPoint(transformedValue, axisPosition + a1))
+          majorTickSegments.push(newScreenPoint(transformedValue, axisPosition + a0))
+          majorTickSegments.push(newScreenPoint(transformedValue, axisPosition + a1))
         } else {
-          majorTickSegments.push(new ScreenPoint(axisPosition + a0, transformedValue))
-          majorTickSegments.push(new ScreenPoint(axisPosition + a1, transformedValue))
+          majorTickSegments.push(newScreenPoint(axisPosition + a0, transformedValue))
+          majorTickSegments.push(newScreenPoint(axisPosition + a1, transformedValue))
         }
       }
     }
@@ -367,23 +369,23 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
         transformedValue = snapTo(plotAreaBottom, transformedValue)
       }
 
-      let pt = new ScreenPoint()
+      let pt = ScreenPoint_LeftTop
       let haVa: [HorizontalAlignment, VerticalAlignment] = [HorizontalAlignment.Center, VerticalAlignment.Middle]
       switch (axis.position) {
         case AxisPosition.Left:
-          pt = new ScreenPoint(axisPosition + a1 - axis.axisTickToLabelDistance, transformedValue)
+          pt = newScreenPoint(axisPosition + a1 - axis.axisTickToLabelDistance, transformedValue)
           haVa = this.getRotatedAlignments(axis.angle, -90)
           break
         case AxisPosition.Right:
-          pt = new ScreenPoint(axisPosition + a1 + axis.axisTickToLabelDistance, transformedValue)
+          pt = newScreenPoint(axisPosition + a1 + axis.axisTickToLabelDistance, transformedValue)
           haVa = this.getRotatedAlignments(axis.angle, 90)
           break
         case AxisPosition.Top:
-          pt = new ScreenPoint(transformedValue, axisPosition + a1 - axis.axisTickToLabelDistance)
+          pt = newScreenPoint(transformedValue, axisPosition + a1 - axis.axisTickToLabelDistance)
           haVa = this.getRotatedAlignments(axis.angle, 0)
           break
         case AxisPosition.Bottom:
-          pt = new ScreenPoint(transformedValue, axisPosition + a1 + axis.axisTickToLabelDistance)
+          pt = newScreenPoint(transformedValue, axisPosition + a1 + axis.axisTickToLabelDistance)
           haVa = this.getRotatedAlignments(axis.angle, -180)
           break
       }
@@ -545,11 +547,11 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
       // Draw the minor tick
       if (axis.tickStyle != TickStyle.None && axis.minorTickSize > 0) {
         if (isHorizontal) {
-          minorTickSegments.push(new ScreenPoint(transformedValue, axisPosition + a0))
-          minorTickSegments.push(new ScreenPoint(transformedValue, axisPosition + a1))
+          minorTickSegments.push(newScreenPoint(transformedValue, axisPosition + a0))
+          minorTickSegments.push(newScreenPoint(transformedValue, axisPosition + a1))
         } else {
-          minorTickSegments.push(new ScreenPoint(axisPosition + a0, transformedValue))
-          minorTickSegments.push(new ScreenPoint(axisPosition + a1, transformedValue))
+          minorTickSegments.push(newScreenPoint(axisPosition + a0, transformedValue))
+          minorTickSegments.push(newScreenPoint(axisPosition + a1, transformedValue))
         }
       }
     }
@@ -605,22 +607,22 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
   ): void {
     if (isHorizontal) {
       if (!cropGridlines) {
-        segments.push(new ScreenPoint(transformedValue, plotAreaTop))
-        segments.push(new ScreenPoint(transformedValue, plotAreaBottom))
+        segments.push(newScreenPoint(transformedValue, plotAreaTop))
+        segments.push(newScreenPoint(transformedValue, plotAreaBottom))
       } else {
         for (const perpAxis of perpAxes) {
-          segments.push(new ScreenPoint(transformedValue, perpAxis.transform(perpAxis.clipMinimum)))
-          segments.push(new ScreenPoint(transformedValue, perpAxis.transform(perpAxis.clipMaximum)))
+          segments.push(newScreenPoint(transformedValue, perpAxis.transform(perpAxis.clipMinimum)))
+          segments.push(newScreenPoint(transformedValue, perpAxis.transform(perpAxis.clipMaximum)))
         }
       }
     } else {
       if (!cropGridlines) {
-        segments.push(new ScreenPoint(plotAreaLeft, transformedValue))
-        segments.push(new ScreenPoint(plotAreaRight, transformedValue))
+        segments.push(newScreenPoint(plotAreaLeft, transformedValue))
+        segments.push(newScreenPoint(plotAreaRight, transformedValue))
       } else {
         for (const perpAxis of perpAxes) {
-          segments.push(new ScreenPoint(perpAxis.transform(perpAxis.clipMinimum), transformedValue))
-          segments.push(new ScreenPoint(perpAxis.transform(perpAxis.clipMaximum), transformedValue))
+          segments.push(newScreenPoint(perpAxis.transform(perpAxis.clipMinimum), transformedValue))
+          segments.push(newScreenPoint(perpAxis.transform(perpAxis.clipMaximum), transformedValue))
         }
       }
     }
