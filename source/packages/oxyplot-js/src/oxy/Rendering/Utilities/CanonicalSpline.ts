@@ -1,4 +1,5 @@
-import { DataPoint, type IInterpolationAlgorithm, newDataPoint, newScreenPoint, ScreenPoint } from '@/oxyplot'
+import type { DataPoint, IInterpolationAlgorithm, ScreenPoint } from '@/oxyplot'
+import { newDataPoint, newScreenPoint } from '@/oxyplot'
 
 /**
  * Provides functionality to interpolate a list of points by a canonical spline.

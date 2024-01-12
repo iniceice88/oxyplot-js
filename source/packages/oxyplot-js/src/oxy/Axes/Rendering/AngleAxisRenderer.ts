@@ -1,13 +1,13 @@
-﻿import { IRenderContext, newScreenPoint } from '@/oxyplot'
+﻿import type { IRenderContext } from '@/oxyplot'
 import {
   AngleAxis,
   Axis,
   AxisRendererBase,
   HorizontalAlignment,
   MathRenderingExtensions,
+  newScreenPoint,
   PlotModel,
   RenderingExtensions,
-  ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 

@@ -1,17 +1,16 @@
-﻿import {
+﻿import type { CreatePlotElementOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
+import {
   Axis,
-  type CreatePlotElementOptions,
   HitTestArguments,
-  type HitTestResult,
-  type IRenderContext,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElement,
-  ScreenPoint,
   screenPointDistanceTo,
   TrackerHitResult,
 } from '@/oxyplot'
+
+export type LabelStringFormatterType = (item: any, trackerParameters: any[]) => any
 
 export interface TrackerStringFormatterArgs extends Record<string, any> {
   item?: any

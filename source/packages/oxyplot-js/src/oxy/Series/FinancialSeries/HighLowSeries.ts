@@ -1,8 +1,12 @@
-import {
-  Axis,
+import type {
   CreateXYAxisSeriesOptions,
   DataPoint,
   IRenderContext,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+} from '@/oxyplot'
+import {
+  Axis,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -12,12 +16,10 @@ import {
   OxyColors,
   OxyRect,
   PlotElementExtensions,
-  ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
   ScreenVector,
   TrackerHitResult,
-  TrackerStringFormatterArgs,
   XYAxisSeries,
 } from '@/oxyplot'
 import { getOrDefault, Number_MAX_VALUE, removeUndef, round } from '@/patch'

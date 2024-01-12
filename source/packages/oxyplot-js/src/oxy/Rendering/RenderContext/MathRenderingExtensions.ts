@@ -1,5 +1,5 @@
-﻿import { IRenderContext, newScreenPoint } from '@/oxyplot'
-import { HorizontalAlignment, OxyColor, OxyColors, OxySize, ScreenPoint, VerticalAlignment } from '@/oxyplot'
+﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
+import { HorizontalAlignment, newScreenPoint, OxyColor, OxyColors, OxySize, VerticalAlignment } from '@/oxyplot'
 import { indexOfAny, round, substring } from '@/patch'
 
 /**

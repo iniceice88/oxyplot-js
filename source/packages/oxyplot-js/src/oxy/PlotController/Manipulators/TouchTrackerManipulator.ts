@@ -1,11 +1,5 @@
-import {
-  type IPlotView,
-  type OxyTouchEventArgs,
-  ScreenPoint,
-  Series,
-  TouchManipulator,
-  TrackerHelper,
-} from '@/oxyplot'
+import type { IPlotView, OxyTouchEventArgs, ScreenPoint } from '@/oxyplot'
+import { Series, TouchManipulator, TrackerHelper } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface TouchTrackerManipulatorOptions {

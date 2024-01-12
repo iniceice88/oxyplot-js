@@ -1,5 +1,5 @@
-import type { CreatePathAnnotationOptions, IInterpolationAlgorithm } from '@/oxyplot'
-import { DataPoint, PathAnnotation, ScreenPoint, ScreenPointHelper } from '@/oxyplot'
+import type { CreatePathAnnotationOptions, DataPoint, IInterpolationAlgorithm, ScreenPoint } from '@/oxyplot'
+import { PathAnnotation, ScreenPointHelper } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface CreateSplineOptions extends CreatePathAnnotationOptions {

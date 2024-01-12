@@ -1,12 +1,16 @@
+import type {
+  ConrecRendererDelegate,
+  CreateXYAxisSeriesOptions,
+  DataPoint,
+  IRenderContext,
+  LabelStringFormatterType,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+} from '@/oxyplot'
 import {
   ArrayBuilder,
   Conrec,
-  type ConrecRendererDelegate,
-  type CreateXYAxisSeriesOptions,
-  DataPoint,
   HorizontalAlignment,
-  type IRenderContext,
-  type LabelStringFormatterType,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -15,11 +19,9 @@ import {
   OxyColor,
   OxyColors,
   RenderingExtensions,
-  ScreenPoint,
   screenPointDistanceToSquared,
   screenPointMinus,
   TrackerHitResult,
-  type TrackerStringFormatterArgs,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'

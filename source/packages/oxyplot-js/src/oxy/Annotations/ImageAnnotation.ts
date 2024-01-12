@@ -1,10 +1,9 @@
+import type { HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   type CreateTransposableAnnotationOptions,
   DataPoint_Zero,
   HitTestArguments,
-  type HitTestResult,
   HorizontalAlignment,
-  type IRenderContext,
   newScreenPoint,
   OxyImage,
   OxyRect,
@@ -12,7 +11,6 @@ import {
   PlotLength,
   PlotLengthUnit,
   RenderingExtensions,
-  ScreenPoint,
   screenPointMinus,
   screenPointPlus,
   ScreenVector,

@@ -1,14 +1,11 @@
-﻿import {
-  type AxisChangedEventArgs,
+﻿import type { AxisChangedEventArgs, CreatePlotElementOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
+import {
   AxisChangeTypes,
   AxisLayer,
   AxisPosition,
   AxisUtilities,
-  type CreatePlotElementOptions,
-  DataPoint,
   FontWeights,
   HorizontalAndVerticalAxisRenderer,
-  type IRenderContext,
   LineStyle,
   newDataPoint,
   newScreenPoint,
@@ -19,7 +16,6 @@
   OxyThickness,
   PlotElement,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPoint_Undefined,
   TickStyle,
 } from '@/oxyplot'

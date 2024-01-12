@@ -1,23 +1,25 @@
-﻿import {
-  Axis,
-  type CreateItemsSeriesOptions,
+﻿import type {
+  CreateItemsSeriesOptions,
   DataPoint,
+  IRenderContext,
+  ITransposablePlotElement,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+  TrackerStringFormatterType,
+} from '@/oxyplot'
+import {
+  Axis,
   DataPoint_Zero,
-  type IRenderContext,
   ItemsSeries,
-  type ITransposablePlotElement,
   OxyRect,
   PlotElementExtensions,
   PlotElementUtilities,
-  ScreenPoint,
   ScreenPoint_isUndefined,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
   screenPointMinus,
   setTransposablePlotElement,
   TrackerHitResult,
-  type TrackerStringFormatterArgs,
-  type TrackerStringFormatterType,
 } from '@/oxyplot'
 import { Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
 

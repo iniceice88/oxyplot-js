@@ -1,4 +1,5 @@
-import { type IPlotView, type OxyMouseEventArgs, PlotManipulator, ScreenPoint } from '@/oxyplot'
+import type { IPlotView, OxyMouseEventArgs, ScreenPoint } from '@/oxyplot'
+import { PlotManipulator } from '@/oxyplot'
 
 /**
  * Provides an abstract base class for manipulators that handles mouse events.

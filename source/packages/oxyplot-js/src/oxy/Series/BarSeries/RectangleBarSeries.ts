@@ -1,9 +1,13 @@
-import {
+import type {
   CreateXYAxisSeriesOptions,
-  EdgeRenderingMode,
-  HorizontalAlignment,
   IRenderContext,
   LabelStringFormatterType,
+  ScreenPoint,
+  TrackerStringFormatterType,
+} from '@/oxyplot'
+import {
+  EdgeRenderingMode,
+  HorizontalAlignment,
   newDataPoint,
   newScreenPoint,
   OxyColor,
@@ -11,9 +15,7 @@ import {
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   TrackerHitResult,
-  TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'

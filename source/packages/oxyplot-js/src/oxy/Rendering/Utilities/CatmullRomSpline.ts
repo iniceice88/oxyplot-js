@@ -1,11 +1,5 @@
-import {
-  DataPoint,
-  type IInterpolationAlgorithm,
-  newDataPoint,
-  newScreenPoint,
-  ScreenPoint,
-  screenPointEquals,
-} from '@/oxyplot'
+import type { DataPoint, IInterpolationAlgorithm, ScreenPoint } from '@/oxyplot'
+import { newDataPoint, newScreenPoint, screenPointEquals } from '@/oxyplot'
 
 /**
  * Provides functionality to interpolate a list of points by a Centripetal Catmull–Rom spline.

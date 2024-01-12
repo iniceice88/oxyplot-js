@@ -1,14 +1,5 @@
-import {
-  AxisPosition,
-  type AxisStringFormatterType,
-  AxisUtilities,
-  type CreateLinearAxisOptions,
-  DataPoint,
-  DateTimeIntervalType,
-  LinearAxis,
-  newDataPoint,
-  OxyRect,
-} from '@/oxyplot'
+import type { AxisStringFormatterType, CreateLinearAxisOptions, DataPoint } from '@/oxyplot'
+import { AxisPosition, AxisUtilities, DateTimeIntervalType, LinearAxis, newDataPoint, OxyRect } from '@/oxyplot'
 import {
   DateTime_MaxValue,
   DateTime_MinValue,

@@ -1,5 +1,5 @@
-﻿import type { Series } from '@/oxyplot'
-import { Axis, DataPoint, OxyRect, PlotModel, ScreenPoint, XYAxisSeries } from '@/oxyplot'
+﻿import type { DataPoint, ScreenPoint, Series } from '@/oxyplot'
+import { Axis, OxyRect, PlotModel, XYAxisSeries } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface CreateTrackerHitResultOptions {

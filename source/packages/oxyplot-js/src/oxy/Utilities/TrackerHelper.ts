@@ -1,4 +1,4 @@
-import { ScreenPoint, screenPointDistanceTo, Series, TrackerHitResult } from '@/oxyplot'
+import { type ScreenPoint, screenPointDistanceTo, Series, TrackerHitResult } from '@/oxyplot'
 
 /**
  * Provides helper methods for tracker functionality.

@@ -1,4 +1,4 @@
-﻿import { DataPoint, ScreenPoint } from '@/oxyplot'
+﻿import type { DataPoint, ScreenPoint } from '@/oxyplot'
 
 /**
  * Defines an interpolation algorithm.

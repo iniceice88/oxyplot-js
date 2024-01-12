@@ -1,12 +1,9 @@
+import type { CreateShapeAnnotationOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  type CreateShapeAnnotationOptions,
   HitTestArguments,
-  type HitTestResult,
-  type IRenderContext,
   MarkerType,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPoint_LeftTop,
   screenPointDistanceTo,
   screenPointPlus,

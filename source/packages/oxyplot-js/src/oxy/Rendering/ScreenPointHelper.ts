@@ -1,6 +1,5 @@
 ﻿import {
-  newScreenPoint,
-  ScreenPoint,
+  newScreenPoint, type ScreenPoint,
   ScreenPoint_isUndefined,
   ScreenPoint_LeftTop,
   screenPointDistanceToSquared,

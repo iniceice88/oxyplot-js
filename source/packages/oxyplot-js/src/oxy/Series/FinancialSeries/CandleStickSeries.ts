@@ -1,8 +1,6 @@
+import type { CreateHighLowSeriesOptions, HighLowItem, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  CreateHighLowSeriesOptions,
-  HighLowItem,
   HighLowSeries,
-  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -13,7 +11,6 @@ import {
   OxyColors,
   OxyRect,
   PlotElementExtensions,
-  ScreenPoint,
   TrackerHitResult,
 } from '@/oxyplot'
 import { Number_MAX_VALUE, removeUndef } from '@/patch'

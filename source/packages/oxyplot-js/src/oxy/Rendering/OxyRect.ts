@@ -1,4 +1,4 @@
-﻿import { newScreenPoint, OxySize, OxyThickness, ScreenPoint } from '@/oxyplot'
+﻿import { newScreenPoint, OxySize, OxyThickness, type ScreenPoint } from '@/oxyplot'
 import { isNegativeInfinity, isPositiveInfinity } from '@/patch'
 
 /**

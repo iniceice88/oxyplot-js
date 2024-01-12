@@ -1,5 +1,5 @@
-﻿import type { ITransposablePlotElement, IXyAxisPlotElement } from '@/oxyplot'
-import { DataPoint, OxyRect, PlotElementExtensions, ScreenPoint } from '@/oxyplot'
+﻿import type { DataPoint, ITransposablePlotElement, IXyAxisPlotElement, ScreenPoint } from '@/oxyplot'
+import { OxyRect, PlotElementExtensions } from '@/oxyplot'
 
 /**
  * Provides utility functions for plot elements.

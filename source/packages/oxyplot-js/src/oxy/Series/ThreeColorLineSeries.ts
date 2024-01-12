@@ -1,4 +1,4 @@
-import type { CreateLineSeriesOptions, IRenderContext } from '@/oxyplot'
+import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   LineSeries,
   LineStyle,
@@ -8,7 +8,6 @@ import {
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
 } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 

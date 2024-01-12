@@ -1,6 +1,5 @@
+import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  type CreateLineSeriesOptions,
-  type IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
@@ -10,7 +9,6 @@ import {
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
 } from '@/oxyplot'
 
 /**

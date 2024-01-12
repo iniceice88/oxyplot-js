@@ -1,17 +1,14 @@
-﻿import {
+﻿import type { CreateLinearAxisOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
+import {
   AngleAxis,
   Axis,
   AxisPosition,
-  CreateLinearAxisOptions,
-  DataPoint,
-  type IRenderContext,
   LinearAxis,
   LineStyle,
   MagnitudeAxisRenderer,
   newDataPoint,
   newScreenPoint,
   OxyRect,
-  ScreenPoint,
   ScreenPoint_LeftTop,
 } from '@/oxyplot'
 

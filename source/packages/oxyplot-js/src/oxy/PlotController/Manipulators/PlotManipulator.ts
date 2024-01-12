@@ -1,14 +1,5 @@
-import {
-  Axis,
-  AxisPreference,
-  DataPoint,
-  DataPoint_Zero,
-  type IPlotView,
-  ManipulatorBase,
-  newDataPoint,
-  type OxyInputEventArgs,
-  ScreenPoint,
-} from '@/oxyplot'
+import type { DataPoint, IPlotView, OxyInputEventArgs, ScreenPoint } from '@/oxyplot'
+import { Axis, AxisPreference, DataPoint_Zero, ManipulatorBase, newDataPoint } from '@/oxyplot'
 
 /**
  * Provides an abstract base class for plot manipulators.

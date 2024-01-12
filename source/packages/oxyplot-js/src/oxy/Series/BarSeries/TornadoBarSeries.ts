@@ -1,21 +1,21 @@
-import {
+import type {
   CreateBarItemOptions,
   CreateBarSeriesBaseOptions,
   IRenderContext,
-  LabelStringFormatterType, newDataPoint,
+  LabelStringFormatterType,
+  ScreenPoint,
   TrackerStringFormatterType,
 } from '@/oxyplot'
 import {
   BarItemBase,
   BarSeriesBase,
-  DataPoint,
   EdgeRenderingMode,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   TrackerHitResult,
 } from '@/oxyplot'
 import { getOrDefault, Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
@@ -80,11 +80,11 @@ export interface CreateTornadoBarSeriesOptions extends CreateBarSeriesBaseOption
   maximumColorField?: string
   maximumField?: string
   maximumFillColor?: OxyColor
-  maximumLabelFormatString?: string
+  maximumLabelStringFormatter?: LabelStringFormatterType
   minimumColorField?: string
   minimumField?: string
   minimumFillColor?: OxyColor
-  minimumLabelFormatString?: string
+  minimumLabelStringFormatter?: LabelStringFormatterType
   actualMaximumBarRectangles?: OxyRect[]
   actualMinimumBarRectangles?: OxyRect[]
 }

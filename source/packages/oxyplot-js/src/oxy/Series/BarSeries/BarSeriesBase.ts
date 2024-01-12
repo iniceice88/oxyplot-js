@@ -1,28 +1,29 @@
-﻿import {
+﻿import type {
+  CreateXYAxisSeriesOptions,
+  IBarSeries,
+  IRenderContext,
+  LabelStringFormatterType,
+  ScreenPoint,
+} from '@/oxyplot'
+import {
   Axis,
   BarItem,
   BarItemBase,
   BarSeriesManager,
   CategoryAxis,
-  CreateXYAxisSeriesOptions,
   HorizontalAlignment,
-  IBarSeries,
   IntervalBarItem,
-  type IRenderContext,
   LabelPlacement,
   OxyColor,
   OxyColors,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   screenPointPlus,
   ScreenVector,
   TornadoBarItem,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-
-export type LabelStringFormatterType = (item: any, trackerParameters: any[]) => any
 
 export interface CreateBarSeriesBaseOptions extends CreateXYAxisSeriesOptions {
   barWidth?: number

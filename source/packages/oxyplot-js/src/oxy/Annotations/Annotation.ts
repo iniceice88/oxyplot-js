@@ -1,5 +1,12 @@
-﻿import { CreatePlotElementOptions, IRenderContext, IXyAxisPlotElement, newScreenPoint } from '@/oxyplot'
-import { AnnotationLayer, Axis, DataPoint, OxyRect, PlotElement, PlotElementUtilities, ScreenPoint } from '@/oxyplot'
+﻿import type {
+  Axis,
+  CreatePlotElementOptions,
+  DataPoint,
+  IRenderContext,
+  IXyAxisPlotElement,
+  ScreenPoint,
+} from '@/oxyplot'
+import { AnnotationLayer, newScreenPoint, OxyRect, PlotElement, PlotElementUtilities } from '@/oxyplot'
 
 export interface CreateAnnotationOptions extends CreatePlotElementOptions {
   xAxisKey?: string

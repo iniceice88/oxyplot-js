@@ -1,12 +1,5 @@
-﻿import {
-  HorizontalAlignment,
-  OxyRect,
-  OxySize,
-  ScreenPoint,
-  screenPointPlus,
-  ScreenVector,
-  VerticalAlignment,
-} from '@/oxyplot'
+﻿import type { ScreenPoint } from '@/oxyplot'
+import { HorizontalAlignment, OxyRect, OxySize, screenPointPlus, ScreenVector, VerticalAlignment } from '@/oxyplot'
 
 declare module './OxySize' {
   interface OxySize {

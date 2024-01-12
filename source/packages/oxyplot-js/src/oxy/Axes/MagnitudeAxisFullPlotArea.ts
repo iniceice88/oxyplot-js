@@ -1,18 +1,20 @@
+import type {
+  AxisChangedEventArgs,
+  CreateMagnitudeAxisOptions,
+  IRenderContext,
+  ScreenPoint,
+  TickValuesType,
+} from '@/oxyplot'
 import {
-  type AxisChangedEventArgs,
   AxisChangeTypes,
   AxisPosition,
   AxisUtilities,
-  type CreateMagnitudeAxisOptions,
-  type IRenderContext,
   LineStyle,
   MagnitudeAxis,
   MagnitudeAxisFullPlotAreaRenderer,
   newScreenPoint,
   OxyRect,
-  ScreenPoint,
   screenPointDistanceTo,
-  type TickValuesType,
 } from '@/oxyplot'
 
 export interface CreateMagnitudeAxisFullPlotAreaOptions extends CreateMagnitudeAxisOptions {

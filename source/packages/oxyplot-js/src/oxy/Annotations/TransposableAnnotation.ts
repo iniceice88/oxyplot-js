@@ -1,13 +1,10 @@
+import type { CreateAnnotationOptions, DataPoint, ITransposablePlotElement, ScreenPoint } from '@/oxyplot'
 import {
   Annotation,
-  type CreateAnnotationOptions,
-  DataPoint,
-  type ITransposablePlotElement,
   newScreenPoint,
   OxyRect,
   PlotElementExtensions,
   PlotElementUtilities,
-  ScreenPoint,
   setTransposablePlotElement,
 } from '@/oxyplot'
 

@@ -1,18 +1,14 @@
-﻿import {
+﻿import type { CreateLinearAxisOptions, DataPoint, IRenderContext, ScreenPoint, TickValuesType } from '@/oxyplot'
+import {
   AngleAxisRenderer,
-  type Axis,
+  Axis,
   AxisPosition,
   AxisUtilities,
-  type CreateLinearAxisOptions,
-  DataPoint,
-  type IRenderContext,
   LinearAxis,
   LineStyle,
   newScreenPoint,
   OxyRect,
-  ScreenPoint,
   TickStyle,
-  type TickValuesType,
 } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 

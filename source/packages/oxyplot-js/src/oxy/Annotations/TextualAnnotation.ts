@@ -1,10 +1,8 @@
+import type { CreateTransposableAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
 import {
-  type CreateTransposableAnnotationOptions,
-  DataPoint,
   DataPoint_isDefined,
   DataPoint_Undefined,
   HorizontalAlignment,
-  ScreenPoint,
   TransposableAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'

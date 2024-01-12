@@ -12,6 +12,7 @@ import IntervalBarSeriesExamples from './IntervalBarSeriesExamples'
 import LinearBarSeriesExamples from './LinearBarSeriesExamples'
 import LineSeriesExamples from './LineSeriesExamples'
 import PieSeriesExamples from './PieSeriesExamples'
+import PolygonSeriesExamples from './PolygonSeriesExamples'
 import RectangleBarSeriesExamples from './RectangleBarSeriesExamples'
 import RectangleSeriesExamples from './RectangleSeriesExamples'
 import ScatterSeriesExamples from './ScatterSeriesExamples'
@@ -38,6 +39,7 @@ export default [
   LinearBarSeriesExamples,
   LineSeriesExamples,
   PieSeriesExamples,
+  PolygonSeriesExamples,
   RectangleBarSeriesExamples,
   RectangleSeriesExamples,
   ScatterSeriesExamples,

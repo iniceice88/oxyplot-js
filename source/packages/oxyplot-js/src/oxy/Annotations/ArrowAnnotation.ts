@@ -1,12 +1,9 @@
+import type { CreateTextualAnnotationOptions, DataPoint, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  type CreateTextualAnnotationOptions,
-  DataPoint,
   DataPoint_isDefined,
   DataPoint_Zero,
   HitTestArguments,
-  type HitTestResult,
   HorizontalAlignment,
-  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -14,7 +11,6 @@ import {
   OxyColors,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
   screenPointMinus,

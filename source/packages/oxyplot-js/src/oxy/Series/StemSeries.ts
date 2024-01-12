@@ -1,7 +1,6 @@
+import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  type CreateLineSeriesOptions,
   EdgeRenderingMode,
-  type IRenderContext,
   LineSeries,
   LineStyle,
   MarkerType,
@@ -9,7 +8,6 @@ import {
   newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPointHelper,
   screenPointMinus,
   screenPointPlus,

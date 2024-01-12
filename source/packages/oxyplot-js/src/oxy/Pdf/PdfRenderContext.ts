@@ -1,3 +1,4 @@
+import type { ScreenPoint } from '@/oxyplot'
 import {
   ClippingRenderContext,
   EdgeRenderingMode,
@@ -11,7 +12,6 @@ import {
   PortableDocumentExtensions,
   PortableDocumentImage,
   PortableDocumentImageUtilities,
-  ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 

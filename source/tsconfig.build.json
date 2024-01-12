@@ -11,6 +11,7 @@
     "noEmitOnError": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
     "types": [],
     "noEmit": false
   },

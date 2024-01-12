@@ -1,11 +1,5 @@
-import {
-  Axis,
-  AxisChangeTypes,
-  AxisUtilities,
-  type CreateAxisAxisOptions,
-  ScreenPoint,
-  type TickValuesType,
-} from '@/oxyplot'
+import type { CreateAxisAxisOptions, ScreenPoint, TickValuesType } from '@/oxyplot'
+import { Axis, AxisChangeTypes, AxisUtilities } from '@/oxyplot'
 import { isInfinity, log, removeUndef, round } from '@/patch'
 
 export interface CreateLogarithmicAxisOptions extends CreateAxisAxisOptions {

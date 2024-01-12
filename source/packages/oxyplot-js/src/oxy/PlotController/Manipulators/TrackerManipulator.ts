@@ -1,13 +1,5 @@
-import {
-  HitTestArguments,
-  type IPlotView,
-  MouseManipulator,
-  type OxyMouseEventArgs,
-  ScreenPoint,
-  Series,
-  TrackerHelper,
-  TrackerHitResult,
-} from '@/oxyplot'
+import type { IPlotView, OxyMouseEventArgs, ScreenPoint } from '@/oxyplot'
+import { HitTestArguments, MouseManipulator, Series, TrackerHelper, TrackerHitResult } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface TrackerManipulatorOptions {

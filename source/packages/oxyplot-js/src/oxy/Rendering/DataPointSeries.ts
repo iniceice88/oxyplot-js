@@ -1,13 +1,5 @@
-﻿import {
-  type CreateXYAxisSeriesOptions,
-  DataPoint,
-  isDataPoint,
-  isDataPointProvider,
-  newDataPoint,
-  ScreenPoint,
-  TrackerHitResult,
-  XYAxisSeries,
-} from '@/oxyplot'
+﻿import type { CreateXYAxisSeriesOptions, DataPoint, ScreenPoint } from '@/oxyplot'
+import { isDataPoint, isDataPointProvider, newDataPoint, TrackerHitResult, XYAxisSeries } from '@/oxyplot'
 
 export interface CreateDataPointSeriesOptions extends CreateXYAxisSeriesOptions {
   points?: DataPoint[]

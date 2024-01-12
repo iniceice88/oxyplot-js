@@ -1,15 +1,14 @@
+import type { ITextMeasurer, ScreenPoint } from '@/oxyplot'
 import {
   ClippingRenderContext,
   EdgeRenderingMode,
   HorizontalAlignment,
-  type ITextMeasurer,
   LineJoin,
   OxyColor,
   OxyColors,
   OxyImage,
   OxyRect,
   OxySize,
-  ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
   ScreenVector,

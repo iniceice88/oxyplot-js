@@ -1,13 +1,15 @@
-﻿import {
+﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
+import {
+  EdgeRenderingMode,
   HorizontalAlignment,
-  IRenderContext,
+  LineJoin,
   newScreenPoint,
   OxyColor,
+  OxyImage,
   OxyRect,
   OxySize,
   VerticalAlignment,
 } from '@/oxyplot'
-import { EdgeRenderingMode, LineJoin, OxyImage, ScreenPoint } from '@/oxyplot'
 
 /**
  * Provides an abstract base class for rendering contexts.

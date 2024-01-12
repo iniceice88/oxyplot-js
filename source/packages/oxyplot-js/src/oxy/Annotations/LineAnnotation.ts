@@ -1,11 +1,5 @@
-import {
-  type CreatePathAnnotationOptions,
-  DataPoint,
-  LinearAxis,
-  newDataPoint,
-  PathAnnotation,
-  ScreenPoint,
-} from '@/oxyplot'
+import type { CreatePathAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
+import { LinearAxis, newDataPoint, PathAnnotation } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 /**

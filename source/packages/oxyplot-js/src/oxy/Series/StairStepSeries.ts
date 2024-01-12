@@ -1,17 +1,15 @@
+import type { CreateLineSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  CreateLineSeriesOptions,
-  DataPoint,
   DataPoint_Undefined,
   EdgeRenderingMode,
-  IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
   MarkerType,
-  newDataPoint, newScreenPoint,
+  newDataPoint,
+  newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   screenPointDistanceToSquared,
   TrackerHitResult,
 } from '@/oxyplot'

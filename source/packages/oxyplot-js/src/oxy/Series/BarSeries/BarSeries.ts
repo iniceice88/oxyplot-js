@@ -1,20 +1,22 @@
-﻿import {
+﻿import type {
+  CreateBarSeriesBaseOptions,
+  IRenderContext,
+  IStackableSeries,
+  LabelStringFormatterType,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+} from '@/oxyplot'
+import {
   BarItem,
   BarSeriesBase,
-  CreateBarSeriesBaseOptions,
   EdgeRenderingMode,
-  type IRenderContext,
-  type IStackableSeries,
-  type LabelStringFormatterType,
   newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   TrackerHitResult,
-  TrackerStringFormatterArgs,
 } from '@/oxyplot'
 import {
   isNullOrUndef,

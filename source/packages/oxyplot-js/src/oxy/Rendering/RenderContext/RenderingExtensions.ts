@@ -1,5 +1,5 @@
-﻿import {
-  DataPoint,
+﻿import type { DataPoint, IRenderContext, ITransposablePlotElement, ScreenPoint } from '@/oxyplot'
+import {
   DataPoint_isUnDefined,
   DataPoint_Undefined,
   dataPointMinus,
@@ -7,8 +7,6 @@
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
-  IRenderContext,
-  ITransposablePlotElement,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -21,7 +19,6 @@
   OxyRect,
   OxySize,
   OxyThickness,
-  ScreenPoint,
   ScreenPoint_LeftTop,
   ScreenPoint_Undefined,
   screenPointDistanceToSquared,

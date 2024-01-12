@@ -1,22 +1,24 @@
+import type {
+  CreateBarItemBaseOptions,
+  CreateBarSeriesBaseOptions,
+  IRenderContext,
+  IStackableSeries,
+  LabelStringFormatterType,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+} from '@/oxyplot'
 import {
   BarItemBase,
   BarSeriesBase,
-  type CreateBarItemBaseOptions,
-  type CreateBarSeriesBaseOptions,
-  DataPoint,
   EdgeRenderingMode,
-  type IRenderContext,
-  type IStackableSeries,
   LabelPlacement,
-  type LabelStringFormatterType, newDataPoint,
+  newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   TrackerHitResult,
-  type TrackerStringFormatterArgs,
 } from '@/oxyplot'
 import { getOrDefault, Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
 

@@ -1,4 +1,4 @@
-import { newScreenPoint, ScreenPoint } from '@/oxyplot'
+import { newScreenPoint, type ScreenPoint } from '@/oxyplot'
 
 /**
  * Provides functionality to decimate lines.

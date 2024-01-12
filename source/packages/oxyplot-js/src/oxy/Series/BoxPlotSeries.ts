@@ -1,10 +1,9 @@
+import type { CreateXYAxisSeriesOptions, IRenderContext, ScreenPoint, TrackerStringFormatterArgs } from '@/oxyplot'
 import {
   Axis,
-  type CreateXYAxisSeriesOptions,
   DataPoint_isDefined,
   DataPoint_Undefined,
   EdgeRenderingMode,
-  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -16,11 +15,9 @@ import {
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPointHelper,
   screenPointMinus,
   TrackerHitResult,
-  type TrackerStringFormatterArgs,
   XYAxisSeries,
 } from '@/oxyplot'
 import { isInfinity, Number_MAX_VALUE, removeUndef } from '@/patch'

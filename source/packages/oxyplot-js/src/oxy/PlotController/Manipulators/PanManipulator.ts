@@ -1,11 +1,5 @@
-import {
-  CursorType,
-  type IPlotView,
-  MouseManipulator,
-  type OxyMouseEventArgs,
-  ScreenPoint,
-  ScreenPoint_LeftTop,
-} from '@/oxyplot'
+import type { IPlotView, OxyMouseEventArgs, ScreenPoint } from '@/oxyplot'
+import { CursorType, MouseManipulator, ScreenPoint_LeftTop } from '@/oxyplot'
 
 /**
  * Provides a manipulator for panning functionality.

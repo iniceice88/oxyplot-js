@@ -1,13 +1,5 @@
-﻿import {
-  DataPoint,
-  HorizontalAlignment,
-  ITransposablePlotElement,
-  IXyAxisPlotElement,
-  newDataPoint, newScreenPoint,
-  ScreenPoint,
-  ScreenVector,
-  VerticalAlignment,
-} from '@/oxyplot'
+﻿import type { DataPoint, ITransposablePlotElement, IXyAxisPlotElement, ScreenPoint } from '@/oxyplot'
+import { HorizontalAlignment, newDataPoint, newScreenPoint, ScreenVector, VerticalAlignment } from '@/oxyplot'
 
 /**
  * The transposable plot element extensions.

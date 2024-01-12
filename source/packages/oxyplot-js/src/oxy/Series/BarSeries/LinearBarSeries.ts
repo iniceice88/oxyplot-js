@@ -1,16 +1,13 @@
+import type { CreateDataPointSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  CreateDataPointSeriesOptions,
-  DataPoint,
   DataPointSeries,
   EdgeRenderingMode,
-  IRenderContext,
   newDataPoint,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
   ScreenVector,

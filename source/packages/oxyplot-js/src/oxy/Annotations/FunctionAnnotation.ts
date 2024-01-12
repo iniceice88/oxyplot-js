@@ -1,4 +1,5 @@
-import { type CreatePathAnnotationOptions, DataPoint, newDataPoint, PathAnnotation, ScreenPoint } from '@/oxyplot'
+import type { CreatePathAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
+import { newDataPoint, PathAnnotation } from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface CreateFunctionAnnotationOptions extends CreatePathAnnotationOptions {

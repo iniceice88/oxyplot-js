@@ -1,7 +1,7 @@
+import type { IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   EdgeRenderingMode,
   HorizontalAlignment,
-  type IRenderContext,
   LineJoin,
   newScreenPoint,
   OxyColor,
@@ -9,7 +9,6 @@ import {
   OxyRect,
   OxySize,
   RenderContextBase,
-  ScreenPoint,
   ScreenPoint_LeftTop,
   screenPointMinus,
   screenPointPlus,

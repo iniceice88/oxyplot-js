@@ -1,4 +1,4 @@
-import { type CreateLineSeriesOptions, DataPoint, LineSeries, newDataPoint } from '@/oxyplot'
+import { type CreateLineSeriesOptions, LineSeries, newDataPoint } from '@/oxyplot'
 import { assertInteger } from '@/patch'
 
 export interface CreateFunctionSeriesOptions extends CreateLineSeriesOptions {

@@ -1,19 +1,21 @@
+import type {
+  AxisLabelFormatType,
+  CreateItemsSeriesOptions,
+  IRenderContext,
+  ScreenPoint,
+  TrackerStringFormatterArgs,
+} from '@/oxyplot'
 import {
   Axis,
-  type AxisLabelFormatType,
-  type CreateItemsSeriesOptions,
   HorizontalAlignment,
-  type IRenderContext,
   ItemsSeries,
   LineJoin,
   newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
-  ScreenPoint,
   ScreenPointHelper,
   TrackerHitResult,
-  type TrackerStringFormatterArgs,
   VerticalAlignment,
 } from '@/oxyplot'
 import { getOrDefault, round, toPercent } from '@/patch'
@@ -358,10 +360,7 @@ export class PieSeries extends ItemsSeries {
         const label = this.insideLabelFormatter(slice, (slice.value / this.total) * 100)
 
         const r = innerRadius * (1 - this.insideLabelPosition) + outerRadius * this.insideLabelPosition
-        const labelPosition = newScreenPoint(
-          mp.x + r * Math.cos(midAngleRadians),
-          mp.y + r * Math.sin(midAngleRadians),
-        )
+        const labelPosition = newScreenPoint(mp.x + r * Math.cos(midAngleRadians), mp.y + r * Math.sin(midAngleRadians))
         let textAngle = 0
         if (this.areInsideLabelsAngled) {
           textAngle = midAngle

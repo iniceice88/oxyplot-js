@@ -1,11 +1,14 @@
-﻿import {
+﻿import type {
   CreateDataPointSeriesOptions,
   DataPoint,
+  IInterpolationAlgorithm,
+  IRenderContext,
+  LabelStringFormatterType,
+  ScreenPoint,
+} from '@/oxyplot'
+import {
   DataPointSeries,
   HorizontalAlignment,
-  type IInterpolationAlgorithm,
-  type IRenderContext,
-  LabelStringFormatterType,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -17,7 +20,6 @@
   OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
-  ScreenPoint,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
   screenPointPlus,

@@ -1,15 +1,13 @@
+import type { CreateAreaSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   AreaRenderContext,
   AreaSeries,
-  type CreateAreaSeriesOptions,
-  DataPoint,
-  type IRenderContext,
   LineStyle,
-  LineStyleHelper, newDataPoint,
+  LineStyleHelper,
+  newDataPoint,
   OxyColor,
   OxyColors,
   RenderingExtensions,
-  ScreenPoint,
   TrackerHitResult,
 } from '@/oxyplot'
 import { removeUndef } from '@/patch'

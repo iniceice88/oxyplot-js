@@ -1,6 +1,5 @@
+import type { CreateXYAxisSeriesOptions, IRenderContext, ScreenPoint, TrackerStringFormatterType } from '@/oxyplot'
 import {
-  CreateXYAxisSeriesOptions,
-  IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
@@ -11,9 +10,7 @@ import {
   OxyColors,
   OxyRect,
   PlotElementExtensions,
-  ScreenPoint,
   TrackerHitResult,
-  TrackerStringFormatterType,
   XYAxisSeries,
 } from '@/oxyplot'
 import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'

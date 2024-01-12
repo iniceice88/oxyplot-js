@@ -6,7 +6,7 @@ import {
   OxyColor,
   OxyColors,
   OxyImage,
-  ScreenPoint,
+  type ScreenPoint,
   VerticalAlignment,
   XmlWriterBase,
 } from '@/oxyplot'

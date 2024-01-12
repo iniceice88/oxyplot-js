@@ -1,5 +1,5 @@
-﻿import type { IPlotElement } from '@/oxyplot'
-import { Axis, DataPoint, ScreenPoint } from '@/oxyplot'
+﻿import type { DataPoint, IPlotElement, ScreenPoint } from '@/oxyplot'
+import { Axis } from '@/oxyplot'
 
 /**
  * Defines a plot element that uses an X and a Y axis.
