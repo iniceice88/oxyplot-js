@@ -251,7 +251,7 @@ export class PolygonSeries extends XYAxisSeries {
         }
 
         screenPointOutline.length = 0
-        screenPointOutline.push(...item.outlines[i].map(this.transform))
+        screenPointOutline.push(...item.outlines[i].map((p) => this.transform(p)))
 
         if (ScreenPointHelper.isPointInPolygon(point, screenPointOutline)) {
           const text = super.formatDefaultTrackerString(item, p, (args) => {
