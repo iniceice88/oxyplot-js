@@ -1,6 +1,6 @@
 {
-  "name": "sowtrd-mall",
-  "version": "1.0.0",
+  "name": "oxyplot-example",
+  "version": "2.1.2.001",
   "scripts": {
     "dev": "pnpm --parallel --stream -r run dev",
     "build": "pnpm --stream -r run build",
