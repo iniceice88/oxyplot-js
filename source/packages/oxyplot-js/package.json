@@ -1,13 +1,16 @@
 {
   "name": "oxyplot-js",
-  "version": "2.1.2.001",
-  "private": true,
   "type": "module",
+  "version": "2.1.2001",
+  "packageManager": "pnpm@8.14.0",
+  "description": "oxyplot for javascript",
+  "license": "MIT",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "run-p type-check && vite build",
+    "unbuild": "unbuild",
     "type-check": "tsc --noEmit"
   },
   "main": "./dist/oxyplot-js.umd.cjs",
@@ -42,6 +45,7 @@
     "typescript": "~5.2.0",
     "vite": "^5.0.7",
     "vite-plugin-dts": "^3.7.0",
-    "vitest": "^1.0.1"
+    "vitest": "^1.0.1",
+    "unbuild": "^2.0.0"
   }
 }

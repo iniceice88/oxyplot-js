@@ -8,15 +8,16 @@ module.exports = {
     'plugin:vue/vue3-essential',
     'eslint:recommended',
     '@vue/eslint-config-typescript',
-    '@vue/eslint-config-prettier/skip-formatting'
+    '@vue/eslint-config-prettier/skip-formatting',
   ],
   parserOptions: {
     tsconfigRootDir: __dirname,
     ecmaVersion: 'latest',
-    'project': './tsconfig.json'
+    'project': './tsconfig.json',
   },
+  ignorePatterns: ['.eslintrc.js', 'vite.config.ts', 'dist', 'node_modules'],
   'rules': {
     // no-floating-promises
-    '@typescript-eslint/no-floating-promises': 'error'
-  }
+    '@typescript-eslint/no-floating-promises': 'error',
+  },
 }
