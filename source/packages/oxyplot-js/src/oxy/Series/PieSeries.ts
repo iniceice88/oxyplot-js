@@ -18,7 +18,7 @@ import {
   TrackerHitResult,
   VerticalAlignment,
 } from '@/oxyplot'
-import { getOrDefault, round, toPercent } from '@/patch'
+import { getOrDefault, removeUndef, round, toPercent } from '@/patch'
 
 /**
  * Represents a slice of a `PieSeries`.
@@ -94,7 +94,7 @@ export type PieLabelFormatType = (slice: PieSlice, percent: number) => string
 /** Represents a series for pie/circle/doughnut charts. */
 export class PieSeries extends ItemsSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static DefaultTrackerStringFormatter: PieSeriesTrackerStringFormatterType = (args) =>
     `${args.xTitle}: ${round(args.xValue!, 3)} (${toPercent((args.percent || 0) / 100)})`
@@ -128,7 +128,7 @@ export class PieSeries extends ItemsSeries {
     this.trackerStringFormatter = PieSeries.DefaultTrackerStringFormatter
 
     if (opt) {
-      Object.assign(this, opt)
+      Object.assign(this, removeUndef(opt))
     }
   }
 
@@ -199,8 +199,8 @@ export class PieSeries extends ItemsSeries {
   public valueField?: string
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: PieSeriesTrackerStringFormatterType
 
@@ -288,7 +288,10 @@ export class PieSeries extends ItemsSeries {
         const op = newScreenPoint(mp.x + outerRadius * Math.cos(a), mp.y + outerRadius * Math.sin(a))
         outerPoints.push(op)
         const ip = newScreenPoint(mp.x + innerRadius * Math.cos(a), mp.y + innerRadius * Math.sin(a))
+        debugger
+        console.log(innerRadius + explodedRadius > 0)
         if (innerRadius + explodedRadius > 0) {
+          debugger
           innerPoints.push(ip)
         }
 

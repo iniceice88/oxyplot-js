@@ -88,7 +88,7 @@ export interface CreateRectangleBarSeriesOptions extends CreateXYAxisSeriesOptio
  */
 export class RectangleBarSeries extends XYAxisSeries {
   /**
-   * The default tracker format string.
+   * The default tracker formatter.
    */
   public static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = (args) =>
     `${args.title}
@@ -138,7 +138,7 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
   public items: RectangleBarItem[]
 
   /**
-   * Gets or sets the format string for the labels.
+   * Gets or sets the formatter for the labels.
    */
   public labelStringFormatter: LabelStringFormatterType
 

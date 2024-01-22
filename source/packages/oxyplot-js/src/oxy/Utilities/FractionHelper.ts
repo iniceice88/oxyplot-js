@@ -11,7 +11,7 @@ export class FractionHelper {
    * @param unit The unit.
    * @param unitSymbol The unit symbol.
    * @param eps The tolerance.
-   * @param formatString The format string.
+   * @param formatter The formatter.
    * @returns The convert to fraction string.
    */
   public static convertToFractionString(
@@ -19,7 +19,7 @@ export class FractionHelper {
     unit: number = 1,
     unitSymbol?: string,
     eps: number = 1e-6,
-    formatString?: AxisStringFormatterType,
+    formatter?: AxisStringFormatterType,
   ): string {
     if (Math.abs(value) < eps) {
       return '0'
@@ -41,10 +41,10 @@ export class FractionHelper {
       }
     }
 
-    if (!formatString) {
+    if (!formatter) {
       return `${value.toString()}${unitSymbol || ''}`
     }
 
-    return formatString(value) + (unitSymbol || '')
+    return formatter(value) + (unitSymbol || '')
   }
 }

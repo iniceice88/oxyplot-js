@@ -8,7 +8,7 @@ import {
   OxyColors,
   PlotModel,
   PlotType,
-  PolygonSeries,
+  PolygonSeries
 } from 'oxyplot-js'
 
 function polygonSeries(): PlotModel {

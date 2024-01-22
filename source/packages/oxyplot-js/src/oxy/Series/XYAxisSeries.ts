@@ -33,7 +33,7 @@ export interface CreateXYAxisSeriesOptions extends CreateItemsSeriesOptions {
  */
 export abstract class XYAxisSeries extends ItemsSeries implements ITransposablePlotElement {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly DefaultTrackerFormatter: TrackerStringFormatterType = (args) => {
     return `${args.title || ''}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}`
@@ -50,8 +50,8 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
   protected static readonly defaultYAxisTitle = 'Y'
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: TrackerStringFormatterType
 
@@ -481,95 +481,6 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
   }
 
   /**
-   * Updates the Max/Min limits from the specified list.
-   * @param items The items.
-   * @param xf A function that provides the x value for each item.
-   * @param yf A function that provides the y value for each item.
-   * @throws Error if items is null.
-   */
-  protected internalUpdateMaxMin2<T>(items: T[], xf: (item: T) => number, yf: (item: T) => number): void {
-    if (!items) {
-      throw new Error('items is null')
-    }
-
-    this.isXMonotonic = true
-
-    if (items.length === 0) {
-      return
-    }
-
-    let minx = this.minX
-    let miny = this.minY
-    let maxx = this.maxX
-    let maxy = this.maxY
-
-    if (isNaN(minx)) {
-      minx = Number_MAX_VALUE
-    }
-
-    if (isNaN(miny)) {
-      miny = Number_MAX_VALUE
-    }
-
-    if (isNaN(maxx)) {
-      maxx = Number_MIN_VALUE
-    }
-
-    if (isNaN(maxy)) {
-      maxy = Number_MIN_VALUE
-    }
-
-    let lastX = Number_MIN_VALUE
-    for (const item of items) {
-      const x = xf(item)
-      const y = yf(item)
-
-      // Check if the point is valid
-      if (!this.isValidPoint2(x, y)) {
-        continue
-      }
-
-      if (x < lastX) {
-        this.isXMonotonic = false
-      }
-
-      if (x < minx) {
-        minx = x
-      }
-
-      if (x > maxx) {
-        maxx = x
-      }
-
-      if (y < miny) {
-        miny = y
-      }
-
-      if (y > maxy) {
-        maxy = y
-      }
-
-      lastX = x
-    }
-
-    if (minx < Number_MAX_VALUE) {
-      this.minX = minx
-    }
-
-    if (miny < Number_MAX_VALUE) {
-      this.minY = miny
-    }
-
-    if (maxx > Number_MIN_VALUE) {
-      this.maxX = maxx
-    }
-
-    if (maxy > Number_MIN_VALUE) {
-      this.maxY = maxy
-    }
-  }
-
-  /**
    * Updates the Max/Min limits from the specified collection.
    * @param items The items.
    * @param xmin A function that provides the x minimum for each item.
@@ -578,7 +489,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
    * @param ymax A function that provides the y maximum for each item.
    * @throws Error if items is null.
    */
-  protected internalUpdateMaxMin3<T>(
+  protected internalUpdateMaxMin2<T>(
     items: T[],
     xmin: (item: T) => number,
     xmax: (item: T) => number,

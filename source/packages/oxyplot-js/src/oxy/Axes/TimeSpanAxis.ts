@@ -46,8 +46,8 @@ export class TimeSpanAxis extends LinearAxis {
   }
 
   /**
-   * Gets the default format string.
-   * @returns The default format string.
+   * Gets the default formatter.
+   * @returns The default formatter.
    */
   protected getDefaultStringFormatter(): AxisStringFormatterType | undefined {
     function padZero(n: number): string {

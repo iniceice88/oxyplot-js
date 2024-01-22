@@ -210,7 +210,7 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
    * @param topValue The bar item top value.
    * @param categoryValue The bar item category value.
    * @param categoryEndValue The bar item category end value.
-   * @param labelStringFormatter The format string to use for the label.
+   * @param labelStringFormatter The formatter to use for the label.
    * @param labelValues An optional set of data values to use when generating label strings.
    */
   protected async renderLabel(

@@ -12,6 +12,14 @@ function insideLabelColor(): PlotModel {
   return model
 }
 
+function doughnut() {
+  const model = createExample()
+  const series = model.series[0] as PieSeries
+  series.insideLabelColor = OxyColors.White
+  series.innerDiameter = 0.5
+  return model
+}
+
 function createExample(): PlotModel {
   const model = new PlotModel({ title: 'World population by continent' })
 
@@ -20,6 +28,7 @@ function createExample(): PlotModel {
     insideLabelPosition: 0.8,
     angleSpan: 360,
     startAngle: 0,
+    innerDiameter: 0.5,
   })
 
   // http://www.nationsonline.org/oneworld/world_population.htm
@@ -50,6 +59,12 @@ export default {
       title: 'PieSeries with inside label color',
       example: {
         model: insideLabelColor,
+      },
+    },
+    {
+      title: 'Doughnut Chart',
+      example: {
+        model: doughnut,
       },
     },
   ],

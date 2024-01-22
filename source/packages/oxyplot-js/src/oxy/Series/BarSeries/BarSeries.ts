@@ -52,7 +52,7 @@ export type BarSeriesTrackerStringFormatterType = (args: BarSeriesTrackerStringF
  */
 export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly DefaultTrackerFormatter: BarSeriesTrackerStringFormatterType = (args) => {
     return `${args.title || ''}\n${args.category}: ${args.value}`
@@ -64,8 +64,8 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
   private defaultFillColor: OxyColor = OxyColors.Undefined
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: BarSeriesTrackerStringFormatterType = undefined
 
@@ -133,7 +133,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
   overlapsStack: boolean = false
 
   /**
-   * Gets or sets the label format string.
+   * Gets or sets the label formatter.
    */
   labelStringFormatter?: LabelStringFormatterType
 

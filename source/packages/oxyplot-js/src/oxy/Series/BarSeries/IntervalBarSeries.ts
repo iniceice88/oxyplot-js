@@ -89,7 +89,7 @@ export interface CreateIntervalBarSeriesOptions extends CreateBarSeriesBaseOptio
  */
 export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements IStackableSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   static readonly DefaultTrackerStringFormatter: IntervalBarSeriesTrackerStringFormatterType = (args) =>
     `${args.title}\n${args.categoryTitle}: ${args.categoryValue}\n${args.valueTitle}: ${args.item?.start} - ${args.item?.end}`
@@ -117,8 +117,8 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   }
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: IntervalBarSeriesTrackerStringFormatterType
 
@@ -149,7 +149,7 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   readonly overlapsStack = true
 
   /**
-   * Gets or sets the label format string.
+   * Gets or sets the label formatter.
    */
   labelStringFormatter: LabelStringFormatterType = (item: any, args: any[]) => `${args[0]} - ${args[1]}`
 

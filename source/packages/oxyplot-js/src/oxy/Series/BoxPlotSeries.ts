@@ -70,7 +70,7 @@ export type BoxPlotSeriesOutlierTrackerStringFormatterType = (
  */
 export class BoxPlotSeries extends XYAxisSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly DefaultTrackerFormatString: BoxPlotSeriesTrackerStringFormatterType = (args) =>
     `${args.title || ''}
@@ -170,7 +170,7 @@ Mean: ${args.mean!.toFixed(2)}`
   public outlierSize: number
 
   /**
-   * Gets or sets the tracker format string for the outliers.
+   * Gets or sets the tracker formatter for the outliers.
    * Use {0} for series title, {1} for x- and {2} for y-value.
    */
   public outlierTrackerStringFormatter: BoxPlotSeriesOutlierTrackerStringFormatterType

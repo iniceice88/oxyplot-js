@@ -85,7 +85,7 @@ function labelPlacementReversed(): PlotModel {
   return model
 }
 
-/** Label Format String */
+/** Label formatter */
 function labelFormatString(): PlotModel {
   const model = createDisconnectedBins()
   const hs = model.series[0] as HistogramSeries
@@ -364,7 +364,7 @@ export default {
       },
     },
     {
-      title: 'Label Format String',
+      title: 'Label formatter',
       example: {
         model: labelFormatString,
       },

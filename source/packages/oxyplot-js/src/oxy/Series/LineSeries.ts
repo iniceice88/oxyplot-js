@@ -179,7 +179,7 @@ export class LineSeries extends DataPointSeries {
   public decimator?: (points: ScreenPoint[], result: ScreenPoint[]) => void
 
   /**
-   * Gets or sets the label format string. The default is null (no labels).
+   * Gets or sets the label formatter. The default is null (no labels).
    */
   public labelStringFormatter?: LabelStringFormatterType
 

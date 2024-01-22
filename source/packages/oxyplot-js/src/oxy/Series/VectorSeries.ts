@@ -80,7 +80,7 @@ export interface CreateVectorSeriesOptions extends CreateXYAxisSeriesOptions {
   /** The positions of the label for each vector along the drawn arrow (the default value is 0). */
   arrowLabelPosition?: number
 
-  /** The format string for the cell labels. The default value is <c>0.00</c>. */
+  /** The formatter for the cell labels. The default value is <c>0.00</c>. */
   labelStringFormatter?: (item: VectorItem) => string
 
   /** The font size of the labels. The default value is <c>0</c> (labels not visible). */
@@ -113,7 +113,7 @@ export class VectorSeries extends XYAxisSeries {
   /** The default line style. */
   private defaultLineStyle: LineStyle = LineStyle.Solid
 
-  /** The default tracker format string */
+  /** The default tracker formatter */
   public static readonly DefaultTrackerStringFormatter: VectorSeriesTrackerStringFormatterType = (args) => {
     return `${args.title}
 ${args.xTitle}: ${args.xValue}
@@ -204,12 +204,12 @@ ${args.colorAxisTitle}: ${args.item!.value}
   /** Gets or sets the color axis key. */
   public colorAxisKey?: string
 
-  /** Gets or sets the format string for the cell labels. The default value is <c>0.00</c>. */
+  /** Gets or sets the formatter for the cell labels. The default value is <c>0.00</c>. */
   public labelStringFormatter?: (item: VectorItem) => string
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: VectorSeriesTrackerStringFormatterType = undefined
 

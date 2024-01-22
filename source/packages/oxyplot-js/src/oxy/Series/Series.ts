@@ -88,8 +88,8 @@ export abstract class Series extends PlotElement {
   public renderInLegend: boolean
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: TrackerStringFormatterType = undefined
 

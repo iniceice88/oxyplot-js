@@ -195,7 +195,7 @@ export class ErrorSeries extends XYAxisSeries {
    */
   updateMaxMin(): void {
     super.updateMaxMin()
-    this.internalUpdateMaxMin3(
+    this.internalUpdateMaxMin2(
       this.points,
       (p) => p.x - p.xError,
       (p) => p.x + p.xError,

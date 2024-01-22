@@ -106,7 +106,7 @@ export class ScatterSeries extends XYAxisSeries {
   /** Thickness of the marker strokes. */
   markerStrokeThickness: number = 1
 
-  /** The label format string. The default is undefined (no labels). */
+  /** The label formatter. The default is undefined (no labels). */
   labelStringFormatter?: LabelStringFormatterType
 
   /** The label margins. The default is 6. */

@@ -82,7 +82,7 @@ function lineLegendPositionAtEnd() {
     isLegendVisible: false,
   })
 
-  // Define tracker format string
+  // Define tracker formatter
   const trackerStringFormatter: TrackerStringFormatterType = (args) => {
     return `${args.title}: ${Number(args.yValue).toFixed(1)}ºF`
   }

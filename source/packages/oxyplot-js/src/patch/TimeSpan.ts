@@ -91,8 +91,8 @@ export class TimeSpan {
     return new TimeSpan(hours * $1Hour)
   }
 
-  static fromDays(hours: number) {
-    return new TimeSpan(hours * $1Day)
+  static fromDays(days: number) {
+    return new TimeSpan(days * $1Day)
   }
 
   static from(days: number = 0, hours: number = 0, minutes: number = 0, seconds: number = 0, ms: number = 0) {

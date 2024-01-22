@@ -195,7 +195,7 @@ export interface CreateVolumeSeriesOptions extends CreateXYAxisSeriesOptions {
  */
 export class VolumeSeries extends XYAxisSeries {
   /**
-   * The default tracker format string.
+   * The default tracker formatter.
    */
   public static readonly DefaultTrackerStringFormatter: TrackerStringFormatterType = (args) => {
     const item = args.item as OhlcvItem

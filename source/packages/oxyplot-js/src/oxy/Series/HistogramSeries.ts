@@ -125,7 +125,7 @@ export interface CreateHistogramSeriesOptions extends CreateXYAxisSeriesOptions 
 /** Represents a series that can be bound to a collection of HistogramItem. */
 export class HistogramSeries extends XYAxisSeries {
   /**
-   * The default tracker format string.
+   * The default tracker formatter.
    */
   static readonly defaultTrackerStringFormatter: HistogramSeriesTrackerStringFormatterType = (
     args: HistogramSeriesTrackerStringFormatterArgs,
@@ -226,13 +226,13 @@ Count: ${args.item!.count}`
   maxValue: number = 0
 
   /**
-   * Gets or sets the format string for the cell labels. The default value is 0.00.
+   * Gets or sets the formatter for the cell labels. The default value is 0.00.
    */
   labelStringFormatter?: LabelStringFormatterType
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: HistogramSeriesTrackerStringFormatterType = undefined
 

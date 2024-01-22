@@ -48,7 +48,7 @@ export interface CreatePolygonSeriesOptions extends CreateXYAxisSeriesOptions {
  */
 export class PolygonSeries extends XYAxisSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   private static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = (args) =>
     `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.item.value}`
@@ -83,9 +83,9 @@ export class PolygonSeries extends XYAxisSeries {
    */
   public colorAxisKey?: string
   /**
-   * Gets or sets the format string for the cell labels. The default value is `0.00`.
+   * Gets or sets the formatter for the cell labels. The default value is `0.00`.
    *
-   * The label format string is only used when `LabelFontSize` is greater than 0.
+   * The label formatter is only used when `LabelFontSize` is greater than 0.
    */
   public labelStringFormatter: LabelStringFormatterType = (item: PolygonItem, args: any[]) => item.value.toFixed(2)
   /**

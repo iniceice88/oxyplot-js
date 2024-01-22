@@ -95,7 +95,7 @@ export interface CreateTornadoBarSeriesOptions extends CreateBarSeriesBaseOption
  */
 export class TornadoBarSeries extends BarSeriesBase<TornadoBarItem> {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = (args) =>
     `${args.title || ''}\n${args.yTitle}: ${args.yValue}\n${args.xTitle}: ${args.xValue}`
@@ -172,7 +172,7 @@ export class TornadoBarSeries extends BarSeriesBase<TornadoBarItem> {
   maximumFillColor: OxyColor
 
   /**
-   * Gets or sets the format string for the maximum labels.
+   * Gets or sets the formatter for the maximum labels.
    */
   maximumLabelStringFormatter: LabelStringFormatterType
 
@@ -192,7 +192,7 @@ export class TornadoBarSeries extends BarSeriesBase<TornadoBarItem> {
   minimumFillColor: OxyColor
 
   /**
-   * Gets or sets the format string for the minimum labels.
+   * Gets or sets the formatter for the minimum labels.
    */
   minimumLabelStringFormatter: LabelStringFormatterType
 

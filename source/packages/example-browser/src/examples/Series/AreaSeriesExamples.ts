@@ -32,7 +32,7 @@ function crossingLines(): PlotModel {
 function trackerFormatString(): PlotModel {
   const model = new PlotModel({ title: 'AreaSeries with custom TrackerFormatString' })
 
-  // the axis titles will be used in the default tracker format string
+  // the axis titles will be used in the default tracker formatter
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, title: 'X-axis' }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, title: 'Y-axis' }))
 

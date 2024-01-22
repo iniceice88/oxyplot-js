@@ -135,7 +135,7 @@ export interface CreateRectangleItemOptions extends CreateXYAxisSeriesOptions {
   colorAxisKey?: string
 
   /**
-   * The format string for the cell labels. The default value is 0.00.
+   * The formatter for the cell labels. The default value is 0.00.
    */
   labelStringFormatter?: LabelStringFormatterType
 
@@ -145,7 +145,7 @@ export interface CreateRectangleItemOptions extends CreateXYAxisSeriesOptions {
   labelFontSize?: number
 
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   trackerStringFormatter?: TrackerStringFormatterType
 
@@ -170,7 +170,7 @@ export class RectangleSeries extends XYAxisSeries {
   private _actualItems: RectangleItem[] = []
 
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   static readonly DefaultTrackerFormatString: TrackerStringFormatterType = (args: TrackerStringFormatterArgs) =>
     `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
@@ -227,7 +227,7 @@ export class RectangleSeries extends XYAxisSeries {
   colorAxisKey?: string
 
   /**
-   * Gets or sets the format string for the cell labels. The default value is 0.00.
+   * Gets or sets the formatter for the cell labels. The default value is 0.00.
    */
   labelStringFormatter: LabelStringFormatterType = (item) => item.toFixed(2)
 

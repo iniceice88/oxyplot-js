@@ -99,7 +99,7 @@ export interface CreateHighLowSeriesOptions extends CreateXYAxisSeriesOptions {
  */
 export class HighLowSeries extends XYAxisSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly DefaultTrackerStringFormatter: HighLowSeriesTrackerStringFormatterType = (args) =>
     `${args.title}
@@ -135,8 +135,8 @@ Close: ${round(args.close!, 3)}`
   }
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: HighLowSeriesTrackerStringFormatterType
 
@@ -465,7 +465,7 @@ Close: ${round(args.close!, 3)}`
    */
   updateMaxMin(): void {
     super.updateMaxMin()
-    this.internalUpdateMaxMin3(
+    this.internalUpdateMaxMin2(
       this.items,
       (i) => i.x,
       (i) => i.x,

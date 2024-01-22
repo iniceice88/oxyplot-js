@@ -1,14 +1,14 @@
-import ShowCases from './ShowCases'
 import Annotations from './Annotations'
-import CustomSeries from './CustomSeries'
 import Axes from './Axes'
+import CustomSeries from './CustomSeries'
+import Discussions from './Discussions'
 import Exps from './Examples'
 import Misc from './Misc'
 import Series from './Series'
+import ShowCases from './ShowCases'
 
 import type { ExampleCategory } from './types'
 import { sortArray } from 'oxyplot-js'
-import Discussions from './Discussions'
 
 const allExampleCats = [
   ...Annotations,

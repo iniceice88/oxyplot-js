@@ -751,7 +751,7 @@ export abstract class Axis extends PlotElement {
   public titleFontWeight: number
 
   /**
-   * Gets or sets the format string used for formatting the title and unit when Unit is defined.
+   * Gets or sets the formatter used for formatting the title and unit when Unit is defined.
    * The default value is "{0} [{1}]", where {0} refers to the Title and {1} refers to the Unit.
    * If Unit is null, the actual title is defined by Title only.
    */
@@ -772,7 +772,7 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets a value indicating whether to use superscript exponential format. The default value is false.
    * This format will convert 1.5E+03 to 1.5·10^{3} and render the superscript properly.
-   * If StringFormatter is null, 1.0E+03 will be converted to 10^{3}, otherwise it will use the format string for the mantissa.
+   * If StringFormatter is null, 1.0E+03 will be converted to 10^{3}, otherwise it will use the formatter for the mantissa.
    */
   public useSuperExponentialFormat: boolean = false
 
@@ -1588,9 +1588,9 @@ export abstract class Axis extends PlotElement {
   protected actualMaximumAndMinimumChangedOverride(): void {}
 
   /**
-   * Gets the default format string.
-   * @returns A format string.
-   * @remarks This format string is used if the StringFormat is not set.
+   * Gets the default formatter.
+   * @returns A formatter.
+   * @remarks This formatter is used if the StringFormat is not set.
    */
   protected getDefaultStringFormatter(): AxisStringFormatterType | undefined {
     return (x: number) => {

@@ -61,7 +61,7 @@ export type ContourSeriesTrackerStringFormatterType = (
  */
 export class ContourSeries extends XYAxisSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   public static readonly DefaultTrackerFormatString: ContourSeriesTrackerStringFormatterType = (args) => {
     return `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.zTitle}: ${args.contourLevel}`
@@ -118,13 +118,13 @@ export class ContourSeries extends XYAxisSeries {
   public labelBackground: OxyColor
 
   /**
-   * The format string for contour values.
+   * The formatter for contour values.
    */
   public labelStringFormatter?: LabelStringFormatterType
 
   /**
-   * A format string used for the tracker. The default depends on the series.
-   * The arguments for the format string may be different for each type of series. See the documentation.
+   * A format function used for the tracker. The default depends on the series.
+   * The arguments for the formatter may be different for each type of series. See the documentation.
    */
   public trackerStringFormatter?: ContourSeriesTrackerStringFormatterType = undefined
 

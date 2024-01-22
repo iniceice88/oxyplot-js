@@ -79,7 +79,7 @@ export interface CreateHeatMapSeriesOptions extends CreateXYAxisSeriesOptions {
  */
 export class HeatMapSeries extends XYAxisSeries {
   /**
-   * The default tracker format string
+   * The default tracker formatter
    */
   static readonly DefaultTrackerFormatString: TrackerStringFormatterType = (args: TrackerStringFormatterArgs) =>
     `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
@@ -180,7 +180,7 @@ export class HeatMapSeries extends XYAxisSeries {
   renderMethod: HeatMapRenderMethod = HeatMapRenderMethod.Bitmap
 
   /**
-   * Gets or sets the format string for the cell labels. The default value is "0.00".
+   * Gets or sets the formatter for the cell labels. The default value is "0.00".
    */
   labelStringFormatter: LabelStringFormatterType = (item) => item.toFixed(2)
 
