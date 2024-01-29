@@ -3,14 +3,24 @@
   "type": "module",
   "version": "2.1.2001",
   "packageManager": "pnpm@8.14.0",
+  "author": "inice88",
   "description": "oxyplot for javascript",
+  "homepage": "https://github.com/iniceice88/oxyplot-js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iniceice88/oxyplot-js.git",
+    "directory": "source"
+  },
+  "keywords": [
+    "oxyplot",
+    "oxyplot-js"
+  ],
   "license": "MIT",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "run-p type-check && vite build",
-    "unbuild": "unbuild",
     "type-check": "tsc --noEmit"
   },
   "main": "./dist/oxyplot-js.umd.cjs",
@@ -45,7 +55,6 @@
     "typescript": "~5.2.0",
     "vite": "^5.0.7",
     "vite-plugin-dts": "^3.7.0",
-    "vitest": "^1.0.1",
-    "unbuild": "^2.0.0"
+    "vitest": "^1.0.1"
   }
 }

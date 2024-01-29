@@ -4,7 +4,7 @@ import dts from 'vite-plugin-dts'
 
 export default defineConfig({
   build: {
-    sourcemap: true,
+    sourcemap: false,
     lib: {
       entry: resolve(__dirname, './src/index.ts'),
       name: 'oxyplot-js',
