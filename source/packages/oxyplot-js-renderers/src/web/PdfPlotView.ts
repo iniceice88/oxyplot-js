@@ -1,7 +1,7 @@
 import { OxyRect, OxySize, PlotModel, ScreenPoint_LeftTop } from 'oxyplot-js'
-import { PdfRenderContext } from './PdfRenderContext.ts'
+import { PdfRenderContext } from './PdfRenderContext'
 import { jsPDF } from 'jspdf'
-import { WebPlotViewBase } from './WebPlotViewBase.ts'
+import { WebPlotViewBase } from './WebPlotViewBase'
 
 export class PdfPlotView extends WebPlotViewBase {
   private readonly _view: HTMLIFrameElement

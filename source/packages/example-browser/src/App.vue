@@ -19,11 +19,11 @@ import duration from 'dayjs/plugin/duration'
 import dayOfYear from 'dayjs/plugin/dayOfYear'
 import oxyPlotImg from './assets/OxyPlot.png'
 
-import { getRenderContextImageCacheService } from './web/RenderContextImageCacheService.ts'
+import { getRenderContextImageCacheService } from '@oxyplot-js/renderers'
 
-import { PdfPlotView } from './web/PdfPlotView.ts'
-import { CanvasPlotView } from './web/CanvasPlotView.ts'
-import { SvgPlotView } from './web/SvgPlotView.ts'
+import { PdfPlotView } from '@oxyplot-js/renderers'
+import { CanvasPlotView } from '@oxyplot-js/renderers'
+import { SvgPlotView } from '@oxyplot-js/renderers'
 
 type RendererType = 'svg' | 'canvas' | 'pdf'
 ;(window as any).oxyPlotImg = oxyPlotImg

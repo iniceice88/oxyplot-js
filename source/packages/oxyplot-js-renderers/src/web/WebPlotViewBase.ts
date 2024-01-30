@@ -1,8 +1,8 @@
 import {
   CursorType,
-  IPlotController,
+  type IPlotController,
   type IPlotModel,
-  IPlotView,
+  type IPlotView,
   OxyRect,
   PlotController,
   PlotModel,

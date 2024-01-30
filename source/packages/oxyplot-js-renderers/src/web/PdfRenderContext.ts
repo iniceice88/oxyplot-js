@@ -10,27 +10,27 @@ import {
   OxyImage,
   OxyRect,
   OxySize,
-  round,
-  ScreenPoint,
+  type ScreenPoint,
   StringHelper,
   VerticalAlignment,
 } from 'oxyplot-js'
 import { canvasTextMeasurer, OxyStyleToCanvasStyleConverter } from './canvasTextMeasurer'
-import { getRenderContextImageCacheService, IRenderContextImageCacheService } from './RenderContextImageCacheService.ts'
+import { type Context2d, jsPDF } from 'jspdf'
 
-export class CanvasRenderContext extends ClippingRenderContext {
-  private readonly ctx: CanvasRenderingContext2D
+export class PdfRenderContext extends ClippingRenderContext {
+  private readonly _pdf: jsPDF
+  private readonly ctx: Context2d
   private readonly _textMeasurer: ITextMeasurer
   private readonly styleConverter = new OxyStyleToCanvasStyleConverter()
   private readonly _ctxInitStyles: Record<string, any>
-  private readonly _renderContextImageCacheService: IRenderContextImageCacheService
 
-  constructor(private canvas: HTMLCanvasElement) {
+  constructor(orientation?: 'p' | 'portrait' | 'l' | 'landscape') {
     super()
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('Could not get canvas context')
-
+    this._pdf = new jsPDF({
+      unit: 'px',
+      orientation,
+    })
+    const ctx = this._pdf.context2d
     this.ctx = ctx
     this._ctxInitStyles = {
       fillStyle: ctx.fillStyle,
@@ -39,8 +39,11 @@ export class CanvasRenderContext extends ClippingRenderContext {
       lineWidth: ctx.lineWidth,
     }
 
-    this._renderContextImageCacheService = getRenderContextImageCacheService()
-    this._textMeasurer = canvasTextMeasurer(ctx)
+    this._textMeasurer = canvasTextMeasurer()
+  }
+
+  getPdf() {
+    return this._pdf
   }
 
   public async drawImage(
@@ -58,26 +61,13 @@ export class CanvasRenderContext extends ClippingRenderContext {
   ): Promise<void> {
     if (opacity <= 0) return
 
-    this.resetStyles()
-    const ctx = this.ctx
+    const x = destX - (srcX / srcWidth) * destWidth
+    const width = (source.width / srcWidth) * destWidth
+    const y = destY - (srcY / srcHeight) * destHeight
+    const height = (source.height / srcHeight) * destHeight
 
-    const img = await this.getOrCreateImage(source, () => {
-      const blob = new Blob([source.data], { type: 'image/png' })
-      return createImageBitmap(blob)
-    })
-
-    ctx.imageSmoothingEnabled = interpolate
-    ctx.drawImage(
-      img,
-      srcX,
-      srcY,
-      srcWidth,
-      srcHeight,
-      round(destX, 0),
-      round(destY, 0),
-      round(destWidth, 0),
-      round(destHeight, 0),
-    )
+    this.clearStyles()
+    this._pdf.addImage(source.data, 'PNG', x, y, width, height)
   }
 
   /**
@@ -98,8 +88,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     lineJoin?: LineJoin,
   ): Promise<void> {
     if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
-
-    this.resetStyles()
+    this.clearStyles()
 
     const ctx = this.ctx
     ctx.beginPath()
@@ -125,8 +114,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
   ): Promise<void> {
     if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
 
-    this.resetStyles()
-
+    this.clearStyles()
     const ctx = this.ctx
     ctx.beginPath()
 
@@ -156,10 +144,20 @@ export class CanvasRenderContext extends ClippingRenderContext {
     lineJoin?: LineJoin,
   ): Promise<void> {
     if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || points.length < 2) return
-
-    this.resetStyles()
-
+    this.clearStyles()
     const ctx = this.ctx
+    if (fill.a < 255 || stroke.a < 255) {
+      this._pdf.saveGraphicsState()
+      let opacity = 1,
+        strokeOpacity = 1
+      if (fill.a < 255) {
+        opacity = fill.a / 255
+      }
+      if (stroke.a < 255) {
+        strokeOpacity = stroke.a / 255
+      }
+      this._pdf.setGState(this._pdf.GState({ opacity, 'stroke-opacity': strokeOpacity }))
+    }
     ctx.beginPath()
 
     this.applyPolygonStyle(fill, stroke, thickness, edgeRenderingMode, dashArray, lineJoin)
@@ -173,6 +171,10 @@ export class CanvasRenderContext extends ClippingRenderContext {
 
     if (stroke.isVisible() && thickness > 0) {
       ctx.stroke()
+    }
+
+    if (fill.a < 255 || stroke.a < 255) {
+      this._pdf.restoreGraphicsState()
     }
   }
 
@@ -197,7 +199,8 @@ export class CanvasRenderContext extends ClippingRenderContext {
   ): Promise<void> {
     if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || polygons.length === 0) return
 
-    this.resetStyles()
+    this.clearStyles()
+
     const ctx = this.ctx
     this.applyPolygonStyle(fill, stroke, thickness, edgeRenderingMode, dashArray, lineJoin)
 
@@ -246,11 +249,10 @@ export class CanvasRenderContext extends ClippingRenderContext {
     maxSize?: OxySize,
   ): Promise<void> {
     if (!text || fill.isInvisible()) return
+    this.clearStyles()
 
     if (isNullOrUndef(horizontalAlignment)) horizontalAlignment = HorizontalAlignment.Left
     if (isNullOrUndef(verticalAlignment)) verticalAlignment = VerticalAlignment.Top
-
-    this.resetStyles()
 
     const ctx = this.ctx
     fontSize = fontSize || 12
@@ -295,7 +297,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
         x = -textRect.width
       }
 
-      ctx.fillText(line, x, y + textRect.height / 2, maxSize?.width)
+      ctx.fillText(line, x, y + textRect.height / 2)
       y += textRect.height
     }
 
@@ -309,19 +311,12 @@ export class CanvasRenderContext extends ClippingRenderContext {
   protected setClip(rect: OxyRect): void {
     this.ctx.save()
 
-    const region = new Path2D()
-    region.rect(rect.left, rect.top, rect.width, rect.height)
-    this.ctx.clip(region)
+    this.ctx.rect(rect.left, rect.top, rect.width, rect.height)
+    this.ctx.clip()
   }
 
   protected resetClip(): void {
     this.ctx.restore()
-  }
-
-  private resetStyles() {
-    const ctx = this.ctx
-    ctx.setLineDash([])
-    Object.assign(ctx, this._ctxInitStyles)
   }
 
   private applyLineStyle(
@@ -334,12 +329,16 @@ export class CanvasRenderContext extends ClippingRenderContext {
     const ctx = this.ctx
 
     if (dashArray && dashArray.length > 0) {
-      ctx.setLineDash(dashArray)
+      ;(ctx as any).setLineDash(dashArray)
     }
 
     ctx.lineWidth = thickness
     ctx.lineJoin = this.styleConverter.convertLineJoin(lineJoin)
     ctx.strokeStyle = this.styleConverter.convertStrokeOrFillStyle(stroke)
+  }
+
+  private clearStyles() {
+    ;(this.ctx as any).setLineDash([])
   }
 
   private applyPolygonStyle(
@@ -370,19 +369,5 @@ export class CanvasRenderContext extends ClippingRenderContext {
       const point = points[i]
       this.ctx.lineTo(point.x, point.y)
     }
-  }
-
-  private async getOrCreateImage(
-    source: OxyImage,
-    creator: () => Promise<ImageBitmap | HTMLImageElement>,
-  ): Promise<ImageBitmap | HTMLImageElement> {
-    const hashCode = source.getHashCode().toString()
-    const existsImage = this._renderContextImageCacheService.get(hashCode)
-    if (existsImage) {
-      return Promise.resolve(existsImage)
-    }
-    const image = await creator()
-    this._renderContextImageCacheService.set(hashCode, image)
-    return image
   }
 }

@@ -11,6 +11,31 @@ Now you can use OxyPlot in web browsers and Node.js environments.
 [Playground](https://stackblitz.com/edit/oxyplot-js-play-asx72fo?file=src%2Fexamples%2FAnnotations%2FAnnotationExamples.ts)
 
 ### Install
+
 ```bash
 npm install oxyplot-js
+npm install oxyplot-js-renderers
+```
+
+### How to use
+
+```html
+<canvas
+  id="canvasPlotView"
+  style="width: 800px; height: 600px"
+/>
+````
+
+```ts
+import { PlotModel } from 'oxyplot-js'
+import { CanvasPlotView } from '@oxyplot-js/renderers'
+
+const canvas = document.getElementById('canvasPlotView')! as HTMLCanvasElement
+const plotView = new CanvasPlotView(canvas)
+
+const model: PlotModel = new PlotModel({ title: 'LineSeries' })
+// add some series
+// model.series.push(lineSeries)
+
+plotView.model = model
 ```

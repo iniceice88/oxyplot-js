@@ -1,28 +1,30 @@
 import {
   CursorType,
   EdgeRenderingMode,
-  ITextMeasurer,
+  type IRenderContext,
   OxyColor,
   OxyColors,
   OxyRect,
   PlotModel,
-  SvgRenderContext,
   TrackerHitResult,
 } from 'oxyplot-js'
 import { addPlotViewEvents, convertCursorType } from './web-events'
-import { canvasTextMeasurer } from './canvasTextMeasurer.ts'
+import { OxyStyleToCanvasStyleConverter } from './canvasTextMeasurer'
+import { CanvasRenderContext } from './CanvasRenderContext'
 import { WebPlotViewBase } from './WebPlotViewBase'
 
-export class SvgPlotView extends WebPlotViewBase {
-  private readonly _view: HTMLDivElement
+export class CanvasPlotView extends WebPlotViewBase {
+  private readonly _view: HTMLCanvasElement
   private readonly _tooltip: HTMLDivElement
-  //private readonly _drawCtx: HTMLElement
-  private readonly textMeasurer: ITextMeasurer
+  private readonly _renderContext: IRenderContext
+  private _drawCtx: CanvasRenderingContext2D
+  private readonly _styleConverter: OxyStyleToCanvasStyleConverter = new OxyStyleToCanvasStyleConverter()
 
-  constructor(view: HTMLDivElement) {
+  constructor(view: HTMLCanvasElement) {
     super()
     this._view = view
-    this.textMeasurer = canvasTextMeasurer()
+    this._drawCtx = this._view.getContext('2d') as CanvasRenderingContext2D
+    if (!this._drawCtx) throw new Error('Could not get 2d context')
     this._tooltip = document.createElement('div')
     this._tooltip.style.position = 'absolute'
     this._tooltip.style.zIndex = '100'
@@ -32,6 +34,7 @@ export class SvgPlotView extends WebPlotViewBase {
     this._tooltip.style.visibility = 'hidden'
     this._tooltip.style.pointerEvents = 'none'
     document.body.appendChild(this._tooltip)
+    this._renderContext = new CanvasRenderContext(this._view)
 
     addPlotViewEvents(this._view, this)
   }
@@ -41,7 +44,7 @@ export class SvgPlotView extends WebPlotViewBase {
   }
 
   get clientArea(): OxyRect {
-    return new OxyRect(0, 0, this._view.clientWidth, this._view.clientHeight)
+    return new OxyRect(0, 0, this._view.width, this._view.height)
   }
 
   hideTracker(): void {
@@ -68,28 +71,19 @@ export class SvgPlotView extends WebPlotViewBase {
   }
 
   async renderOverride(model: PlotModel): Promise<void> {
+    this._drawCtx = this._view.getContext('2d') as CanvasRenderingContext2D
     const view = this._view
-    this._view.innerHTML = ''
-    const renderContext = new SvgRenderContext(
-      view.clientWidth,
-      view.clientHeight,
-      true,
-      this.textMeasurer,
-      model.background,
-    )
-
+    this._drawCtx.reset()
     if (!model.background.isUndefined()) {
-      this._view.style.backgroundColor = model.background.toString()
+      this._drawCtx.fillStyle = this._styleConverter.convertStrokeOrFillStyle(model.background)
+      this._drawCtx.fillRect(0, 0, view.width, view.height)
     }
 
-    await model.render(renderContext, new OxyRect(0, 0, view.clientWidth, view.clientHeight))
+    await model.render(this._renderContext, new OxyRect(0, 0, view.width, view.height))
     if (this._zoomRectangle && this._zoomRectangle.equals(OxyRect.Empty)) {
       const fill = OxyColor.parse('#40FFFF00')
       const stroke = OxyColors.Black
-      await renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
+      await this._renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
     }
-
-    renderContext.complete()
-    this._view.innerHTML = renderContext.getXml()
   }
 }

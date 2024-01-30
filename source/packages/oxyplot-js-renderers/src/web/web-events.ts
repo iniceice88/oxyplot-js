@@ -7,7 +7,7 @@ import {
   type OxyMouseEventArgs,
   type OxyMouseWheelEventArgs,
 } from 'oxyplot-js'
-import { WebPlotViewBase } from './WebPlotViewBase.ts'
+import { WebPlotViewBase } from './WebPlotViewBase'
 
 export function toOxyMouseEventArgs(e: MouseEvent): OxyMouseEventArgs {
   return {
