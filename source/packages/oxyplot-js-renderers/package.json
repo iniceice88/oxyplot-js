@@ -20,7 +20,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "run-p type-check && vite build",
+    "build": "pnpm type-check && vite build",
     "type-check": "tsc --noEmit"
   },
   "main": "./dist/oxyplot-js-renderers.umd.cjs",
@@ -38,22 +38,18 @@
       }
     }
   },
-  "dependencies": {
-    "oxyplot-js": "2.1.2001"
-  },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
     "@tsconfig/node18": "^18.2.2",
     "@types/jsdom": "^21.1.6",
     "@types/node": "^18.19.2",
     "eslint": "^8.49.0",
-    "jsdom": "^23.0.1",
-    "npm-run-all2": "^6.1.1",
     "prettier": "^3.0.3",
     "typescript": "~5.2.0",
     "vite": "^5.0.7",
     "vite-plugin-dts": "^3.7.0",
     "vitest": "^1.0.1",
-    "jspdf": "^2.5.1"
+    "jspdf": "^2.5.1",
+    "oxyplot-js": "2.1.2001"
   }
 }

@@ -10,6 +10,17 @@ export default defineConfig({
       name: 'oxyplot-js-renderers',
       fileName: 'oxyplot-js-renderers',
     },
+    rollupOptions: {
+      external: ['image-js', 'xmlbuilder2', 'oxyplot-js', 'jspdf'],
+      output: {
+        globals: {
+          'image-js': 'image-js',
+          xmlbuilder2: 'xmlbuilder2',
+          'oxyplot-js': 'oxyplot-js',
+          jspdf: 'jspdf',
+        },
+      },
+    },
   },
   plugins: [dts()],
 })

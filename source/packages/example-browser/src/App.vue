@@ -19,11 +19,7 @@ import duration from 'dayjs/plugin/duration'
 import dayOfYear from 'dayjs/plugin/dayOfYear'
 import oxyPlotImg from './assets/OxyPlot.png'
 
-import { getRenderContextImageCacheService } from '@oxyplot-js/renderers'
-
-import { PdfPlotView } from '@oxyplot-js/renderers'
-import { CanvasPlotView } from '@oxyplot-js/renderers'
-import { SvgPlotView } from '@oxyplot-js/renderers'
+import { CanvasPlotView, getRenderContextImageCacheService, PdfPlotView, SvgPlotView } from 'oxyplot-js-renderers'
 
 type RendererType = 'svg' | 'canvas' | 'pdf'
 ;(window as any).oxyPlotImg = oxyPlotImg
@@ -103,7 +99,7 @@ function getPlotView() {
     if (plotViewCache[key]) return plotViewCache[key]
 
     const canvas = getCanvas()
-    const plotView = new CanvasPlotView(canvas)
+    const plotView = new CanvasPlotView(canvas) as any
     plotViewCache[key] = plotView
     return plotView
   }
@@ -114,7 +110,7 @@ function getPlotView() {
 
     const plotView = new PdfPlotView(document.getElementById('pdfPlotView')! as HTMLIFrameElement)
     plotView.orientation = isPdfOrientationP.value ? 'portrait' : 'landscape'
-    plotViewCache[key] = plotView
+    plotViewCache[key] = plotView as any
     return plotView
   }
 
@@ -127,7 +123,7 @@ function getPlotView() {
       return plotView
     }
 
-    plotView = new SvgPlotView(div)
+    plotView = new SvgPlotView(div) as any
     plotViewCache[key] = plotView
     return plotView
   }

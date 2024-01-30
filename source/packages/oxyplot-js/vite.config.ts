@@ -10,6 +10,16 @@ export default defineConfig({
       name: 'oxyplot-js',
       fileName: 'oxyplot-js',
     },
+    rollupOptions: {
+      external: ['dayjs','image-js','xmlbuilder2'],
+      output: {
+        globals: {
+          'dayjs': 'dayjs',
+          'image-js': 'image-js',
+          'xmlbuilder2': 'xmlbuilder2',
+        },
+      },
+    },
   },
   resolve: {
     alias: {
