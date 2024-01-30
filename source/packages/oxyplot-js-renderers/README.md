@@ -28,7 +28,7 @@ npm install oxyplot-js-renderers
 
 ```ts
 import { PlotModel } from 'oxyplot-js'
-import { CanvasPlotView } from '@oxyplot-js/renderers'
+import { CanvasPlotView } from 'oxyplot-js-renderers'
 
 const canvas = document.getElementById('canvasPlotView')! as HTMLCanvasElement
 const plotView = new CanvasPlotView(canvas)
