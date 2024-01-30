@@ -1,7 +1,7 @@
 {
   "name": "oxyplot-js-renderers",
   "type": "module",
-  "version": "2.1.2002",
+  "version": "2.1.2003",
   "packageManager": "pnpm@8.14.0",
   "author": "inice88",
   "description": "renderers for oxyplot-js",
