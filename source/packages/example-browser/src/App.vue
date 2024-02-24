@@ -104,8 +104,6 @@ function getCanvas() {
   const ratio = window.devicePixelRatio || 1
   c.width = width * ratio
   c.height = height * ratio
-  c.style.width = width + 'px'
-  c.style.height = height + 'px'
 
   canvas = c
   return canvas
@@ -244,25 +242,20 @@ async function display(pageExample: PageExample) {
       </div>
     </div>
     <div class="flex-grow ml-4">
-      <iframe
-        v-show="currentRendererType === 'pdf'"
-        id="pdfPlotView"
-        class="border border-gray-200 rounded-lg shadow"
-        :class="[isPdfOrientationP ? 'pdfplotview-portrait' : 'pdfplotview-landscape']"
-      />
-      <canvas
-        id="canvasPlotView"
-        v-show="currentRendererType === 'canvas'"
-        class="border border-gray-200 rounded-lg shadow"
-        style="width: 800px; height: 600px"
-      />
       <div
-        id="svgPlotView"
-        v-show="currentRendererType === 'svg'"
-        class="border border-gray-200 rounded-lg shadow select-none"
-        style="width: 800px; height: 600px"
-      ></div>
-
+        id="plotViewWrapper"
+        style="resize: both; overflow: auto; width: 800px; height: 600px"
+        class="border border-gray-200 rounded-lg shadow p-4"
+      >
+        <iframe
+          v-show="currentRendererType === 'pdf'"
+          id="pdfPlotView"
+          class="w-full h-full"
+          :class="[isPdfOrientationP ? 'pdfplotview-portrait' : 'pdfplotview-landscape']"
+        />
+        <canvas id="canvasPlotView" class="w-full h-full" v-show="currentRendererType === 'canvas'" />
+        <div id="svgPlotView" class="w-full h-full" v-show="currentRendererType === 'svg'"></div>
+      </div>
       <div class="flex justify-between mt-2">
         <div class="flex items-center">
           Renderer:
@@ -368,14 +361,4 @@ async function display(pageExample: PageExample) {
   </a>
 </template>
 
-<style scoped>
-.pdfplotview-portrait {
-  width: 800px;
-  height: 80vh;
-}
-
-.pdfplotview-landscape {
-  width: 800px;
-  height: 600px;
-}
-</style>
+<style scoped></style>

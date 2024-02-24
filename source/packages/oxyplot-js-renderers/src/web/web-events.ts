@@ -78,9 +78,10 @@ export function addPlotViewEvents(view: HTMLElement, plotView: WebPlotViewBase) 
     event.preventDefault()
   })
 
-  view.addEventListener('resize', async () => {
+  new ResizeObserver(() => {
     plotView.invalidatePlot(false)
-  })
+  }).observe(view)
+
   view.onmousedown = (e) => {
     plotView.actualController.handleMouseDown(plotView, toOxyMouseDownEventArgs(e))
   }
