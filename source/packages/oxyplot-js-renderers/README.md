@@ -8,7 +8,7 @@ Now you can use OxyPlot in web browsers and Node.js environments.
 
 [Live Demo](https://iniceice88.github.io/oxyplot-js/)
 
-[Playground](https://stackblitz.com/edit/oxyplot-js-play-asx72fo?file=src%2Fexamples%2FAnnotations%2FAnnotationExamples.ts)
+[Playground](https://stackblitz.com/edit/oxyplot-js-play-asx72fo)
 
 ### Install
 
