@@ -1,2 +1,2 @@
-export * from './oxy/internal'
+export * from './oxy/index'
 export * from './patch'

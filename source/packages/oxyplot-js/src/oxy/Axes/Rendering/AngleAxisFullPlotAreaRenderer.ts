@@ -1,20 +1,21 @@
-import type { IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
-  AngleAxis,
+  AngleAxisFullPlotArea,
   Axis,
   AxisRendererBase,
   HorizontalAlignment,
+  type IRenderContext,
   MathRenderingExtensions,
   newScreenPoint,
   OxyRect,
   PlotModel,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
   VerticalAlignment,
 } from '@/oxyplot'
 
 /** Provides functionality to render AngleAxis using the full plot area. */
-export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
+export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase<AngleAxisFullPlotArea> {
   /**
    * Initializes a new instance of the AngleAxisFullPlotAreaRenderer class.
    * @param rc The render context.
@@ -30,8 +31,7 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
    * @param pass The render pass.
    * @throws Error if magnitude axis is not defined.
    */
-  async render(axis: Axis, pass: number): Promise<void> {
-    const angleAxis = axis as AngleAxis
+  async render(axis: AngleAxisFullPlotArea, pass: number): Promise<void> {
     await super.render(axis, pass)
 
     const magnitudeAxis = this.plot.defaultMagnitudeAxis
@@ -40,8 +40,8 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
       throw new Error('Magnitude axis not defined.')
     }
 
-    const scaledStartAngle = angleAxis.startAngle / angleAxis.scale
-    const scaledEndAngle = angleAxis.endAngle / angleAxis.scale
+    const scaledStartAngle = axis.startAngle / axis.scale
+    const scaledEndAngle = axis.endAngle / axis.scale
 
     const axisLength = Math.abs(scaledEndAngle - scaledStartAngle)
     if (this.minorPen) {
@@ -73,11 +73,8 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase {
     }
 
     const isFullCircle =
-      Math.abs(
-        Math.abs(
-          Math.max(angleAxis.endAngle, angleAxis.startAngle) - Math.min(angleAxis.startAngle, angleAxis.endAngle),
-        ) - 360,
-      ) < 1e-3
+      Math.abs(Math.abs(Math.max(axis.endAngle, axis.startAngle) - Math.min(axis.startAngle, axis.endAngle)) - 360) <
+      1e-3
 
     let majorTickCount = Math.floor(axisLength / axis.actualMajorStep)
     if (!isFullCircle) {

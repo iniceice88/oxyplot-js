@@ -3,7 +3,7 @@
 /**
  * Provides an abstract base class for axis renderers.
  */
-export abstract class AxisRendererBase {
+export abstract class AxisRendererBase<T extends Axis = Axis> {
   /**
    * The plot.
    */
@@ -93,7 +93,7 @@ export abstract class AxisRendererBase {
    * @param axis The axis.
    * @param pass The pass.
    */
-  public async render(axis: Axis, pass: number): Promise<void> {
+  public async render(axis: T, pass: number): Promise<void> {
     if (!axis) {
       return
     }
@@ -109,7 +109,7 @@ export abstract class AxisRendererBase {
    * Creates the pens.
    * @param axis The axis.
    */
-  protected createPens(axis: Axis): void {
+  protected createPens(axis: T): void {
     const minorTickColor = axis.minorTicklineColor.isAutomatic() ? axis.ticklineColor : axis.minorTicklineColor
 
     this.minorPen = OxyPen.create(axis.minorGridlineColor, axis.minorGridlineThickness, axis.minorGridlineStyle)
@@ -130,7 +130,7 @@ export abstract class AxisRendererBase {
    * @param pos
    */
   protected getTickPositions(
-    axis: Axis,
+    axis: T,
     tickStyle: TickStyle,
     tickSize: number,
     position: AxisPosition,

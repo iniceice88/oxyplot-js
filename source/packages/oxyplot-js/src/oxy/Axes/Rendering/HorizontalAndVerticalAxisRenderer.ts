@@ -19,7 +19,7 @@ import { Number_MAX_VALUE } from '@/patch'
 /**
  * Provides functionality to render horizontal and vertical axes.
  */
-export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
+export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends AxisRendererBase<T> {
   /**
    * Initializes a new instance of the HorizontalAndVerticalAxisRenderer class.
    * @param rc The render context.
@@ -34,7 +34,7 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
    * @param axis The axis.
    * @param pass The pass.
    */
-  public async render(axis: Axis, pass: number): Promise<void> {
+  public async render(axis: T, pass: number): Promise<void> {
     await super.render(axis, pass)
 
     let drawAxisLine = true
@@ -276,7 +276,7 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
    * @param drawAxisLine Draw the axis line if set to true.
    */
   protected async renderMajorItems(
-    axis: Axis,
+    axis: T,
     axisPosition: number,
     titlePosition: number,
     drawAxisLine: boolean,
@@ -489,7 +489,7 @@ export class HorizontalAndVerticalAxisRenderer extends AxisRendererBase {
    * @param axis The axis.
    * @param axisPosition The axis position.
    */
-  protected async renderMinorItems(axis: Axis, axisPosition: number): Promise<void> {
+  protected async renderMinorItems(axis: T, axisPosition: number): Promise<void> {
     const eps = axis.actualMinorStep * 1e-3
 
     const plotAreaLeft = this.plot.plotArea.left

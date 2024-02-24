@@ -380,14 +380,14 @@ function _createHeatMapPeaks(palette?: OxyPalette, includeContours: boolean = tr
   const peaksData = ArrayBuilder.evaluate(peaks, xvalues, yvalues)
 
   const model = new PlotModel({ title: 'Peaks' })
-  model.axes.push(
-    new LinearColorAxis({
-      position: AxisPosition.Right,
-      palette: palette ?? OxyPalettes.jet(500),
-      highColor: OxyColors.Gray,
-      lowColor: OxyColors.Black,
-    }),
-  )
+  const colorAxis = new LinearColorAxis({
+    position: AxisPosition.Right,
+    highColor: OxyColors.Gray,
+    lowColor: OxyColors.Black,
+    palette,
+  })
+
+  model.axes.push(colorAxis)
 
   const hms = new HeatMapSeries({ x0: x0, x1: x1, y0: y0, y1: y1, data: peaksData })
   model.series.push(hms)

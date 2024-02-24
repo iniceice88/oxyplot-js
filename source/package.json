@@ -1,6 +1,6 @@
 {
   "name": "oxyplot-example",
-  "version": "2.1.2002",
+  "version": "2.1.2004",
   "scripts": {
     "dev": "pnpm --parallel --stream -r run dev",
     "build": "pnpm --stream -r run build",
@@ -14,7 +14,6 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.7",
-    "typescript": "^5.3.3",
-    "vite": "^4.3.0"
+    "typescript": "^5.3.3"
   }
 }

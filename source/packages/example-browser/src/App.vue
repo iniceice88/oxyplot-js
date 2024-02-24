@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ExampleCategory, ExampleInfo } from './examples/types'
 import examples from './examples/AllExamples'
-import { computed, ref, toRaw, watch } from 'vue'
+import { computed, onMounted, ref, toRaw, watch } from 'vue'
 import {
   Disclosure,
   DisclosureButton,
@@ -71,6 +71,26 @@ watch([isTransposed, isReversed, currentRendererType], async () => {
 })
 
 watch(isPdfOrientationP, () => {})
+
+onMounted(() => {
+  let initMode = window.location.hash
+  if (initMode.length > 1) {
+    // select example on load
+    initMode = decodeURIComponent(initMode.substring(1))
+    if (!initMode.includes('\t')) return
+    const [cateName, exampleTitle] = initMode.split('\t')
+    selectExample(cateName, exampleTitle)
+  }
+})
+
+function selectExample(cateName: string, exampleTitle: string) {
+  const ec = examples.find((x) => x.category === cateName)
+  if (!ec) return
+
+  const ei = ec.examples.find((x) => x.title === exampleTitle)
+  if (!ei) return
+  handleExampleClick(ec, ei)
+}
 
 let canvas: HTMLCanvasElement | null = null
 
@@ -144,7 +164,9 @@ async function handleExampleClick(ec: ExampleCategory, ei: ExampleInfo) {
 
   getRenderContextImageCacheService().clear()
 
-  await display(example)
+  if (!(await display(example))) return
+
+  window.location.hash = encodeURIComponent(`${ec.category}\t${ei.title}`)
 }
 
 async function getExample(ei: ExampleInfo): Promise<PageExample | null> {
@@ -179,11 +201,12 @@ async function getExample(ei: ExampleInfo): Promise<PageExample | null> {
 
 async function display(pageExample: PageExample) {
   const model = pageExample.model
-  if (!model) return
+  if (!model) return false
 
   const plotView = getPlotView()
   ;(plotView as any).model = model
   ;(plotView as any).controller = pageExample.controller
+  return true
 }
 </script>
 

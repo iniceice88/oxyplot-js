@@ -1,22 +1,24 @@
-﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
   AngleAxis,
   Axis,
   AxisRendererBase,
   HorizontalAlignment,
+  type IRenderContext,
+  MagnitudeAxis,
   MathRenderingExtensions,
   newScreenPoint,
   OxyColors,
   OxyPen,
   OxyRect,
   PlotModel,
+  type ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 
 /**
  * Provides functionality to render MagnitudeAxis.
  */
-export class MagnitudeAxisRenderer extends AxisRendererBase {
+export class MagnitudeAxisRenderer extends AxisRendererBase<MagnitudeAxis> {
   /**
    * Initializes a new instance of the MagnitudeAxisRenderer class.
    * @param rc The render context.
@@ -32,7 +34,7 @@ export class MagnitudeAxisRenderer extends AxisRendererBase {
    * @param pass The pass.
    * @throws Error if angle axis is not defined.
    */
-  async render(axis: Axis, pass: number): Promise<void> {
+  async render(axis: MagnitudeAxis, pass: number): Promise<void> {
     await super.render(axis, pass)
 
     const angleAxis = this.plot.defaultAngleAxis

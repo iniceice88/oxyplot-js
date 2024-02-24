@@ -1,15 +1,17 @@
-import type { IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   AngleAxis,
   Axis,
   AxisRendererBase,
   HorizontalAlignment,
+  type IRenderContext,
+  MagnitudeAxisFullPlotArea,
   MathRenderingExtensions,
   newScreenPoint,
   OxyPen,
   OxyRect,
   PlotModel,
   RenderingExtensions,
+  type ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 
@@ -18,7 +20,7 @@ const degree = 180.0 / Math.PI
 const rad = Math.PI / 180.0
 
 /** Provides functionality to render MagnitudeAxis using the full plot area. */
-export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase {
+export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase<MagnitudeAxisFullPlotArea> {
   /** this constant limit the number of segments to draw a tick arc */
   private static readonly maxSegments = 180.0
 
@@ -33,7 +35,7 @@ export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase {
    * @param pass The pass.
    * @throws Error Angle axis should not be undefined.
    */
-  public async render(axis: Axis, pass: number): Promise<void> {
+  public async render(axis: MagnitudeAxisFullPlotArea, pass: number): Promise<void> {
     await super.render(axis, pass)
 
     const angleAxis = this.plot.defaultAngleAxis!

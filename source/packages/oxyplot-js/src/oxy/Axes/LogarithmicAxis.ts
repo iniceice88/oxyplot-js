@@ -190,7 +190,7 @@ export class LogarithmicAxis extends Axis {
    */
   public inverseTransform(sx: number): number {
     // Inline the PostInverseTransform method here.
-    return Math.exp(sx / this.scale + this.offset)
+    return this.postInverseTransform(sx / this.scale + this.offset)
   }
 
   /**
@@ -204,7 +204,7 @@ export class LogarithmicAxis extends Axis {
     }
 
     // Inline the PreTransform method here.
-    return (Math.log(x) - this.offset) * this.scale
+    return (this.preTransform(x) - this.offset) * this.scale
   }
 
   /**
@@ -540,10 +540,10 @@ export class LogarithmicAxis extends Axis {
    * Invoked when actualMinimum, actualMaximum, clipMinimum, and clipMaximum are changed.
    */
   protected actualMaximumAndMinimumChangedOverride(): void {
-    this.logActualMinimum = log(this.actualMinimum, this.base)
-    this.logActualMaximum = log(this.actualMaximum, this.base)
-    this.logClipMinimum = log(this.clipMinimum, this.base)
-    this.logClipMaximum = log(this.clipMaximum, this.base)
+    this.logActualMinimum = this.preTransform(this.actualMinimum)
+    this.logActualMaximum = this.preTransform(this.actualMaximum)
+    this.logClipMinimum = this.preTransform(this.clipMinimum)
+    this.logClipMaximum = this.preTransform(this.clipMaximum)
   }
 
   /**
@@ -552,7 +552,7 @@ export class LogarithmicAxis extends Axis {
    * @returns The transformed value.
    */
   protected postInverseTransform(x: number): number {
-    return Math.exp(x)
+    return Math.pow(this.base, x)
   }
 
   /**
@@ -565,7 +565,7 @@ export class LogarithmicAxis extends Axis {
       throw new Error('Value should be positive.')
     }
 
-    return x <= 0 ? 0 : Math.log(x)
+    return x <= 0 ? 0 : log(x, this.base)
   }
 
   /**

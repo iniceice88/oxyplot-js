@@ -7,7 +7,7 @@
         "./src/patch"
       ],
       "@/oxyplot": [
-        "./src/oxy/internal"
+        "./src/oxy"
       ]
     }
   },

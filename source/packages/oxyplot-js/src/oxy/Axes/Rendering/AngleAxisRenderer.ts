@@ -1,7 +1,6 @@
 ﻿import type { IRenderContext } from '@/oxyplot'
 import {
   AngleAxis,
-  Axis,
   AxisRendererBase,
   HorizontalAlignment,
   MathRenderingExtensions,
@@ -14,7 +13,7 @@ import {
 /**
  * Provides functionality to render AngleAxis.
  */
-export class AngleAxisRenderer extends AxisRendererBase {
+export class AngleAxisRenderer extends AxisRendererBase<AngleAxis> {
   /**
    * Initializes a new instance of the AngleAxisRenderer class.
    * @param rc The render context.
@@ -30,9 +29,7 @@ export class AngleAxisRenderer extends AxisRendererBase {
    * @param pass The render pass.
    * @throws Error if magnitude axis is not defined.
    */
-  public async render(axis: Axis, pass: number): Promise<void> {
-    const angleAxis = axis as AngleAxis
-
+  public async render(axis: AngleAxis, pass: number): Promise<void> {
     await super.render(axis, pass)
 
     const magnitudeAxis = this.plot.defaultMagnitudeAxis
@@ -41,8 +38,8 @@ export class AngleAxisRenderer extends AxisRendererBase {
       throw new Error('Magnitude axis not defined.')
     }
 
-    const scaledStartAngle = angleAxis.startAngle / angleAxis.scale
-    const scaledEndAngle = angleAxis.endAngle / angleAxis.scale
+    const scaledStartAngle = axis.startAngle / axis.scale
+    const scaledEndAngle = axis.endAngle / axis.scale
 
     const axisLength = Math.abs(scaledEndAngle - scaledStartAngle)
     if (this.minorPen) {
@@ -65,11 +62,8 @@ export class AngleAxisRenderer extends AxisRendererBase {
     }
 
     const isFullCircle =
-      Math.abs(
-        Math.abs(
-          Math.max(angleAxis.endAngle, angleAxis.startAngle) - Math.min(angleAxis.startAngle, angleAxis.endAngle),
-        ) - 360,
-      ) < 1e-3
+      Math.abs(Math.abs(Math.max(axis.endAngle, axis.startAngle) - Math.min(axis.startAngle, axis.endAngle)) - 360) <
+      1e-3
     let majorTickCount = (axisLength / axis.actualMajorStep) | 0
     if (!isFullCircle) {
       majorTickCount++

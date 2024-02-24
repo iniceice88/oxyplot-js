@@ -1,4 +1,4 @@
-import type { ExampleCategory } from '../types.ts'
+import type { ExampleCategory } from '../types'
 import {
   AxisPosition,
   DataPoint,
