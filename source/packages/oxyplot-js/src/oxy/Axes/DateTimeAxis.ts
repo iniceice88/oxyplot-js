@@ -27,6 +27,11 @@ export class DateTimeAxis extends LinearAxis {
    */
   private static readonly TimeOrigin = new Date(Date.UTC(1901, 0, 1, 0, 0, 0))
 
+  /**
+   * The time origin difference in days to the c# time origin.
+   */
+  public static readonly TimeOriginDiffDaysToCSharp = 366
+
   /** The maximum day value */
   private static MaxDayValue = TimeSpan.fromMilliseconds(
     DateTime_MaxValue.getTime() - DateTimeAxis.TimeOrigin.getTime(),
@@ -81,6 +86,14 @@ export class DateTimeAxis extends LinearAxis {
     }
     const dateService = getDateService()
     return dateService.addTimespan(DateTimeAxis.TimeOrigin, TimeSpan.fromDays(value - 1))
+  }
+
+  /**
+   * Converts a numeric representation of the date (number of days after the time origin of .net version) to a DateTime structure.
+   */
+  public static fromDotNetValue(value: number): Date {
+    value = value - DateTimeAxis.TimeOriginDiffDaysToCSharp
+    return DateTimeAxis.toDateTime(value)
   }
 
   /** Converts a DateTime to days after the time origin. */
