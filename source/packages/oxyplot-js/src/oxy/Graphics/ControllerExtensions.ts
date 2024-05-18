@@ -1,18 +1,20 @@
+import type {
+  IPlotController,
+  IViewCommandG,
+  OxyKeyEventArgs,
+  OxyMouseDownEventArgs,
+  OxyMouseEventArgs,
+  OxyMouseWheelEventArgs,
+  OxyTouchEventArgs,
+} from '@/oxyplot'
 import {
-  type IPlotController,
-  type IViewCommandG,
   OxyKey,
-  type OxyKeyEventArgs,
   OxyKeyGesture,
   OxyModifierKeys,
   OxyMouseButton,
-  type OxyMouseDownEventArgs,
   OxyMouseDownGesture,
   OxyMouseEnterGesture,
-  type OxyMouseEventArgs,
-  type OxyMouseWheelEventArgs,
   OxyMouseWheelGesture,
-  type OxyTouchEventArgs,
   OxyTouchGesture,
 } from '@/oxyplot'
 

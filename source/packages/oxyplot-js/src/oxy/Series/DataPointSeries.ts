@@ -1,5 +1,15 @@
-﻿import type { CreateXYAxisSeriesOptions, DataPoint, ScreenPoint } from '@/oxyplot'
-import { isDataPoint, isDataPointProvider, newDataPoint, TrackerHitResult, XYAxisSeries } from '@/oxyplot'
+﻿import {
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultXYAxisSeriesOptions,
+  isDataPoint,
+  isDataPointProvider,
+  newDataPoint,
+  type ScreenPoint,
+  TrackerHitResult,
+  XYAxisSeries,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateDataPointSeriesOptions extends CreateXYAxisSeriesOptions {
   points?: DataPoint[]
@@ -9,19 +19,31 @@ export interface CreateDataPointSeriesOptions extends CreateXYAxisSeriesOptions 
   mapping?: (item: any) => DataPoint
 }
 
+export const DefaultDataPointSeriesOptions: CreateDataPointSeriesOptions = {
+  canTrackerInterpolatePoints: false,
+
+  points: undefined,
+  dataFieldX: undefined,
+  dataFieldY: undefined,
+  mapping: undefined,
+}
+
+export const ExtendedDefaultDataPointSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultDataPointSeriesOptions,
+}
+
 /**
  * Provides an abstract base class for series that contain a collection of DataPoints.
  */
 export abstract class DataPointSeries extends XYAxisSeries {
   protected constructor(opt?: CreateDataPointSeriesOptions) {
     super(opt)
-
-    if (opt) {
-      if (opt.points) {
-        this._points.push(...opt.points)
-        delete opt.points
-      }
+    if (opt?.points) {
+      opt.points.forEach((p) => this._points.push(p))
+      delete opt.points
     }
+    assignObject(this, DefaultDataPointSeriesOptions, opt)
   }
 
   /**
@@ -37,7 +59,7 @@ export abstract class DataPointSeries extends XYAxisSeries {
   /**
    * A value indicating whether the tracker can interpolate points.
    */
-  public canTrackerInterpolatePoints: boolean = false
+  public canTrackerInterpolatePoints: boolean = DefaultDataPointSeriesOptions.canTrackerInterpolatePoints!
 
   /**
    * The data field X. The default is null.
@@ -176,5 +198,9 @@ export abstract class DataPointSeries extends XYAxisSeries {
       return item.getDataPoint()
     }
     throw new Error(`Cannot convert item ${item} to DataPoint`)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultDataPointSeriesOptions
   }
 }

@@ -1,51 +1,52 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IColorAxis,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
 import {
   Axis,
   ColorAxisExtensions,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IColorAxis,
   ImageFormat,
+  type IRenderContext,
+  type LabelStringFormatterType,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
-  OxyColorExtensions,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
-  OxyRect,
+  type OxyImage,
+  OxyImageEx,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   toColorAxis,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
+  type TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { hashCode, maxValueOfArray, minValueOfArray, removeUndef, TwoDimensionalArray } from '@/patch'
+import { assignMethod, assignObject, hashCode, maxValueOfArray, minValueOfArray, TwoDimensionalArray } from '@/patch'
 
 /**
  * Specifies how the heat map coordinates are defined.
  */
 export enum HeatMapCoordinateDefinition {
   /**
-   * The coordinates defines the center of the cells
+   * The coordinates define the center of the cells
    */
   Center,
 
   /**
-   * The coordinates defines the edge of the cells
+   * The coordinates define the edge of the cells
    */
   Edge,
 }
 
 /**
- * Specifies how the heat map coordinates are defined.
+ * Specifies how the heat map is rendered.
  */
 export enum HeatMapRenderMethod {
   /**
@@ -74,6 +75,27 @@ export interface CreateHeatMapSeriesOptions extends CreateXYAxisSeriesOptions {
   labelFontSize?: number
 }
 
+export const DefaultHeatMapSeriesOptions: CreateHeatMapSeriesOptions = {
+  x0: 0,
+  x1: 0,
+  y0: 0,
+  y1: 0,
+  interpolate: true,
+  coordinateDefinition: HeatMapCoordinateDefinition.Center,
+  renderMethod: HeatMapRenderMethod.Bitmap,
+  labelFontSize: 0,
+
+  data: undefined,
+  colorAxis: undefined,
+  colorAxisKey: undefined,
+  labelStringFormatter: undefined,
+}
+
+export const ExtendedDefaultHeatMapSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultHeatMapSeriesOptions,
+}
+
 /**
  * Represents a heat map.
  */
@@ -81,9 +103,10 @@ export class HeatMapSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  static readonly DefaultTrackerFormatString: TrackerStringFormatterType = (args: TrackerStringFormatterArgs) =>
-    `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
-  //'{0}\n{1}: {2}\n{3}: {4}\n{5}: {6}'
+  static readonly DefaultTrackerFormatString: TrackerStringFormatterType = function (args: TrackerStringFormatterArgs) {
+    //'{0}\n{1}: {2}\n{3}: {4}\n{5}: {6}'
+    return `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
+  }
 
   /**
    * The default color-axis title
@@ -93,17 +116,17 @@ export class HeatMapSeries extends XYAxisSeries {
   /**
    * The hash code of the data when the image was updated.
    */
-  private dataHash: number = 0
+  private _dataHash: number = 0
 
   /**
    * The hash code of the color axis when the image was updated.
    */
-  private colorAxisHash: number = 0
+  private _colorAxisHash: number = 0
 
   /**
    * The image
    */
-  private image?: OxyImage
+  private _image?: OxyImage
 
   /**
    * Initializes a new instance of the HeatMapSeries class.
@@ -111,33 +134,33 @@ export class HeatMapSeries extends XYAxisSeries {
   constructor(opt?: CreateHeatMapSeriesOptions) {
     super(opt)
     this.trackerStringFormatter = HeatMapSeries.DefaultTrackerFormatString
-    this.interpolate = true
-    this.labelFontSize = 0
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignObject(this, DefaultHeatMapSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'HeatMapSeries'
   }
 
   /**
    * Gets or sets the x-coordinate of the elements at index [0,*] in the data set.
    */
-  x0: number = 0
+  x0: number = DefaultHeatMapSeriesOptions.x0!
 
   /**
-   * Gets or sets the x-coordinate of the mid point for the elements at index [m-1,*] in the data set.
+   * Gets or sets the x-coordinate of the mid-point for the elements at index [m-1,*] in the data set.
    */
-  x1: number = 0
+  x1: number = DefaultHeatMapSeriesOptions.x1!
 
   /**
-   * Gets or sets the y-coordinate of the mid point for the elements at index [*,0] in the data set.
+   * Gets or sets the y-coordinate of the mid-point for the elements at index [*,0] in the data set.
    */
-  y0: number = 0
+  y0: number = DefaultHeatMapSeriesOptions.y0!
 
   /**
-   * Gets or sets the y-coordinate of the mid point for the elements at index [*,n-1] in the data set.
+   * Gets or sets the y-coordinate of the mid-point for the elements at index [*,n-1] in the data set.
    */
-  y1: number = 0
+  y1: number = DefaultHeatMapSeriesOptions.y1!
 
   /**
    * Gets or sets the data array.
@@ -147,22 +170,38 @@ export class HeatMapSeries extends XYAxisSeries {
   /**
    * Gets or sets a value indicating whether to interpolate when rendering. The default value is true.
    */
-  interpolate: boolean = true
+  interpolate: boolean = DefaultHeatMapSeriesOptions.interpolate!
 
   /**
    * Gets the minimum value of the dataset.
    */
-  minValue: number = 0
+  get minValue() {
+    return this._minValue
+  }
+
+  private _minValue = 0
 
   /**
    * Gets the maximum value of the dataset.
    */
-  maxValue: number = 0
+  get maxValue() {
+    return this._maxValue
+  }
+
+  private _maxValue = 0
 
   /**
-   * Gets or sets the color axis.
+   * Gets the color axis.
    */
-  colorAxis?: IColorAxis
+  get colorAxis() {
+    return this._colorAxis
+  }
+
+  protected set colorAxis(value) {
+    this._colorAxis = value
+  }
+
+  private _colorAxis?: IColorAxis
 
   /**
    * Gets or sets the color axis key.
@@ -172,12 +211,12 @@ export class HeatMapSeries extends XYAxisSeries {
   /**
    * Gets or sets the coordinate definition. The default value is HeatMapCoordinateDefinition.Center.
    */
-  coordinateDefinition: HeatMapCoordinateDefinition = HeatMapCoordinateDefinition.Center
+  coordinateDefinition: HeatMapCoordinateDefinition = DefaultHeatMapSeriesOptions.coordinateDefinition!
 
   /**
    * Gets or sets the render method. The default value is HeatMapRenderMethod.Bitmap.
    */
-  renderMethod: HeatMapRenderMethod = HeatMapRenderMethod.Bitmap
+  renderMethod: HeatMapRenderMethod = DefaultHeatMapSeriesOptions.renderMethod!
 
   /**
    * Gets or sets the formatter for the cell labels. The default value is "0.00".
@@ -187,14 +226,14 @@ export class HeatMapSeries extends XYAxisSeries {
   /**
    * Gets or sets the font size of the labels. The default value is 0 (labels not visible).
    */
-  labelFontSize: number = 0
+  labelFontSize: number = DefaultHeatMapSeriesOptions.labelFontSize!
 
   /**
    * Invalidates the image that renders the heat map. The image will be regenerated the next time the HeatMapSeries is rendered.
    * Call PlotModel.invalidatePlot to refresh the view.
    */
   public invalidate(): void {
-    this.image = undefined
+    this._image = undefined
   }
 
   /**
@@ -203,7 +242,7 @@ export class HeatMapSeries extends XYAxisSeries {
    */
   public async render(rc: IRenderContext): Promise<void> {
     if (!this.data) {
-      this.image = undefined
+      this._image = undefined
       return
     }
 
@@ -243,31 +282,31 @@ export class HeatMapSeries extends XYAxisSeries {
 
     const s00 = PlotElementExtensions.transform(this, left, bottom)
     const s11 = PlotElementExtensions.transform(this, right, top)
-    const rect = OxyRect.fromScreenPoints(s00, s11)
+    const rect = OxyRectHelper.fromScreenPoints(s00, s11)
 
     const needImage = this.renderMethod === HeatMapRenderMethod.Bitmap
 
     const currentDataHash = calculateHashcode(this.data)
     const currentColorAxisHash = this.colorAxis.getElementHashCode()
     if (
-      (needImage && !this.image) ||
-      currentDataHash !== this.dataHash ||
-      currentColorAxisHash !== this.colorAxisHash
+      (needImage && !this._image) ||
+      currentDataHash !== this._dataHash ||
+      currentColorAxisHash !== this._colorAxisHash
     ) {
       if (needImage) {
         await this.updateImage()
       }
 
-      this.dataHash = currentDataHash
-      this.colorAxisHash = currentColorAxisHash
+      this._dataHash = currentDataHash
+      this._colorAxisHash = currentColorAxisHash
     }
 
     const orientate = PlotElementExtensions.orientate
     if (needImage) {
-      if (this.image) {
+      if (this._image) {
         await RenderingExtensions.drawImage(
           rc,
-          this.image,
+          this._image,
           rect.left,
           rect.top,
           rect.width,
@@ -293,7 +332,7 @@ export class HeatMapSeries extends XYAxisSeries {
             this,
             newScreenPoint(s00Orientated.x + (i + 1) * sdx, s00Orientated.y + (j + 1) * sdy),
           ) // re-orientate
-          const rectrect = OxyRect.fromScreenPoints(pointa, pointb)
+          const rectrect = OxyRectHelper.fromScreenPoints(pointa, pointb)
 
           await rc.drawRectangle(rectrect, rectcolor, OxyColors.Undefined, 0, this.edgeRenderingMode)
         }
@@ -457,8 +496,8 @@ export class HeatMapSeries extends XYAxisSeries {
     if (!this.data) return
 
     const validDatas = this.data.flat().filter((x) => !isNaN(x))
-    this.minValue = minValueOfArray(validDatas)
-    this.maxValue = maxValueOfArray(validDatas)
+    this._minValue = minValueOfArray(validDatas)
+    this._maxValue = maxValueOfArray(validDatas)
   }
 
   /**
@@ -504,7 +543,7 @@ export class HeatMapSeries extends XYAxisSeries {
         const point = orientate(this, newScreenPoint(s00.x + i * sdx, s00.y + j * sdy)) // re-orientate
         const v = HeatMapSeries.getValue(this.data, i, j)
         const color = getColor(this.colorAxis!, v)
-        const hsv = OxyColorExtensions.toHsv(color)
+        const hsv = OxyColorHelper.toHsv(color)
         const textColor = hsv[2] > 0.6 ? OxyColors.Black : OxyColors.White
         const label = this.getLabel(v, i, j)
         await rc.drawText(
@@ -652,7 +691,11 @@ export class HeatMapSeries extends XYAxisSeries {
       }
     }
 
-    this.image = await OxyImage.create(buffer, ImageFormat.Png)
+    this._image = await OxyImageEx.create(buffer, ImageFormat.Png)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultHeatMapSeriesOptions
   }
 }
 

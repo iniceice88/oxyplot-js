@@ -28,6 +28,10 @@ export class LineSegmentSeries extends LineSeries {
     this.epsilon = 1e-8
   }
 
+  getElementName() {
+    return 'LineSegmentSeries'
+  }
+
   /**
    * Gets or sets a value indicating whether to show vertical lines where there is no gap in x-coordinate.
    */

@@ -2,32 +2,46 @@ import {
   CategoryAxis,
   CategoryColorAxisRenderer,
   type CreateCategoryAxisOptions,
+  ExtendedDefaultCategoryAxisOptions,
   type IColorAxis,
   type IRenderContext,
-  OxyColor,
+  newOxyPalette,
+  type OxyColor,
   OxyColors,
-  OxyPalette,
+  type OxyPalette,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateCategoryColorAxisOptions extends CreateCategoryAxisOptions {
   invalidCategoryColor?: OxyColor
   palette?: OxyPalette
 }
 
+export const DefaultCategoryColorAxisOptions: CreateCategoryColorAxisOptions = {
+  invalidCategoryColor: OxyColors.Undefined,
+  palette: newOxyPalette(),
+}
+
+export const ExtendedDefaultCategoryColorAxisOptions = {
+  ...ExtendedDefaultCategoryAxisOptions,
+  ...DefaultCategoryColorAxisOptions,
+}
+
 /** Represents a categorized color axis. */
 export class CategoryColorAxis extends CategoryAxis implements IColorAxis {
   /** The invalid category color. */
-  public invalidCategoryColor: OxyColor = OxyColors.Undefined
+  public invalidCategoryColor: OxyColor = DefaultCategoryColorAxisOptions.invalidCategoryColor!
 
   /** The palette. */
-  public palette: OxyPalette
+  public palette: OxyPalette = DefaultCategoryColorAxisOptions.palette!
 
   constructor(opt?: CreateCategoryColorAxisOptions) {
     super(opt)
-    this.palette = new OxyPalette()
-    if (opt) {
-      Object.assign(this, opt)
-    }
+    assignObject(this, DefaultCategoryColorAxisOptions, opt)
+  }
+
+  getElementName() {
+    return 'CategoryColorAxis'
   }
 
   /** Gets the color of the specified index in the color palette. */
@@ -74,5 +88,9 @@ export class CategoryColorAxis extends CategoryAxis implements IColorAxis {
     const lowValue =
       paletteIndex === 0 ? this.clipMinimum : (majorLabelValues[paletteIndex - 1] + majorLabelValues[paletteIndex]) / 2
     return lowValue
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultCategoryColorAxisOptions
   }
 }

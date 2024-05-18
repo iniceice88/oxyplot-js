@@ -8,7 +8,8 @@ import {
   MathRenderingExtensions,
   newScreenPoint,
   OxyPen,
-  OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
   PlotModel,
   RenderingExtensions,
   type ScreenPoint,
@@ -46,12 +47,16 @@ export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase<Magnitud
     }
 
     angleAxis.updateActualMaxMin()
+    const plotAreaBottom = OxyRectHelper.bottom(axis.plotModel.plotArea)
+    const plotAreaRight = OxyRectHelper.right(axis.plotModel.plotArea)
 
     const topDistance = Math.abs(axis.plotModel.plotArea.top - magnitudeAxis.midPoint.y)
-    const bottomDistance = Math.abs(axis.plotModel.plotArea.bottom - magnitudeAxis.midPoint.y)
+    const bottomDistance = Math.abs(plotAreaBottom - magnitudeAxis.midPoint.y)
     const leftDistance = Math.abs(axis.plotModel.plotArea.left - magnitudeAxis.midPoint.x)
-    const rightDistance = Math.abs(axis.plotModel.plotArea.right - magnitudeAxis.midPoint.x)
-    const distanceRect = axis.plotModel.plotArea.offset(-magnitudeAxis.midPoint.x, -magnitudeAxis.midPoint.y)
+    const rightDistance = Math.abs(plotAreaRight - magnitudeAxis.midPoint.x)
+    const distanceRect = OxyRectEx.fromRect(
+      OxyRectHelper.offset(axis.plotModel.plotArea, -magnitudeAxis.midPoint.x, -magnitudeAxis.midPoint.y),
+    )
 
     const cornerAngleTopRight = -degree * Math.atan2(distanceRect.top, distanceRect.right)
     let cornerAngleTopLeft = -degree * Math.atan2(distanceRect.top, distanceRect.left)
@@ -341,7 +346,7 @@ export class MagnitudeAxisFullPlotAreaRenderer extends AxisRendererBase<Magnitud
     if (pass === 1) {
       const autoResetClipDisp = RenderingExtensions.autoResetClip(
         this.renderContext,
-        OxyRect.fromScreenPoints(axis.screenMin, axis.screenMax),
+        OxyRectHelper.fromScreenPoints(axis.screenMin, axis.screenMax),
       )
       for (const tickValue of this.majorLabelValues) {
         await this.renderTickText(axis, tickValue, angleAxis)

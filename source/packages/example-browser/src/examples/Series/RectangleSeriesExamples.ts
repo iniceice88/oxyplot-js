@@ -1,4 +1,4 @@
-import { AxisPosition, LinearColorAxis, OxyPalettes, PlotModel, RectangleItem, RectangleSeries } from 'oxyplot-js'
+import { AxisPosition, LinearColorAxis, newRectangleItem, OxyPalettes, PlotModel, RectangleSeries } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 function fromItems(): PlotModel {
@@ -14,7 +14,7 @@ function fromItems(): PlotModel {
 
   const s = new RectangleSeries({ labelFontSize: 12 })
   for (let i = numberOfItems - 1; i >= 0; i--) {
-    s.items.push(new RectangleItem(-i * 0.5, i * 0.5, i * i, i * (i + 3), i))
+    s.items.push(newRectangleItem(-i * 0.5, i * 0.5, i * i, i * (i + 3), i))
   }
 
   model.series.push(s)
@@ -43,7 +43,7 @@ function fromItemsSource(): PlotModel {
       itemsSource: items,
       mapping: (x) => {
         const r = x as MyItem
-        return new RectangleItem(r.x, r.x * 2, r.x, r.x * 2, r.value)
+        return newRectangleItem(r.x, r.x * 2, r.x, r.x * 2, r.value)
       },
     }),
   )

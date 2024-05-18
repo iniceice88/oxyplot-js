@@ -4,10 +4,9 @@ import {
   LinearAxis,
   LineSeries,
   LineStyle,
-  OxyColor,
+  newOxyRect, newOxyThickness,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
-  OxyThickness,
   PlotModel,
   TitleHorizontalAlignment,
 } from 'oxyplot-js'
@@ -97,7 +96,7 @@ function backgroundUndefined(): PlotModel {
 function backgroundWhite50(): PlotModel {
   const model = new PlotModel({
     title: 'Background = 50% White',
-    background: OxyColor.fromAColor(128, OxyColors.White),
+    background: OxyColorHelper.fromAColor(128, OxyColors.White),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -139,7 +138,7 @@ function backgroundBlack(): PlotModel {
 }
 
 function plotAreaBorderThickness2(): PlotModel {
-  const model = new PlotModel({ title: 'PlotAreaBorderThickness = 2', plotAreaBorderThickness: new OxyThickness(2) })
+  const model = new PlotModel({ title: 'PlotAreaBorderThickness = 2', plotAreaBorderThickness: newOxyThickness(2) })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
   return model
@@ -148,7 +147,7 @@ function plotAreaBorderThickness2(): PlotModel {
 function plotAreaBorderThickness1001(): PlotModel {
   const model = new PlotModel({
     title: 'PlotAreaBorderThickness = (1,0,0,1)',
-    plotAreaBorderThickness: new OxyThickness(1, 0, 0, 1),
+    plotAreaBorderThickness: newOxyThickness(1, 0, 0, 1),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -158,7 +157,7 @@ function plotAreaBorderThickness1001(): PlotModel {
 function plotAreaBorderThickness4114(): PlotModel {
   const model = new PlotModel({
     title: 'PlotAreaBorderThickness = (4,1,1,4)',
-    plotAreaBorderThickness: new OxyThickness(4, 1, 1, 4),
+    plotAreaBorderThickness: newOxyThickness(4, 1, 1, 4),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -166,7 +165,7 @@ function plotAreaBorderThickness4114(): PlotModel {
 }
 
 function plotAreaBorderThickness0(): PlotModel {
-  const model = new PlotModel({ title: 'PlotAreaBorderThickness = 0', plotAreaBorderThickness: new OxyThickness(0) })
+  const model = new PlotModel({ title: 'PlotAreaBorderThickness = 0', plotAreaBorderThickness: newOxyThickness(0) })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
   return model
@@ -176,7 +175,7 @@ function plotAreaBorderThickness0AxisLineThickness1(): PlotModel {
   const model = new PlotModel({
     title: 'PlotAreaBorderThickness = 0',
     subtitle: 'AxislineThickness = 1, AxislineColor = OxyColors.Blue, AxislineStyle = LineStyle.Solid',
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
   model.axes.push(
     new LinearAxis({
@@ -207,7 +206,7 @@ function invalidAxisKey(): PlotModel {
 function exceptionClipping(): PlotModel {
   const model = new PlotModel()
   const annotation = new DelegateAnnotation((rc) => {
-    rc.pushClip(new OxyRect(50, 50, 50, 50))
+    rc.pushClip(newOxyRect(50, 50, 50, 50))
     throw new Error(
       'This Exception should be completely visible and not clipped by the previously pushed clipping rectangle.',
     )
@@ -220,7 +219,7 @@ function exceptionClipping(): PlotModel {
 function unbalancedClippingPush(): PlotModel {
   const model = new PlotModel()
   const annotation = new DelegateAnnotation(async (rc) => {
-    rc.pushClip(new OxyRect(50, 50, 50, 50))
+    rc.pushClip(newOxyRect(50, 50, 50, 50))
   })
 
   model.annotations.push(annotation)

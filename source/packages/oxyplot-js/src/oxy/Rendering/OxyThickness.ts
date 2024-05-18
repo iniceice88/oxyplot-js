@@ -3,112 +3,99 @@
 /**
  * Describes the thickness of a frame around a rectangle. Four number values describe the left, top, right, and bottom sides of the rectangle, respectively.
  */
-export class OxyThickness {
-  public static readonly Zero = new OxyThickness(0)
-
+export interface OxyThickness {
   /**
    * The bottom.
    */
-  private readonly _bottom: number
-
+  bottom: number
   /**
    * The left.
    */
-  private readonly _left: number
-
+  left: number
   /**
    * The right.
    */
-  private readonly _right: number
-
+  right: number
   /**
    * The top.
    */
-  private readonly _top: number
+  top: number
+}
 
-  /**
-   * Initializes a new instance of the OxyThickness class.
-   * @param thickness The thickness.
-   */
-  constructor(thickness: number)
-  /**
-   * Initializes a new instance of the OxyThickness class.
-   * @param left The left.
-   * @param top The top.
-   * @param right The right.
-   * @param bottom The bottom.
-   */
-  constructor(left: number, top: number, right: number, bottom: number)
-  constructor(leftOrThickness: number, top?: number, right?: number, bottom?: number) {
-    if (isNullOrUndef(top) && isNullOrUndef(right) && isNullOrUndef(bottom)) {
-      this._left = this._top = this._right = this._bottom = leftOrThickness
-    } else if (!isNullOrUndef(top) && !isNullOrUndef(right) && !isNullOrUndef(bottom)) {
-      this._left = leftOrThickness
-      this._top = top
-      this._right = right
-      this._bottom = bottom
-    } else {
-      throw new Error('Invalid arguments')
-    }
+export function newOxyThickness(thickness: number): Readonly<OxyThickness>
+export function newOxyThickness(left: number, top: number, right: number, bottom: number): OxyThickness
+export function newOxyThickness(leftOrThickness: number, top?: number, right?: number, bottom?: number): OxyThickness {
+  if (!isNullOrUndef(leftOrThickness) && isNullOrUndef(top) && isNullOrUndef(right) && isNullOrUndef(bottom)) {
+    return Object.freeze({
+      left: leftOrThickness,
+      top: leftOrThickness,
+      right: leftOrThickness,
+      bottom: leftOrThickness,
+    })
+  } else if (!isNullOrUndef(top) && !isNullOrUndef(right) && !isNullOrUndef(bottom)) {
+    return Object.freeze({
+      left: leftOrThickness,
+      top: top,
+      right: right,
+      bottom: bottom,
+    })
+  } else {
+    debugger
+    throw new Error('Invalid arguments')
+  }
+}
+
+export const OxyThickness_Zero = Object.freeze(newOxyThickness(0))
+
+export class OxyThicknessEx implements OxyThickness {
+  private _thickness: OxyThickness
+
+  constructor(t: OxyThickness) {
+    this._thickness = t
   }
 
-  /**
-   * Gets the bottom thickness.
-   */
-  public get bottom(): number {
-    return this._bottom
+  static from(t: OxyThickness) {
+    return new OxyThicknessEx(t)
   }
 
-  /**
-   * Gets the left thickness.
-   */
-  public get left(): number {
-    return this._left
+  get bottom() {
+    return this._thickness.bottom
   }
 
-  /**
-   * Gets the right thickness.
-   */
-  public get right(): number {
-    return this._right
+  get left() {
+    return this._thickness.left
   }
 
-  /**
-   * Gets the top thickness.
-   */
-  public get top(): number {
-    return this._top
+  get right() {
+    return this._thickness.right
   }
 
-  /**
-   * Returns a string that represents this instance.
-   */
-  public toString(): string {
-    return `(${this._left}, ${this._top}, ${this._right}, ${this._bottom})`
+  get top() {
+    return this._thickness.top
   }
 
   /**
    * Determines whether this instance and another specified OxyThickness object have the same value.
+   * @param t
    * @param other The thickness to compare to this instance.
    * @returns true if the value of the other parameter is the same as the value of this instance; otherwise, false.
    */
-  public equals(other: OxyThickness): boolean {
-    return (
-      this.left === other.left && this.top === other.top && this.right === other.right && this.bottom === other.bottom
-    )
+  static equals(t: OxyThickness, other: OxyThickness): boolean {
+    return t.left === other.left && t.top === other.top && t.right === other.right && t.bottom === other.bottom
   }
 
   /**
    * Creates a new OxyThickness with the maximum dimensions of this instance and the specified other instance.
+   * @param t
    * @param other The other instance.
    * @returns A new OxyThickness.
    */
-  public include(other: OxyThickness): OxyThickness {
-    return new OxyThickness(
-      Math.max(other.left, this.left),
-      Math.max(other.top, this.top),
-      Math.max(other.right, this.right),
-      Math.max(other.bottom, this.bottom),
+  static include(t: OxyThickness, other: OxyThickness): OxyThickness {
+    return newOxyThickness(
+      Math.max(other.left, t.left),
+      Math.max(other.top, t.top),
+      Math.max(other.right, t.right),
+      Math.max(other.bottom, t.bottom),
     )
   }
 }

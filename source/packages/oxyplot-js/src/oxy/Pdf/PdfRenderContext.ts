@@ -1,17 +1,20 @@
-import type { ScreenPoint } from '@/oxyplot'
 import {
   ClippingRenderContext,
   EdgeRenderingMode,
   HorizontalAlignment,
   LineJoin,
-  OxyColor,
-  OxyImage,
-  OxyRect,
-  OxySize,
+  newOxySize,
+  type OxyColor,
+  OxyColorHelper,
+  type OxyImage,
+  type OxyRect,
+  OxyRectHelper,
+  type OxySize,
   PortableDocument,
   PortableDocumentExtensions,
   PortableDocumentImage,
   PortableDocumentImageUtilities,
+  type ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 
@@ -30,7 +33,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     this.doc.addPageWithDimensions(width, height)
     this.rendersToScreen = false
 
-    if (background.isVisible()) {
+    if (OxyColorHelper.isVisible(background)) {
       PortableDocumentExtensions.setFillColor(this.doc, background)
       this.doc.fillRectangle(0, 0, width, height)
     }
@@ -49,13 +52,13 @@ export class PdfRenderContext extends ClippingRenderContext {
     thickness: number,
     edgeRenderingMode: EdgeRenderingMode,
   ): Promise<void> {
-    const isStroked = stroke.isVisible() && thickness > 0
-    const isFilled = fill.isVisible()
+    const isStroked = OxyColorHelper.isVisible(stroke) && thickness > 0
+    const isFilled = OxyColorHelper.isVisible(fill)
     if (!isStroked && !isFilled) {
       return
     }
 
-    const y = this.doc.pageHeight - rect.bottom
+    const y = this.doc.pageHeight - OxyRectHelper.bottom(rect)
     if (isStroked) {
       this.setLineWidth(thickness)
       PortableDocumentExtensions.setColor(this.doc, stroke)
@@ -109,8 +112,8 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray: number[] | undefined,
     lineJoin: LineJoin,
   ): Promise<void> {
-    const isStroked = stroke.isVisible() && thickness > 0
-    const isFilled = fill.isVisible()
+    const isStroked = OxyColorHelper.isVisible(stroke) && thickness > 0
+    const isFilled = OxyColorHelper.isVisible(fill)
     if (!isStroked && !isFilled) {
       return
     }
@@ -153,13 +156,13 @@ export class PdfRenderContext extends ClippingRenderContext {
     thickness: number,
     edgeRenderingMode: EdgeRenderingMode,
   ): Promise<void> {
-    const isStroked = stroke.isVisible() && thickness > 0
-    const isFilled = fill.isVisible()
+    const isStroked = OxyColorHelper.isVisible(stroke) && thickness > 0
+    const isFilled = OxyColorHelper.isVisible(fill)
     if (!isStroked && !isFilled) {
       return
     }
 
-    const y = this.doc.pageHeight - rect.bottom
+    const y = this.doc.pageHeight - OxyRectHelper.bottom(rect)
     if (isStroked) {
       this.setLineWidth(thickness)
       PortableDocumentExtensions.setColor(this.doc, stroke)
@@ -241,7 +244,7 @@ export class PdfRenderContext extends ClippingRenderContext {
   public measureText(text: string, fontFamily: string | undefined, fontSize: number, fontWeight: number): OxySize {
     this.doc.setFont(fontFamily!, (fontSize / 96) * 72, fontWeight > 500)
     const { width, height } = this.doc.measureText(text)
-    return new OxySize(width, height)
+    return newOxySize(width, height)
   }
 
   /** Draws the specified portion of the specified OxyImage at the specified location and with the specified size. */
@@ -262,7 +265,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     if (!image) {
       image = PortableDocumentImageUtilities.convert(source, interpolate)
       if (!image) {
-        // TODO: remove this when image decoding is working
+        // todo: remove this when image decoding is working
         return
       }
 
@@ -286,7 +289,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     this.doc.saveState()
     this.doc.setClippingRectangle(
       clippingRectangle.left,
-      clippingRectangle.bottom,
+      OxyRectHelper.bottom(clippingRectangle),
       clippingRectangle.width,
       clippingRectangle.height,
     )

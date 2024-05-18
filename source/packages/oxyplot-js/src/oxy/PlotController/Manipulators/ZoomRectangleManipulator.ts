@@ -1,4 +1,13 @@
-import { CursorType, type IPlotView, MouseManipulator, type OxyMouseEventArgs, OxyRect } from '@/oxyplot'
+import {
+  CursorType,
+  type IPlotView,
+  MouseManipulator,
+  newOxyRect,
+  type OxyMouseEventArgs,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectHelper,
+} from '@/oxyplot'
 
 /**
  * Provides a manipulator for rectangle zooming functionality.
@@ -7,7 +16,7 @@ export class ZoomRectangleManipulator extends MouseManipulator {
   /**
    * The zoom rectangle.
    */
-  private zoomRectangle: OxyRect = OxyRect.Empty
+  private zoomRectangle: OxyRect = OxyRect_Empty
 
   /**
    * Initializes a new instance of the ZoomRectangleManipulator class.
@@ -37,7 +46,10 @@ export class ZoomRectangleManipulator extends MouseManipulator {
 
     if (this.zoomRectangle.width > 10 && this.zoomRectangle.height > 10) {
       const p0 = this.inverseTransform(this.zoomRectangle.left, this.zoomRectangle.top)
-      const p1 = this.inverseTransform(this.zoomRectangle.right, this.zoomRectangle.bottom)
+      const p1 = this.inverseTransform(
+        OxyRectHelper.right(this.zoomRectangle),
+        OxyRectHelper.bottom(this.zoomRectangle),
+      )
 
       if (this.xAxis) {
         this.xAxis.zoom(p0.x, p1.x)
@@ -82,7 +94,7 @@ export class ZoomRectangleManipulator extends MouseManipulator {
       h = plotArea.height
     }
 
-    this.zoomRectangle = new OxyRect(x, y, w, h)
+    this.zoomRectangle = newOxyRect(x, y, w, h)
     this.plotView.showZoomRectangle(this.zoomRectangle)
     e.handled = true
   }
@@ -97,7 +109,7 @@ export class ZoomRectangleManipulator extends MouseManipulator {
     this.isZoomEnabled = !!((this.xAxis && this.xAxis.isZoomEnabled) || (this.yAxis && this.yAxis.isZoomEnabled))
 
     if (this.isZoomEnabled && this.startPosition) {
-      this.zoomRectangle = new OxyRect(this.startPosition.x, this.startPosition.y, 0, 0)
+      this.zoomRectangle = newOxyRect(this.startPosition.x, this.startPosition.y, 0, 0)
       this.plotView.showZoomRectangle(this.zoomRectangle)
       this.plotView.setCursorType(this.getCursorType())
       e.handled = true

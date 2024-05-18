@@ -3,7 +3,8 @@ import {
   BinningIntervalType,
   BinningOptions,
   BinningOutlierMode,
-  HistogramItem,
+  type HistogramItem,
+  newHistogramItem,
 } from '@/oxyplot'
 
 /**
@@ -154,7 +155,7 @@ export class HistogramHelpers {
 
     for (let i = 0; i < orderedBreaks.length - 1; i++) {
       const count = counts[i]
-      items.push(new HistogramItem(orderedBreaks[i], orderedBreaks[i + 1], count / total, count))
+      items.push(newHistogramItem(orderedBreaks[i], orderedBreaks[i + 1], count / total, count))
     }
 
     return items

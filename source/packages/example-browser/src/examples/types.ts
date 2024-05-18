@@ -13,6 +13,7 @@ export interface ExampleCategory {
 }
 
 export interface ExampleInfo {
+  category?: string
   title: string
   example: Example
 }

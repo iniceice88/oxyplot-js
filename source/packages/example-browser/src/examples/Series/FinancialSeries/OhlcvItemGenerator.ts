@@ -1,4 +1,4 @@
-import { DateTimeAxis, OhlcvItem } from 'oxyplot-js'
+import { DateTimeAxis, newOhlcvItem, OhlcvItem } from 'oxyplot-js'
 import { Random } from '../../Random'
 import { HighLowItemGenerator } from './HighLowItemGenerator'
 
@@ -41,7 +41,7 @@ export class OhlcvItemGenerator {
 
       const nowT = new Date(baseT.getTime() + ti * 1000)
       const t = DateTimeAxis.toDouble(nowT)
-      items.push(new OhlcvItem(t, buyvol, sellvol))
+      items.push(newOhlcvItem(t, buyvol, sellvol))
     }
 
     return items

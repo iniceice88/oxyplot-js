@@ -12,7 +12,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'vite.config.ts', 'build.config.ts', 'dist', 'node_modules'],
+  ignorePatterns: ['.eslintrc.js', 'vite.config.ts', 'vitest.config.ts', 'build.config.ts', 'dist', 'node_modules'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -21,6 +21,18 @@ module.exports = {
     'prettier/prettier': 'off',
     '@typescript-eslint/no-inferrable-types': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-this-alias': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'caughtErrorsIgnorePattern': '^_',
+      },
+    ],
+    '@typescript-eslint/ban-types': 'warn',
   },
 }

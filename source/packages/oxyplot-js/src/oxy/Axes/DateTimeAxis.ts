@@ -1,5 +1,15 @@
-import type { AxisStringFormatterType, CreateLinearAxisOptions, DataPoint } from '@/oxyplot'
-import { AxisPosition, AxisUtilities, DateTimeIntervalType, LinearAxis, newDataPoint, OxyRect } from '@/oxyplot'
+import {
+  AxisPosition,
+  type AxisStringFormatterType,
+  AxisUtilities,
+  type CreateLinearAxisOptions,
+  type DataPoint,
+  DateTimeIntervalType,
+  ExtendedDefaultLinearAxisOptions,
+  LinearAxis,
+  newDataPoint,
+  type OxyRect,
+} from '@/oxyplot'
 import {
   DateTime_MaxValue,
   DateTime_MinValue,
@@ -7,7 +17,7 @@ import {
   type IDateService,
   isNullOrUndef,
   isUndef,
-  removeUndef,
+  assignObject,
   TimeSpan,
 } from '@/patch'
 import { DayOfWeek } from '../types'
@@ -17,6 +27,20 @@ export interface CreateDateTimeAxisOptions extends CreateLinearAxisOptions {
   intervalType?: DateTimeIntervalType
   minorIntervalType?: DateTimeIntervalType
   timeZone?: string
+}
+
+export const DefaultDateTimeAxisOptions: CreateDateTimeAxisOptions = {
+  firstDayOfWeek: DayOfWeek.Monday,
+  intervalType: DateTimeIntervalType.Auto,
+  minorIntervalType: DateTimeIntervalType.Auto,
+  position: AxisPosition.Bottom,
+
+  timeZone: undefined,
+} as const
+
+export const ExtendedDefaultDateTimeAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultDateTimeAxisOptions,
 }
 
 /** Represents an axis presenting DateTime values. */
@@ -43,33 +67,32 @@ export class DateTimeAxis extends LinearAxis {
   ).totalDays
 
   /** The actual interval type. */
-  private actualIntervalType: DateTimeIntervalType = DateTimeIntervalType.Auto
+  private _actualIntervalType: DateTimeIntervalType = DateTimeIntervalType.Auto
 
   /** The actual minor interval type. */
-  private actualMinorIntervalType: DateTimeIntervalType = DateTimeIntervalType.Auto
+  private _actualMinorIntervalType: DateTimeIntervalType = DateTimeIntervalType.Auto
 
   /** Initializes a new instance of the DateTimeAxis class. */
   constructor(opt?: CreateDateTimeAxisOptions) {
     super(opt)
-    this.position = AxisPosition.Bottom
-    this.intervalType = DateTimeIntervalType.Auto
-    this.firstDayOfWeek = DayOfWeek.Monday
     this._dateService = getDateService()
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultDateTimeAxisOptions, opt)
+  }
+
+  getElementName() {
+    return 'DateTimeAxis'
   }
 
   private readonly _dateService: IDateService
 
   /** Gets or sets FirstDayOfWeek. */
-  public firstDayOfWeek: DayOfWeek
+  public firstDayOfWeek: DayOfWeek = DefaultDateTimeAxisOptions.firstDayOfWeek!
 
   /** Gets or sets IntervalType. */
-  public intervalType: DateTimeIntervalType
+  public intervalType: DateTimeIntervalType = DefaultDateTimeAxisOptions.intervalType!
 
   /** Gets or sets MinorIntervalType. */
-  public minorIntervalType: DateTimeIntervalType = DateTimeIntervalType.Auto
+  public minorIntervalType: DateTimeIntervalType = DefaultDateTimeAxisOptions.minorIntervalType!
 
   /** Gets or sets the time zone (used when formatting date/time values). */
   public timeZone?: string
@@ -114,14 +137,14 @@ export class DateTimeAxis extends LinearAxis {
       this.clipMinimum,
       this.clipMaximum,
       this.actualMinorStep,
-      this.actualMinorIntervalType,
+      this._actualMinorIntervalType,
     )
 
     const majorTickValues = this.createDateTimeTickValues(
       this.clipMinimum,
       this.clipMaximum,
       this.actualMajorStep,
-      this.actualIntervalType,
+      this._actualIntervalType,
     )
 
     const majorLabelValues = majorTickValues
@@ -149,22 +172,22 @@ export class DateTimeAxis extends LinearAxis {
   updateIntervals(plotArea: OxyRect): void {
     super.updateIntervals(plotArea)
     const hasStringFormatter = !isNullOrUndef(this.stringFormatter)
-    switch (this.actualIntervalType) {
+    switch (this._actualIntervalType) {
       case DateTimeIntervalType.Years:
         this.actualMinorStep = 31
-        this.actualMinorIntervalType = DateTimeIntervalType.Years
+        this._actualMinorIntervalType = DateTimeIntervalType.Years
         if (!hasStringFormatter) {
           this.actualStringFormatter = (d: any) => this._dateService.format(d, 'YYYY')
         }
         break
       case DateTimeIntervalType.Months:
-        this.actualMinorIntervalType = DateTimeIntervalType.Months
+        this._actualMinorIntervalType = DateTimeIntervalType.Months
         if (!hasStringFormatter) {
           this.actualStringFormatter = (d: any) => this._dateService.format(d, 'YYYY-MM-DD')
         }
         break
       case DateTimeIntervalType.Weeks:
-        this.actualMinorIntervalType = DateTimeIntervalType.Days
+        this._actualMinorIntervalType = DateTimeIntervalType.Days
         this.actualMajorStep = 7
         this.actualMinorStep = 1
         if (!hasStringFormatter) {
@@ -318,39 +341,39 @@ export class DateTimeAxis extends LinearAxis {
     }
 
     // Determine the actual interval type based on the calculated interval
-    this.actualIntervalType = this.intervalType
-    this.actualMinorIntervalType = this.minorIntervalType
+    this._actualIntervalType = this.intervalType
+    this._actualMinorIntervalType = this.minorIntervalType
 
     if (this.intervalType === DateTimeIntervalType.Auto) {
-      this.actualIntervalType = DateTimeIntervalType.Milliseconds
+      this._actualIntervalType = DateTimeIntervalType.Milliseconds
 
       if (interval >= 1.0 / 24 / 60 / 60) {
-        this.actualIntervalType = DateTimeIntervalType.Seconds
+        this._actualIntervalType = DateTimeIntervalType.Seconds
       }
 
       if (interval >= 1.0 / 24 / 60) {
-        this.actualIntervalType = DateTimeIntervalType.Minutes
+        this._actualIntervalType = DateTimeIntervalType.Minutes
       }
 
       if (interval >= 1.0 / 24) {
-        this.actualIntervalType = DateTimeIntervalType.Hours
+        this._actualIntervalType = DateTimeIntervalType.Hours
       }
 
       if (interval >= 1) {
-        this.actualIntervalType = DateTimeIntervalType.Days
+        this._actualIntervalType = DateTimeIntervalType.Days
       }
 
       if (interval >= 30) {
-        this.actualIntervalType = DateTimeIntervalType.Months
+        this._actualIntervalType = DateTimeIntervalType.Months
       }
 
       if (range >= 365.25) {
-        this.actualIntervalType = DateTimeIntervalType.Years
+        this._actualIntervalType = DateTimeIntervalType.Years
       }
     }
 
     // Handle special cases for months and years
-    if (this.actualIntervalType === DateTimeIntervalType.Months) {
+    if (this._actualIntervalType === DateTimeIntervalType.Months) {
       const monthsRange = range / 30.5
       interval = super.calculateActualInterval(
         availableSize,
@@ -361,7 +384,7 @@ export class DateTimeAxis extends LinearAxis {
       )
     }
 
-    if (this.actualIntervalType === DateTimeIntervalType.Years) {
+    if (this._actualIntervalType === DateTimeIntervalType.Years) {
       const yearsRange = range / 365.25
       interval = super.calculateActualInterval(
         availableSize,
@@ -373,25 +396,25 @@ export class DateTimeAxis extends LinearAxis {
     }
 
     // Determine the actual minor interval type based on the actual interval type
-    if (this.actualMinorIntervalType === DateTimeIntervalType.Auto) {
-      switch (this.actualIntervalType) {
+    if (this._actualMinorIntervalType === DateTimeIntervalType.Auto) {
+      switch (this._actualIntervalType) {
         case DateTimeIntervalType.Years:
-          this.actualMinorIntervalType = DateTimeIntervalType.Months
+          this._actualMinorIntervalType = DateTimeIntervalType.Months
           break
         case DateTimeIntervalType.Months:
-          this.actualMinorIntervalType = DateTimeIntervalType.Days
+          this._actualMinorIntervalType = DateTimeIntervalType.Days
           break
         case DateTimeIntervalType.Weeks:
-          this.actualMinorIntervalType = DateTimeIntervalType.Days
+          this._actualMinorIntervalType = DateTimeIntervalType.Days
           break
         case DateTimeIntervalType.Days:
-          this.actualMinorIntervalType = DateTimeIntervalType.Hours
+          this._actualMinorIntervalType = DateTimeIntervalType.Hours
           break
         case DateTimeIntervalType.Hours:
-          this.actualMinorIntervalType = DateTimeIntervalType.Minutes
+          this._actualMinorIntervalType = DateTimeIntervalType.Minutes
           break
         default:
-          this.actualMinorIntervalType = DateTimeIntervalType.Days
+          this._actualMinorIntervalType = DateTimeIntervalType.Days
           break
       }
     }
@@ -496,5 +519,9 @@ export class DateTimeAxis extends LinearAxis {
 
     // For shorter intervals, use the standard Axis method for tick generation
     return this.createTickValues(min, max, interval)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultDateTimeAxisOptions
   }
 }

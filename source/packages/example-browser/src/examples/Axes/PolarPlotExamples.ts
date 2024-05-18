@@ -5,8 +5,8 @@ import {
   LineStyle,
   MagnitudeAxis,
   MagnitudeAxisFullPlotArea,
+  newOxyThickness,
   OxyMouseButton,
-  OxyThickness,
   PlotModel,
   PlotType,
 } from 'oxyplot-js'
@@ -18,7 +18,7 @@ function archimedeanSpiral(): PlotModel {
     title: 'Polar plot',
     subtitle: 'Archimedean spiral with equation r(θ) = θ for 0 < θ < 6π',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
   model.axes.push(
     new AngleAxis({
@@ -77,7 +77,7 @@ function offsetAngles(): PlotModel {
   const model = new PlotModel({
     title: 'Offset angle axis',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   const angleAxis = new AngleAxis({
@@ -130,7 +130,7 @@ function semiCircle(): PlotModel {
   const model = new PlotModel({
     title: 'Semi-circle polar plot',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
   model.axes.push(
     new AngleAxis({
@@ -162,7 +162,7 @@ function semiCircleOffsetAngleAxisRange(): PlotModel {
     title: 'Semi-circle polar plot',
     subtitle: 'Angle axis range offset to -180 - 180',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
   model.axes.push(
     new AngleAxis({
@@ -195,7 +195,7 @@ function eastWestDirections(): PlotModel {
   const model = new PlotModel({
     title: 'East/west directions',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   model.axes.push(
@@ -206,7 +206,7 @@ function eastWestDirections(): PlotModel {
       minorStep: 30,
       startAngle: -90,
       endAngle: 270,
-      labelFormatter: (angle) => {
+      labelFormatter: function (angle) {
         if (angle > 0 && angle < 180) {
           return `${angle}E`
         } else if (angle > 180) {
@@ -242,7 +242,7 @@ function semiCircleFullPlotArea(): PlotModel {
     title: 'Semi-circle polar plot filling the plot area',
     subtitle: 'The center can be moved using the right mouse button',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(1),
+    plotAreaBorderThickness: newOxyThickness(1),
   })
 
   model.axes.push(
@@ -326,7 +326,7 @@ function createFullPlotAreaPlotModel(): PlotModel {
     title: 'Polar plot filling the plot area',
     subtitle: 'The center can be move using the right mouse button',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(1),
+    plotAreaBorderThickness: newOxyThickness(1),
   })
 
   model.axes.push(

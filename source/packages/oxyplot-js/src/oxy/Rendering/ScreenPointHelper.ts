@@ -1,9 +1,10 @@
 ﻿import {
-  newScreenPoint, type ScreenPoint,
+  newScreenPoint,
+  type ScreenPoint,
   ScreenPoint_isUndefined,
   ScreenPoint_LeftTop,
   screenPointDistanceToSquared,
-  screenPointMinus,
+  screenPointMinusEx,
 } from '@/oxyplot'
 import { Number_MAX_VALUE } from '@/patch'
 
@@ -40,7 +41,7 @@ export class ScreenPointHelper {
         continue
       }
 
-      const l2 = screenPointMinus(point, nearestPointOnSegment).lengthSquared
+      const l2 = screenPointMinusEx(point, nearestPointOnSegment).lengthSquared
 
       if (l2 < minimumDistance) {
         nearestPoint = nearestPointOnSegment

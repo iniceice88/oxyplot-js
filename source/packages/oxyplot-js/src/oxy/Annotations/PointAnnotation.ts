@@ -1,17 +1,22 @@
-import type { CreateShapeAnnotationOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateShapeAnnotationOptions,
+  ExtendedDefaultShapeAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
+  type IRenderContext,
   MarkerType,
+  newScreenVector,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
   screenPointDistanceTo,
   screenPointPlus,
-  ScreenVector,
   ShapeAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+
+import { assignObject } from '@/patch'
 
 export interface CreatePointAnnotationOptions extends CreateShapeAnnotationOptions {
   x?: number
@@ -22,6 +27,22 @@ export interface CreatePointAnnotationOptions extends CreateShapeAnnotationOptio
   customOutline?: ScreenPoint[]
 }
 
+export const DefaultPointAnnotationOptions: CreatePointAnnotationOptions = {
+  x: 0,
+  y: 0,
+  size: 4,
+  textMargin: 2,
+  shape: MarkerType.Circle,
+  textVerticalAlignment: VerticalAlignment.Top,
+
+  customOutline: undefined,
+}
+
+export const ExtendedDefaultPointAnnotationOptions = {
+  ...ExtendedDefaultShapeAnnotationOptions,
+  ...DefaultPointAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows a point.
  */
@@ -29,47 +50,45 @@ export class PointAnnotation extends ShapeAnnotation {
   /**
    * The position transformed to screen coordinates.
    */
-  private screenPosition: ScreenPoint = ScreenPoint_LeftTop
+  private _screenPosition: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Initializes a new instance of the PointAnnotation class.
    */
   constructor(opt?: CreatePointAnnotationOptions) {
     super(opt)
-    this.size = 4
-    this.textMargin = 2
-    this.shape = MarkerType.Circle
-    this.textVerticalAlignment = VerticalAlignment.Top
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultPointAnnotationOptions, opt)
+  }
+
+  getElementName() {
+    return 'PointAnnotation'
   }
 
   /**
    * The x-coordinate of the center.
    */
-  public x: number = 0
+  public x: number = DefaultPointAnnotationOptions.x!
 
   /**
    * The y-coordinate of the center.
    */
-  public y: number = 0
+  public y: number = DefaultPointAnnotationOptions.y!
 
   /**
    * The size of the rendered point.
    */
-  public size: number
+  public size: number = DefaultPointAnnotationOptions.size!
 
   /**
    * The distance between the rendered point and the text.
    */
-  public textMargin: number
+  public textMargin: number = DefaultPointAnnotationOptions.textMargin!
 
   /**
    * The shape of the rendered point.
    */
-  public shape: MarkerType
+  public shape: MarkerType = DefaultPointAnnotationOptions.shape!
 
   /**
    * A custom polygon outline for the point marker. Set shape to MarkerType.Custom to use this property.
@@ -80,11 +99,11 @@ export class PointAnnotation extends ShapeAnnotation {
    * Renders the point annotation.
    */
   public async render(rc: IRenderContext): Promise<void> {
-    this.screenPosition = PlotElementExtensions.transform(this, this.x, this.y)
+    this._screenPosition = PlotElementExtensions.transform(this, this.x, this.y)
 
     await RenderingExtensions.drawMarker(
       rc,
-      this.screenPosition,
+      this._screenPosition,
       this.shape,
       this.customOutline,
       this.size,
@@ -98,7 +117,7 @@ export class PointAnnotation extends ShapeAnnotation {
       const [ha, va] = this.getActualTextAlignment()
       const dx = -Number(ha) * (this.size + this.textMargin)
       const dy = -Number(va) * (this.size + this.textMargin)
-      const textPosition = screenPointPlus(this.screenPosition, new ScreenVector(dx, dy))
+      const textPosition = screenPointPlus(this._screenPosition, newScreenVector(dx, dy))
       await rc.drawText(
         textPosition,
         this.text,
@@ -117,13 +136,17 @@ export class PointAnnotation extends ShapeAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (screenPointDistanceTo(this.screenPosition, args.point) < this.size) {
+    if (screenPointDistanceTo(this._screenPosition, args.point) < this.size) {
       return {
         element: this,
-        nearestHitPoint: this.screenPosition,
+        nearestHitPoint: this._screenPosition,
       }
     }
 
     return undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPointAnnotationOptions
   }
 }

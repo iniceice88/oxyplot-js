@@ -1,6 +1,13 @@
-import type { CreatePathAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
-import { LinearAxis, newDataPoint, PathAnnotation } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import {
+  type CreatePathAnnotationOptions,
+  type DataPoint,
+  ExtendedDefaultPathAnnotationOptions,
+  LinearAxis,
+  newDataPoint,
+  PathAnnotation,
+  type ScreenPoint,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 /**
  * Specifies the definition of the line in a LineAnnotation.
@@ -22,12 +29,25 @@ export enum LineAnnotationType {
   LinearEquation,
 }
 
-interface CreateLineAnnotationOptions extends CreatePathAnnotationOptions {
+export interface CreateLineAnnotationOptions extends CreatePathAnnotationOptions {
   intercept?: number
   slope?: number
   type?: LineAnnotationType
   x?: number
   y?: number
+}
+
+export const DefaultLineAnnotationOptions: CreateLineAnnotationOptions = {
+  intercept: 0,
+  slope: 0,
+  type: LineAnnotationType.LinearEquation,
+  x: 0,
+  y: 0,
+}
+
+export const ExtendedDefaultLineAnnotationOptions = {
+  ...ExtendedDefaultPathAnnotationOptions,
+  ...DefaultLineAnnotationOptions,
 }
 
 /**
@@ -39,36 +59,37 @@ export class LineAnnotation extends PathAnnotation {
    */
   constructor(opt?: CreateLineAnnotationOptions) {
     super(opt)
-    this.type = LineAnnotationType.LinearEquation
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultLineAnnotationOptions, opt)
+  }
+
+  getElementName() {
+    return 'LineAnnotation'
   }
 
   /**
    * The y-intercept when type is LinearEquation.
    */
-  public intercept: number = 0
+  public intercept: number = DefaultLineAnnotationOptions.intercept!
 
   /**
    * The slope when type is LinearEquation.
    */
-  public slope: number = 0
+  public slope: number = DefaultLineAnnotationOptions.slope!
 
   /**
    * The type of line equation.
    */
-  public type: LineAnnotationType
+  public type: LineAnnotationType = DefaultLineAnnotationOptions.type!
 
   /**
    * The X position for vertical lines (only for type==Vertical).
    */
-  public x: number = 0
+  public x: number = DefaultLineAnnotationOptions.x!
 
   /**
    * The Y position for horizontal lines (only for type==Horizontal)
    */
-  public y: number = 0
+  public y: number = DefaultLineAnnotationOptions.y!
 
   /**
    * Gets the screen points.
@@ -129,5 +150,9 @@ export class LineAnnotation extends PathAnnotation {
 
     // transform to screen coordinates
     return points.map((p) => this.transform(p))
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLineAnnotationOptions
   }
 }

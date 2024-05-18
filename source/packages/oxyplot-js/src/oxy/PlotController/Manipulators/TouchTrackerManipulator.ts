@@ -1,5 +1,12 @@
-import type { IPlotView, OxyTouchEventArgs, ScreenPoint } from '@/oxyplot'
-import { Series, TouchManipulator, TrackerHelper } from '@/oxyplot'
+import {
+  type IPlotView,
+  OxyRectHelper,
+  type OxyTouchEventArgs,
+  type ScreenPoint,
+  Series,
+  TouchManipulator,
+  TrackerHelper,
+} from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface TouchTrackerManipulatorOptions {
@@ -141,7 +148,7 @@ export class TouchTrackerManipulator extends TouchManipulator {
       return
     }
 
-    if (!actualModel.plotArea.contains(position.x, position.y)) {
+    if (!OxyRectHelper.contains(actualModel.plotArea, position.x, position.y)) {
       return
     }
 

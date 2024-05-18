@@ -1,16 +1,16 @@
 import {
   AxisLayer,
   AxisPosition,
-  BarItem,
   BarSeries,
   CategoryAxis,
   LinearAxis,
   LineSeries,
   LineStyle,
   MarkerType,
+  newBarItem,
   newDataPoint,
+  newOxyThickness,
   OxyColors,
-  OxyThickness,
   PlotModel,
   round,
   ScatterSeries,
@@ -20,7 +20,7 @@ import type { ExampleCategory } from '../types'
 
 /** Graph1 */
 function graph1(): PlotModel {
-  const pm = new PlotModel({ title: 'Q1 2003 Calls by Region', plotAreaBorderThickness: new OxyThickness(0) })
+  const pm = new PlotModel({ title: 'Q1 2003 Calls by Region', plotAreaBorderThickness: newOxyThickness(0) })
   const categoryAxis = new CategoryAxis({
     axislineStyle: LineStyle.Solid,
     tickStyle: TickStyle.None,
@@ -42,10 +42,10 @@ function graph1(): PlotModel {
     }),
   )
   const series = new BarSeries({ fillColor: OxyColors.Black, xAxisKey: 'x', yAxisKey: 'y' })
-  series.items.push(new BarItem({ value: 3000 }))
-  series.items.push(new BarItem({ value: 4500 }))
-  series.items.push(new BarItem({ value: 2100 }))
-  series.items.push(new BarItem({ value: 4800 }))
+  series.items.push(newBarItem({ value: 3000 }))
+  series.items.push(newBarItem({ value: 4500 }))
+  series.items.push(newBarItem({ value: 2100 }))
+  series.items.push(newBarItem({ value: 4800 }))
   pm.series.push(series)
   return pm
 }
@@ -54,7 +54,7 @@ function graph1(): PlotModel {
 function graph2(): PlotModel {
   const pm = new PlotModel({
     title: '2003 Sales',
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
     isLegendVisible: false,
   })
   const sales1 = [1000, 1010, 1020, 1010, 1020, 1030, 1000, 500, 1000, 900, 900, 1000]
@@ -96,8 +96,8 @@ function graph2(): PlotModel {
 function graph3(): PlotModel {
   const pm = new PlotModel({
     title: 'Headcount',
-    plotAreaBorderThickness: new OxyThickness(0),
-    plotMargins: new OxyThickness(100, 40, 20, 40),
+    plotAreaBorderThickness: newOxyThickness(0),
+    plotMargins: newOxyThickness(100, 40, 20, 40),
   })
   const values = new Map<string, number>([
     ['Manufacturing', 240],
@@ -139,7 +139,7 @@ function graph3(): PlotModel {
 
 /** Regional % of Total Expenses */
 function graph4(): PlotModel {
-  const pm = new PlotModel({ title: 'Regional % of Total Expenses', plotAreaBorderThickness: new OxyThickness(0) })
+  const pm = new PlotModel({ title: 'Regional % of Total Expenses', plotAreaBorderThickness: newOxyThickness(0) })
   const categoryAxis = new CategoryAxis({
     tickStyle: TickStyle.None,
     gapWidth: 0,
@@ -172,14 +172,14 @@ function graph4(): PlotModel {
     yAxisKey: 'y',
   })
   const numbers = [0.34, 0.3, 0.2, 0.16]
-  series.items = numbers.map((n) => BarItem.fromValue(n))
+  series.items = numbers.map((n) => newBarItem(n))
   pm.series.push(series)
   return pm
 }
 
 /** Actual to Plan Variance */
 function graph5(): PlotModel {
-  const pm = new PlotModel({ title: 'Actual to Plan Variance', plotAreaBorderThickness: new OxyThickness(0) })
+  const pm = new PlotModel({ title: 'Actual to Plan Variance', plotAreaBorderThickness: newOxyThickness(0) })
   const values = new Map<string, number>([
     ['Sales', 7],
     ['Marketing', -7],
@@ -233,8 +233,8 @@ function graph5(): PlotModel {
 function graph6(): PlotModel {
   const pm = new PlotModel({
     title: 'Order Count by Order Size',
-    plotAreaBorderThickness: new OxyThickness(0),
-    plotMargins: new OxyThickness(60, 4, 4, 60),
+    plotAreaBorderThickness: newOxyThickness(0),
+    plotMargins: newOxyThickness(60, 4, 4, 60),
   })
   const values = new Map<string, number>([
     [' <$10', 5000],
@@ -285,7 +285,7 @@ function graph6(): PlotModel {
 function graph7(): PlotModel {
   const pm = new PlotModel({
     title: 'Correlation of Employee Heights and Salaries',
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
   const values = [
     newDataPoint(62, 39000),

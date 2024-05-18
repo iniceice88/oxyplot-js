@@ -1,5 +1,19 @@
-import { type AxisStringFormatterType, LinearAxis } from '@/oxyplot'
-import { TimeSpan } from '@/patch'
+import {
+  type AxisStringFormatterType,
+  type CreateLinearAxisOptions,
+  ExtendedDefaultLinearAxisOptions,
+  LinearAxis,
+} from '@/oxyplot'
+import { assignObject, TimeSpan } from '@/patch'
+
+export interface CreateTimeSpanAxisOptions extends CreateLinearAxisOptions {}
+
+export const DefaultTimeSpanAxisOptions: CreateTimeSpanAxisOptions = {}
+
+export const ExtendedDefaultTimeSpanAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultTimeSpanAxisOptions,
+}
 
 /**
  * Represents an axis presenting TimeSpan values.
@@ -9,6 +23,15 @@ import { TimeSpan } from '@/patch'
  * "m:ss" shows minutes and seconds
  */
 export class TimeSpanAxis extends LinearAxis {
+  constructor(opt?: CreateTimeSpanAxisOptions) {
+    super(opt)
+    assignObject(this, DefaultTimeSpanAxisOptions, opt)
+  }
+
+  getElementName() {
+    return 'TimeSpanAxis'
+  }
+
   /**
    * Converts a time span to a double.
    * @param s The time span.
@@ -114,5 +137,9 @@ export class TimeSpanAxis extends LinearAxis {
     }
 
     return interval
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultTimeSpanAxisOptions
   }
 }

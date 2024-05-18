@@ -69,7 +69,7 @@ export class Selection {
    * @param index The index.
    * @param feature The feature.
    */
-  public select(index: number, feature: any = null): void {
+  public select(index: number, feature?: any): void {
     const si = new SelectionItem(index, feature)
     this.setSelection(si, true)
   }
@@ -79,7 +79,7 @@ export class Selection {
    * @param index The index of the item.
    * @param feature The feature.
    */
-  public unselect(index: number, feature: any = null): void {
+  public unselect(index: number, feature?: any): void {
     const si = new SelectionItem(index, feature)
     if (!this.hasSelection(si)) {
       throw new Error(`Item ${index} and feature ${feature} is not selected. Cannot unselect.`)
@@ -123,14 +123,14 @@ class SelectionItem {
   /**
    * The feature
    */
-  private readonly feature: any
+  private readonly feature?: any
 
   /**
    * Initializes a new instance of the SelectionItem class.
    * @param index The index.
    * @param feature The feature.
    */
-  constructor(index: number, feature: any) {
+  constructor(index: number, feature?: any) {
     this.index = index
     this.feature = feature
   }

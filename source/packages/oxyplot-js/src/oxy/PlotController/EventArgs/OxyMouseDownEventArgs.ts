@@ -14,9 +14,9 @@ export interface OxyMouseDownEventArgs extends OxyMouseEventArgs {
    */
   clickCount: number
 
-  // TODO: Consider removing this property
   /**
    * Gets or sets the hit test result.
+   * @deprecated
    */
   hitTestResult: HitTestResult
 }

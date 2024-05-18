@@ -5,8 +5,10 @@ import {
   ImageFormat,
   type INumericColorAxis,
   type IRenderContext,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
+  type OxyImage,
+  OxyImageEx,
   PlotModel,
   RenderingExtensions,
 } from '@/oxyplot'
@@ -73,11 +75,11 @@ export class NumericColorAxisRenderer<T extends Axis & INumericColorAxis> extend
         highLowLength *= -1
       }
 
-      if (!axis.lowColor.isUndefined()) {
+      if (!OxyColorHelper.isUndefined(axis.lowColor)) {
         await this.drawColorRect(axis, this.minScreenPosition, this.minScreenPosition + highLowLength, axis.lowColor)
       }
 
-      if (!axis.highColor.isUndefined()) {
+      if (!OxyColorHelper.isUndefined(axis.highColor)) {
         await this.drawColorRect(axis, this.maxScreenPosition, this.maxScreenPosition - highLowLength, axis.highColor)
       }
     }
@@ -102,7 +104,7 @@ export class NumericColorAxisRenderer<T extends Axis & INumericColorAxis> extend
       }
     }
 
-    return OxyImage.create(buffer, ImageFormat.Png)
+    return OxyImageEx.create(buffer, ImageFormat.Png)
   }
 
   /**

@@ -1,11 +1,13 @@
-import type { IColorAxis, IRenderContext } from '@/oxyplot'
 import {
   Axis,
   AxisPosition,
   HorizontalAndVerticalAxisRenderer,
-  OxyColor,
+  type IColorAxis,
+  type IRenderContext,
+  newOxyRect,
+  type OxyColor,
   OxyColors,
-  OxyRect,
+  OxyRectHelper,
   PlotModel,
 } from '@/oxyplot'
 
@@ -53,23 +55,24 @@ export abstract class ColorAxisRenderer<T extends Axis & IColorAxis> extends Hor
     const distance = axis.axisDistance
     this.minScreenPosition = axis.transform(axis.clipMinimum)
     this.maxScreenPosition = axis.transform(axis.clipMaximum)
-
+    const { x: right, y: bottom } = OxyRectHelper.bottomRight(axis.plotModel.plotArea)
+    const { left, top } = axis.plotModel.plotArea
     switch (axis.position) {
       case AxisPosition.Left:
-        this.left = axis.plotModel.plotArea.left - axis.positionTierMinShift - this.size - distance
-        this.top = axis.plotModel.plotArea.top
+        this.left = left - axis.positionTierMinShift - this.size - distance
+        this.top = top
         break
       case AxisPosition.Right:
-        this.left = axis.plotModel.plotArea.right + axis.positionTierMinShift + distance
-        this.top = axis.plotModel.plotArea.top
+        this.left = right + axis.positionTierMinShift + distance
+        this.top = top
         break
       case AxisPosition.Top:
-        this.left = axis.plotModel.plotArea.left
-        this.top = axis.plotModel.plotArea.top - axis.positionTierMinShift - this.size - distance
+        this.left = left
+        this.top = top - axis.positionTierMinShift - this.size - distance
         break
       case AxisPosition.Bottom:
-        this.left = axis.plotModel.plotArea.left
-        this.top = axis.plotModel.plotArea.bottom + axis.positionTierMinShift + distance
+        this.left = left
+        this.top = bottom + axis.positionTierMinShift + distance
         break
     }
   }
@@ -99,8 +102,8 @@ export abstract class ColorAxisRenderer<T extends Axis & IColorAxis> extends Hor
     const yMin = Math.min(yLow, yHigh)
     const yMax = Math.max(yLow, yHigh) + 0.5
     const rect = axis.isHorizontal()
-      ? new OxyRect(yMin, this.top, yMax - yMin, this.size)
-      : new OxyRect(this.left, yMin, this.size, yMax - yMin)
+      ? newOxyRect(yMin, this.top, yMax - yMin, this.size)
+      : newOxyRect(this.left, yMin, this.size, yMax - yMin)
 
     await this.renderContext.drawRectangle(rect, color, OxyColors.Undefined, 0, axis.edgeRenderingMode)
   }

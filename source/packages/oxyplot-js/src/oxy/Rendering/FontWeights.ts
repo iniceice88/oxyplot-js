@@ -1,14 +1,14 @@
 ﻿/**
  * Defines standard font weight values.
  */
-export class FontWeights {
+export const FontWeights = {
   /**
    * Specifies a bold font weight.
    */
-  public static readonly Bold: number = 700
+  Bold: 700,
 
   /**
    * Specifies a normal font weight.
    */
-  public static readonly Normal: number = 400
+  Normal: 400,
 }

@@ -4,7 +4,7 @@ import {
   LinearBarSeries,
   LogarithmicAxis,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   PlotModel,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -29,8 +29,8 @@ function withStroke(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
   const linearBarSeries = _createExampleLinearBarSeries()
   linearBarSeries.title = 'LinearBarSeries'
-  linearBarSeries.fillColor = OxyColor.parse('#454CAF50')
-  linearBarSeries.strokeColor = OxyColor.parse('#4CAF50')
+  linearBarSeries.fillColor = OxyColorHelper.parse('#454CAF50')
+  linearBarSeries.strokeColor = OxyColorHelper.parse('#4CAF50')
   linearBarSeries.strokeThickness = 1
   model.series.push(linearBarSeries)
 
@@ -67,10 +67,10 @@ function _createWithNegativeColors(logarithmic: boolean = false, baseValue: numb
   )
   const linearBarSeries = _createExampleLinearBarSeriesWithNegativeValues()
   linearBarSeries.title = 'LinearBarSeries'
-  linearBarSeries.fillColor = OxyColor.parse('#454CAF50')
-  linearBarSeries.strokeColor = OxyColor.parse('#4CAF50')
-  linearBarSeries.negativeFillColor = OxyColor.parse('#45BF360C')
-  linearBarSeries.negativeStrokeColor = OxyColor.parse('#BF360C')
+  linearBarSeries.fillColor = OxyColorHelper.parse('#454CAF50')
+  linearBarSeries.strokeColor = OxyColorHelper.parse('#4CAF50')
+  linearBarSeries.negativeFillColor = OxyColorHelper.parse('#45BF360C')
+  linearBarSeries.negativeStrokeColor = OxyColorHelper.parse('#BF360C')
   linearBarSeries.strokeThickness = 1
   linearBarSeries.baseValue = baseValue
   model.series.push(linearBarSeries)

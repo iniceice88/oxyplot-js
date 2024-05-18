@@ -2,9 +2,12 @@ import {
   CursorType,
   EdgeRenderingMode,
   type ITextMeasurer,
-  OxyColor,
+  newOxyRect,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectHelper,
   PlotModel,
   SvgRenderContext,
   TrackerHitResult,
@@ -41,7 +44,7 @@ export class SvgPlotView extends WebPlotViewBase {
   }
 
   get clientArea(): OxyRect {
-    return new OxyRect(0, 0, this._view.clientWidth, this._view.clientHeight)
+    return newOxyRect(0, 0, this._view.clientWidth, this._view.clientHeight)
   }
 
   hideTracker(): void {
@@ -78,13 +81,13 @@ export class SvgPlotView extends WebPlotViewBase {
       model.background,
     )
 
-    if (!model.background.isUndefined()) {
+    if (!OxyColorHelper.isUndefined(model.background)) {
       this._view.style.backgroundColor = model.background.toString()
     }
 
-    await model.render(renderContext, new OxyRect(0, 0, view.clientWidth, view.clientHeight))
-    if (this._zoomRectangle && this._zoomRectangle.equals(OxyRect.Empty)) {
-      const fill = OxyColor.parse('#40FFFF00')
+    await model.render(renderContext, newOxyRect(0, 0, view.clientWidth, view.clientHeight))
+    if (this._zoomRectangle && OxyRectHelper.equals(this._zoomRectangle, OxyRect_Empty)) {
+      const fill = OxyColorHelper.parse('#40FFFF00')
       const stroke = OxyColors.Black
       await renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
     }

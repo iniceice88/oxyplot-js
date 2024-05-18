@@ -1,12 +1,18 @@
-import type { CreateShapeAnnotationOptions, DataPoint, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateShapeAnnotationOptions,
+  type DataPoint,
+  ExtendedDefaultShapeAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
   ShapeAnnotation,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreatePolygonAnnotationOptions extends CreateShapeAnnotationOptions {
   /**
@@ -30,6 +36,19 @@ export interface CreatePolygonAnnotationOptions extends CreateShapeAnnotationOpt
   points?: DataPoint[]
 }
 
+export const DefaultPolygonAnnotationOptions: CreatePolygonAnnotationOptions = {
+  lineJoin: LineJoin.Miter,
+  lineStyle: LineStyle.Solid,
+  minimumSegmentLength: 2,
+
+  points: undefined,
+}
+
+export const ExtendedDefaultPolygonAnnotationOptions = {
+  ...ExtendedDefaultShapeAnnotationOptions,
+  ...DefaultPolygonAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows a polygon.
  */
@@ -37,36 +56,34 @@ export class PolygonAnnotation extends ShapeAnnotation {
   /**
    * The polygon points transformed to screen coordinates.
    */
-  private screenPoints: ScreenPoint[] = []
+  private _screenPoints: ScreenPoint[] = []
 
   /**
    * Initializes a new instance of the PolygonAnnotation class.
    */
   constructor(opt?: CreatePolygonAnnotationOptions) {
     super(opt)
-    this.lineStyle = LineStyle.Solid
-    this.lineJoin = LineJoin.Miter
-    this.minimumSegmentLength = 2
+    assignObject(this, DefaultPolygonAnnotationOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, opt)
-    }
+  getElementName() {
+    return 'PolygonAnnotation'
   }
 
   /**
    * The line join.
    */
-  public lineJoin: LineJoin
+  public lineJoin: LineJoin = DefaultPolygonAnnotationOptions.lineJoin!
 
   /**
    * The line style.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultPolygonAnnotationOptions.lineStyle!
 
   /**
    * The minimum length of the segment.
    */
-  public minimumSegmentLength: number
+  public minimumSegmentLength: number = DefaultPolygonAnnotationOptions.minimumSegmentLength!
 
   /**
    * The points.
@@ -82,14 +99,14 @@ export class PolygonAnnotation extends ShapeAnnotation {
     }
 
     // transform to screen coordinates
-    this.screenPoints = this.points.map((x) => this.transform(x))
-    if (this.screenPoints.length === 0) {
+    this._screenPoints = this.points.map((x) => this.transform(x))
+    if (this._screenPoints.length === 0) {
       return
     }
 
     await RenderingExtensions.drawReducedPolygon(
       rc,
-      this.screenPoints,
+      this._screenPoints,
       this.minimumSegmentLength * this.minimumSegmentLength,
       this.getSelectableFillColor(this.fill),
       this.getSelectableColor(this.stroke),
@@ -101,7 +118,7 @@ export class PolygonAnnotation extends ShapeAnnotation {
 
     if (this.text) {
       const [ha, va] = this.getActualTextAlignment()
-      const textPosition = this.getActualTextPosition(() => ScreenPointHelper.getCentroid(this.screenPoints))
+      const textPosition = this.getActualTextPosition(() => ScreenPointHelper.getCentroid(this._screenPoints))
 
       await rc.drawText(
         textPosition,
@@ -121,16 +138,20 @@ export class PolygonAnnotation extends ShapeAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (!this.screenPoints || this.screenPoints.length === 0) {
+    if (!this._screenPoints || this._screenPoints.length === 0) {
       // Points not specified.
       return undefined
     }
 
-    return ScreenPointHelper.isPointInPolygon(args.point, this.screenPoints)
+    return ScreenPointHelper.isPointInPolygon(args.point, this._screenPoints)
       ? {
           element: this,
           nearestHitPoint: args.point,
         }
       : undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPolygonAnnotationOptions
   }
 }

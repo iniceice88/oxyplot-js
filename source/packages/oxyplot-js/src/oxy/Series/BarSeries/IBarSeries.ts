@@ -1,4 +1,4 @@
-﻿import { Axis, BarItemBase, BarSeriesManager, CategoryAxis, PlotModel } from '@/oxyplot'
+﻿import { Axis, type BarItemBase, BarSeriesManager, CategoryAxis, PlotModel } from '@/oxyplot'
 import { isNullOrUndef } from '@/patch'
 
 /**

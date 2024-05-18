@@ -1,4 +1,4 @@
-﻿import { Axis, AxisPosition, type IRenderContext, OxyPen, PlotModel, TickStyle } from '@/oxyplot'
+﻿import { Axis, AxisPosition, type IRenderContext, OxyColorHelper, OxyPen, PlotModel, TickStyle } from '@/oxyplot'
 
 /**
  * Provides an abstract base class for axis renderers.
@@ -110,7 +110,9 @@ export abstract class AxisRendererBase<T extends Axis = Axis> {
    * @param axis The axis.
    */
   protected createPens(axis: T): void {
-    const minorTickColor = axis.minorTicklineColor.isAutomatic() ? axis.ticklineColor : axis.minorTicklineColor
+    const minorTickColor = OxyColorHelper.isAutomatic(axis.minorTicklineColor)
+      ? axis.ticklineColor
+      : axis.minorTicklineColor
 
     this.minorPen = OxyPen.create(axis.minorGridlineColor, axis.minorGridlineThickness, axis.minorGridlineStyle)
     this.majorPen = OxyPen.create(axis.majorGridlineColor, axis.majorGridlineThickness, axis.majorGridlineStyle)

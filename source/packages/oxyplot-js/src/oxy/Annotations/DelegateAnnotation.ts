@@ -1,4 +1,12 @@
-import { Annotation, type IRenderContext, OxyRect } from '@/oxyplot'
+import {
+  Annotation,
+  ExtendedDefaultAnnotationOptions,
+  type IRenderContext,
+  type OxyRect,
+  OxyRect_Everything,
+} from '@/oxyplot'
+
+const ExtendedDefaultDelegateAnnotationOptions = ExtendedDefaultAnnotationOptions
 
 /**
  * Represents an annotation that renders by a delegate.
@@ -18,6 +26,10 @@ export class DelegateAnnotation extends Annotation {
     this.rendering = rendering
   }
 
+  getElementName() {
+    return 'DelegateAnnotation'
+  }
+
   /**
    * Renders the annotation on the specified context.
    * @param rc The render context.
@@ -31,6 +43,10 @@ export class DelegateAnnotation extends Annotation {
    * @returns The clipping rect.
    */
   public getClippingRect(): OxyRect {
-    return OxyRect.Everything
+    return OxyRect_Everything
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultDelegateAnnotationOptions
   }
 }

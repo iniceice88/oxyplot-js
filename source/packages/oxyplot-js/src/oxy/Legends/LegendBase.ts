@@ -1,15 +1,18 @@
 ﻿import {
   type CreatePlotElementOptions,
+  ExtendedDefaultPlotElementOptions,
   HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
-  OxyColor,
+  type OxyColor,
   OxyColors,
-  OxyRect,
-  OxySize,
+  type OxyRect,
+  OxyRect_Empty,
+  type OxySize,
   PlotElement,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 /**
  * Specifies the placement of the legend box.
@@ -179,8 +182,6 @@ export interface CreateLegendBaseOptions extends CreatePlotElementOptions {
   legendTitleFont?: string
   legendTitleFontSize?: number
   legendTitleFontWeight?: number
-  legendArea?: OxyRect
-  legendSize?: OxySize
   legendBackground?: OxyColor
   legendBorder?: OxyColor
   legendBorderThickness?: number
@@ -202,12 +203,53 @@ export interface CreateLegendBaseOptions extends CreatePlotElementOptions {
   showInvisibleSeries?: boolean
 }
 
+export const DefaultLegendBaseOptions: CreateLegendBaseOptions = {
+  isLegendVisible: false,
+  legendOrientation: LegendOrientation.Horizontal,
+  legendPadding: 0,
+  legendSymbolLength: 0,
+  legendSymbolMargin: 0,
+  legendSymbolPlacement: LegendSymbolPlacement.Left,
+  legendTitleColor: OxyColors.Undefined,
+  legendTitleFontSize: 0,
+  legendTitleFontWeight: 0,
+  legendBackground: OxyColors.Undefined,
+  legendBorder: OxyColors.Undefined,
+  legendBorderThickness: 0,
+  legendColumnSpacing: 0,
+  legendFontSize: 0,
+  legendFontWeight: 0,
+  legendItemAlignment: HorizontalAlignment.Left,
+  legendItemOrder: LegendItemOrder.Normal,
+  legendItemSpacing: 0,
+  legendLineSpacing: 0,
+  legendMargin: 0,
+  legendMaxWidth: 0,
+  legendMaxHeight: 0,
+  legendPlacement: LegendPlacement.Inside,
+  legendPosition: LegendPosition.TopLeft,
+  allowUseFullExtent: false,
+  showInvisibleSeries: false,
+
+  key: undefined,
+  legendTitle: undefined,
+  legendTitleFont: undefined,
+  legendFont: undefined,
+  legendTextColor: undefined,
+} as const
+
+export const ExtendedDefaultLegendBaseOptions = {
+  ...ExtendedDefaultPlotElementOptions,
+  ...DefaultLegendBaseOptions,
+}
+
 /**
  * The abstract Legend class.
  */
 export abstract class LegendBase extends PlotElement {
   protected constructor(opt?: CreateLegendBaseOptions) {
     super(opt)
+    assignObject(this, DefaultLegendBaseOptions, opt)
   }
 
   /**
@@ -235,33 +277,33 @@ export abstract class LegendBase extends PlotElement {
   /**
    * Gets or sets a value indicating whether the legend is visible. The titles of the series must be set to use the legend.
    */
-  public isLegendVisible: boolean = false
+  public isLegendVisible: boolean = DefaultLegendBaseOptions.isLegendVisible!
 
   /**
    * Gets or sets the legend orientation.
    * Horizontal orientation is reverted to Vertical if Legend is positioned Left or Right of the plot.
    */
-  public legendOrientation: LegendOrientation = LegendOrientation.Horizontal
+  public legendOrientation: LegendOrientation = DefaultLegendBaseOptions.legendOrientation!
 
   /**
    * Gets or sets the legend padding.
    */
-  public legendPadding: number = 0
+  public legendPadding: number = DefaultLegendBaseOptions.legendPadding!
 
   /**
    * Gets or sets the length of the legend symbols (the default value is 16).
    */
-  public legendSymbolLength: number = 0
+  public legendSymbolLength: number = DefaultLegendBaseOptions.legendSymbolLength!
 
   /**
    * Gets or sets the legend symbol margins (distance between the symbol and the text).
    */
-  public legendSymbolMargin: number = 0
+  public legendSymbolMargin: number = DefaultLegendBaseOptions.legendSymbolMargin!
 
   /**
    * Gets or sets the legend symbol placement.
    */
-  public legendSymbolPlacement: LegendSymbolPlacement = LegendSymbolPlacement.Left
+  public legendSymbolPlacement: LegendSymbolPlacement = DefaultLegendBaseOptions.legendSymbolPlacement!
 
   /**
    * Gets or sets the legend title.
@@ -272,7 +314,7 @@ export abstract class LegendBase extends PlotElement {
    * Gets or sets the color of the legend title.
    * If this value is `null`, the TextColor will be used.
    */
-  public legendTitleColor: OxyColor = OxyColors.Undefined
+  public legendTitleColor: OxyColor = DefaultLegendBaseOptions.legendTitleColor!
 
   /**
    * Gets or sets the legend title font.
@@ -282,42 +324,42 @@ export abstract class LegendBase extends PlotElement {
   /**
    * Gets or sets the size of the legend title font.
    */
-  public legendTitleFontSize: number = 0
+  public legendTitleFontSize: number = DefaultLegendBaseOptions.legendTitleFontSize!
 
   /**
    * Gets or sets the legend title font weight.
    */
-  public legendTitleFontWeight: number = 0
+  public legendTitleFontWeight: number = DefaultLegendBaseOptions.legendTitleFontWeight!
 
   /**
    * Gets the legend area.
    */
-  public legendArea: OxyRect = OxyRect.Empty
+  public legendArea: OxyRect = OxyRect_Empty
 
   /**
    * Gets or sets the size of the legend.
    */
-  public legendSize: OxySize = OxySize.Empty
+  public legendSize: OxySize = OxyRect_Empty
 
   /**
    * Gets or sets the background color of the legend. Use `null` for no background.
    */
-  public legendBackground: OxyColor = OxyColors.Undefined
+  public legendBackground: OxyColor = DefaultLegendBaseOptions.legendBackground!
 
   /**
    * Gets or sets the border color of the legend.
    */
-  public legendBorder: OxyColor = OxyColors.Undefined
+  public legendBorder: OxyColor = DefaultLegendBaseOptions.legendBorder!
 
   /**
    * Gets or sets the thickness of the legend border. Use 0 for no border.
    */
-  public legendBorderThickness: number = 0
+  public legendBorderThickness: number = DefaultLegendBaseOptions.legendBorderThickness!
 
   /**
    * Gets or sets the spacing between columns of legend items (only for vertical orientation).
    */
-  public legendColumnSpacing: number = 0
+  public legendColumnSpacing: number = DefaultLegendBaseOptions.legendColumnSpacing!
 
   /**
    * Gets or sets the legend font.
@@ -327,7 +369,7 @@ export abstract class LegendBase extends PlotElement {
   /**
    * Gets or sets the size of the legend font.
    */
-  public legendFontSize: number = 0
+  public legendFontSize: number = DefaultLegendBaseOptions.legendFontSize!
 
   /**
    * Gets or sets the color of the legend text.
@@ -338,63 +380,63 @@ export abstract class LegendBase extends PlotElement {
   /**
    * Gets or sets the legend font weight.
    */
-  public legendFontWeight: number = 0
+  public legendFontWeight: number = DefaultLegendBaseOptions.legendFontWeight!
 
   /**
    * Gets or sets the legend item alignment.
    */
-  public legendItemAlignment: HorizontalAlignment = HorizontalAlignment.Left
+  public legendItemAlignment: HorizontalAlignment = DefaultLegendBaseOptions.legendItemAlignment!
 
   /**
    * Gets or sets the legend item order.
    */
-  public legendItemOrder: LegendItemOrder = LegendItemOrder.Normal
+  public legendItemOrder: LegendItemOrder = DefaultLegendBaseOptions.legendItemOrder!
 
   /**
    * Gets or sets the horizontal spacing between legend items when the orientation is horizontal.
    */
-  public legendItemSpacing: number = 0
+  public legendItemSpacing: number = DefaultLegendBaseOptions.legendItemSpacing!
 
   /**
    * Gets or sets the vertical spacing between legend items.
    */
-  public legendLineSpacing: number = 0
+  public legendLineSpacing: number = DefaultLegendBaseOptions.legendLineSpacing!
 
   /**
    * Gets or sets the legend margin.
    */
-  public legendMargin: number = 0
+  public legendMargin: number = DefaultLegendBaseOptions.legendMargin!
 
   /**
    * Gets or sets the max width of the legend.
    */
-  public legendMaxWidth: number = 0
+  public legendMaxWidth: number = DefaultLegendBaseOptions.legendMaxWidth!
 
   /**
    * Gets or sets the max height of the legend.
    */
-  public legendMaxHeight: number = 0
+  public legendMaxHeight: number = DefaultLegendBaseOptions.legendMaxHeight!
 
   /**
    * Gets or sets the legend placement.
    */
-  public legendPlacement: LegendPlacement = LegendPlacement.Inside
+  public legendPlacement: LegendPlacement = DefaultLegendBaseOptions.legendPlacement!
 
   /**
    * Gets or sets the legend position.
    */
-  public legendPosition: LegendPosition = LegendPosition.TopLeft
+  public legendPosition: LegendPosition = DefaultLegendBaseOptions.legendPosition!
 
   /**
    * Gets or sets a value indicating whether the legend should use the full extend of the plot when LegendPlacement equals LegendPlacement.Outside.
    */
-  public allowUseFullExtent: boolean = false
+  public allowUseFullExtent: boolean = DefaultLegendBaseOptions.allowUseFullExtent!
 
   /**
    * Gets or sets a value indicating whether the legend should show invisible series. The default is true.
    * Invisible series will appear in the listening, but will be grayed out.
    */
-  public showInvisibleSeries: boolean = false
+  public showInvisibleSeries: boolean = DefaultLegendBaseOptions.showInvisibleSeries!
 
   /**
    * Makes the LegendOrientation property safe.

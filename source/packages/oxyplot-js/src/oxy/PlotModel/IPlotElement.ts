@@ -1,4 +1,4 @@
-﻿import { OxyRect } from '@/oxyplot'
+﻿import { type OxyRect } from '@/oxyplot'
 
 /**
  * Specifies functionality for an element of a plot.

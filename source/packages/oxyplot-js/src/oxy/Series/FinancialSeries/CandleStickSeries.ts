@@ -1,19 +1,25 @@
-import type { CreateHighLowSeriesOptions, HighLowItem, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateHighLowSeriesOptions,
+  ExtendedDefaultHighLowSeriesOptions,
+  type HighLowItem,
   HighLowSeries,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
+  newOxyRect,
   newScreenPoint,
-  OxyColor,
-  OxyColorExtensions,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type ScreenPoint,
   TrackerHitResult,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, removeUndef } from '@/patch'
+import { assignObject, Number_MAX_VALUE } from '@/patch'
 
 export interface CreateCandleStickSeriesOptions extends CreateHighLowSeriesOptions {
   /**
@@ -28,10 +34,21 @@ export interface CreateCandleStickSeriesOptions extends CreateHighLowSeriesOptio
 
   /**
    * Gets or sets the bar width in data units (for example if the X axis is date/time based, then should
-   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default candlestick
+   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default, candlestick
    * series will use 0.80 x the minimum difference in data points.
    */
   candleWidth?: number
+}
+
+export const DefaultCandleStickSeriesOptions: CreateCandleStickSeriesOptions = {
+  increasingColor: OxyColors.DarkGreen,
+  decreasingColor: OxyColors.Red,
+  candleWidth: 0,
+}
+
+export const ExtendedDefaultCandleStickSeriesOptions = {
+  ...DefaultCandleStickSeriesOptions,
+  ...ExtendedDefaultHighLowSeriesOptions,
 }
 
 /**
@@ -49,38 +66,36 @@ export class CandleStickSeries extends HighLowSeries {
   /**
    * The minimum X gap between successive data items
    */
-  private minDx: number = 0
+  private _minDx: number = 0
 
   /**
    * Initializes a new instance of the CandleStickSeries class.
    */
   constructor(opt?: CreateCandleStickSeriesOptions) {
-    super()
-    this.increasingColor = OxyColors.DarkGreen
-    this.decreasingColor = OxyColors.Red
-    this.candleWidth = 0
+    super(opt)
+    assignObject(this, DefaultCandleStickSeriesOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'CandleStickSeries'
   }
 
   /**
    * Gets or sets the color used when the closing value is greater than opening value.
    */
-  increasingColor: OxyColor
+  increasingColor: OxyColor = DefaultCandleStickSeriesOptions.increasingColor!
 
   /**
    * Gets or sets the fill color used when the closing value is less than opening value.
    */
-  decreasingColor: OxyColor
+  decreasingColor: OxyColor = DefaultCandleStickSeriesOptions.decreasingColor!
 
   /**
    * Gets or sets the bar width in data units (for example if the X axis is date/time based, then should
-   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default candlestick
+   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default, candlestick
    * series will use 0.80 x the minimum difference in data points.
    */
-  candleWidth: number
+  candleWidth: number = DefaultCandleStickSeriesOptions.candleWidth!
 
   /**
    * Fast index of bar where max(bar[i].X) <= x
@@ -112,14 +127,14 @@ export class CandleStickSeries extends HighLowSeries {
 
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
 
-    const dataCandlewidth = this.candleWidth > 0 ? this.candleWidth : this.minDx * 0.8
+    const dataCandlewidth = this.candleWidth > 0 ? this.candleWidth : this._minDx * 0.8
     const halfDataCandlewidth = 0.5 * dataCandlewidth
 
     // colors
     const fillUp = this.getSelectableFillColor(this.increasingColor)
     const fillDown = this.getSelectableFillColor(this.decreasingColor)
-    const lineUp = this.getSelectableColor(OxyColorExtensions.changeIntensity(this.increasingColor, 0.7))
-    const lineDown = this.getSelectableColor(OxyColorExtensions.changeIntensity(this.decreasingColor, 0.7))
+    const lineUp = this.getSelectableColor(OxyColorHelper.changeIntensity(this.increasingColor, 0.7).hex)
+    const lineDown = this.getSelectableColor(OxyColorHelper.changeIntensity(this.decreasingColor, 0.7).hex)
 
     // determine render range
     const xmin = this.xAxis!.clipMinimum
@@ -166,7 +181,7 @@ export class CandleStickSeries extends HighLowSeries {
 
       const p1 = transform(this, bar.x - halfDataCandlewidth, bar.open)
       const p2 = transform(this, bar.x + halfDataCandlewidth, bar.close)
-      const rect = OxyRect.fromScreenPoints(p1, p2)
+      const rect = OxyRectHelper.fromScreenPoints(p1, p2)
       await rc.drawRectangle(rect, fillColor, lineColor, this.strokeThickness, this.edgeRenderingMode)
     }
   }
@@ -177,16 +192,18 @@ export class CandleStickSeries extends HighLowSeries {
    * @param legendBox The bounding rectangle of the legend box.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const yopen = legendBox.top + (legendBox.bottom - legendBox.top) * 0.7
-    const yclose = legendBox.top + (legendBox.bottom - legendBox.top) * 0.3
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const yopen = legendBox.top + (bottom - legendBox.top) * 0.7
+    const yclose = legendBox.top + (bottom - legendBox.top) * 0.3
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
 
     const candlewidth = legendBox.width * 0.75
 
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await rc.drawLine(
-        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, bottom)],
         this.getSelectableColor(this.actualColor),
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -196,7 +213,7 @@ export class CandleStickSeries extends HighLowSeries {
     }
 
     await rc.drawRectangle(
-      new OxyRect(xmid - candlewidth * 0.5, yclose, candlewidth, yopen - yclose),
+      newOxyRect(xmid - candlewidth * 0.5, yclose, candlewidth, yopen - yclose),
       this.getSelectableFillColor(this.increasingColor),
       this.getSelectableColor(this.actualColor),
       this.strokeThickness,
@@ -220,7 +237,7 @@ export class CandleStickSeries extends HighLowSeries {
     const targetX = xy.x
 
     // punt if beyond start & end of series
-    if (targetX > this.items[nbars - 1].x + this.minDx || targetX < this.items[0].x - this.minDx) {
+    if (targetX > this.items[nbars - 1].x + this._minDx || targetX < this.items[0].x - this._minDx) {
       return undefined
     }
 
@@ -268,17 +285,21 @@ export class CandleStickSeries extends HighLowSeries {
     // determine minimum X gap between successive points
     const items = this.items
     const nitems = items.length
-    this.minDx = Number_MAX_VALUE
+    this._minDx = Number_MAX_VALUE
 
     for (let i = 1; i < nitems; i++) {
-      this.minDx = Math.min(this.minDx, items[i].x - items[i - 1].x)
-      if (this.minDx < 0) {
+      this._minDx = Math.min(this._minDx, items[i].x - items[i - 1].x)
+      if (this._minDx < 0) {
         throw new Error('bars are out of order, must be sequential in x')
       }
     }
 
     if (nitems <= 1) {
-      this.minDx = 1
+      this._minDx = 1
     }
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultCandleStickSeriesOptions
   }
 }

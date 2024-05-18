@@ -1,7 +1,17 @@
-﻿import { type CreateSeriesOptions, Series } from '@/oxyplot'
+﻿import { type CreateSeriesOptions, ExtendedDefaultSeriesOptions, Series } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateItemsSeriesOptions extends CreateSeriesOptions {
   itemsSource?: any[]
+}
+
+export const DefaultItemsSeriesOptions: CreateItemsSeriesOptions = {
+  itemsSource: undefined,
+}
+
+export const ExtendedDefaultItemsSeriesOptions = {
+  ...ExtendedDefaultSeriesOptions,
+  ...DefaultItemsSeriesOptions,
 }
 
 /**
@@ -10,6 +20,7 @@ export interface CreateItemsSeriesOptions extends CreateSeriesOptions {
 export abstract class ItemsSeries extends Series {
   protected constructor(opt?: CreateItemsSeriesOptions) {
     super(opt)
+    assignObject(this, DefaultItemsSeriesOptions, opt)
   }
 
   /**
@@ -45,5 +56,9 @@ export abstract class ItemsSeries extends Series {
     if (!this.itemsSource) return undefined
 
     return ItemsSeries.getItem(this.itemsSource, i)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultItemsSeriesOptions
   }
 }

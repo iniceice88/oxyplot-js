@@ -1,26 +1,29 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  IColorAxis,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-} from '@/oxyplot'
 import {
   Axis,
+  type CreateXYAxisSeriesOptions,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IColorAxis,
+  type IRenderContext,
+  type LabelStringFormatterType,
   MarkerType,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  newScreenVector,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointPlus,
-  ScreenVector,
   TrackerHitResult,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
+
 import {
   getOrDefault,
   isInfinity,
@@ -28,7 +31,7 @@ import {
   isUndef,
   Number_MAX_VALUE,
   Number_MIN_VALUE,
-  removeUndef,
+  assignObject,
 } from '@/patch'
 
 /**
@@ -57,7 +60,7 @@ export function isScatterPointProvider(obj: any): obj is IScatterPointProvider {
   return obj && typeof obj.getScatterPoint === 'function'
 }
 
-export interface CreateCreateXYAxisSeriesOptions extends CreateXYAxisSeriesOptions {
+export interface CreateScatterSeriesOptions extends CreateXYAxisSeriesOptions {
   dataFieldValue?: string
   dataFieldSize?: string
   dataFieldTag?: string
@@ -69,10 +72,38 @@ export interface CreateCreateXYAxisSeriesOptions extends CreateXYAxisSeriesOptio
   markerStroke?: OxyColor
   markerStrokeThickness?: number
   markerType?: MarkerType
+  markerOutline?: ScreenPoint[]
   labelMargin?: number
   labelStringFormatter?: LabelStringFormatterType
   colorAxisKey?: string
   binSize?: number
+  points?: ScatterPoint[]
+}
+
+export const DefaultScatterSeriesOptions: CreateScatterSeriesOptions = {
+  markerFill: OxyColors.Automatic,
+  markerSize: 5,
+  markerStroke: OxyColors.Automatic,
+  markerStrokeThickness: 1,
+  markerType: MarkerType.Square,
+  labelMargin: 6,
+  binSize: 0,
+
+  dataFieldValue: undefined,
+  dataFieldSize: undefined,
+  dataFieldTag: undefined,
+  dataFieldX: undefined,
+  dataFieldY: undefined,
+  mapping: undefined,
+  markerOutline: undefined,
+  labelStringFormatter: undefined,
+  colorAxisKey: undefined,
+  points: undefined,
+}
+
+export const ExtendedDefaultScatterSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultScatterSeriesOptions,
 }
 
 /**
@@ -80,40 +111,40 @@ export interface CreateCreateXYAxisSeriesOptions extends CreateXYAxisSeriesOptio
  */
 export class ScatterSeries extends XYAxisSeries {
   /** The default color-axis title */
-  private static readonly defaultColorAxisTitle = 'Value'
+  private static readonly _defaultColorAxisTitle = 'Value'
 
   /** The list of data points. */
   private readonly _points: ScatterPoint[] = []
 
   /** The default fill color. */
-  private defaultMarkerFillColor: OxyColor = OxyColors.Undefined
+  private _defaultMarkerFillColor: OxyColor = OxyColors.Undefined
 
   /** The marker fill color. If undefined, this color will be automatically set. */
-  markerFill: OxyColor = OxyColors.Automatic
+  markerFill: OxyColor = DefaultScatterSeriesOptions.markerFill!
 
   /** Gets or sets the custom marker outline polygon. Set MarkerType to T:MarkerType.Custom to use this. */
   markerOutline?: ScreenPoint[]
 
   /** The size of the marker (same size for all items). */
-  markerSize: number = 5
+  markerSize: number = DefaultScatterSeriesOptions.markerSize!
 
   /** The type of the marker. */
-  markerType: MarkerType = MarkerType.Square
+  markerType: MarkerType = DefaultScatterSeriesOptions.markerType!
 
   /** The marker stroke. */
-  markerStroke: OxyColor = OxyColors.Automatic
+  markerStroke: OxyColor = DefaultScatterSeriesOptions.markerStroke!
 
   /** Thickness of the marker strokes. */
-  markerStrokeThickness: number = 1
+  markerStrokeThickness: number = DefaultScatterSeriesOptions.markerStrokeThickness!
 
   /** The label formatter. The default is undefined (no labels). */
   labelStringFormatter?: LabelStringFormatterType
 
   /** The label margins. The default is 6. */
-  labelMargin: number = 6
+  labelMargin: number = DefaultScatterSeriesOptions.labelMargin!
 
   /** The size of the 'binning' feature. */
-  binSize: number = 0
+  binSize: number = DefaultScatterSeriesOptions.binSize!
 
   /** The color axis key. */
   colorAxisKey?: string
@@ -136,15 +167,20 @@ export class ScatterSeries extends XYAxisSeries {
   /** A function that maps from elements in the ItemsSource to ScatterPoint points to be rendered. */
   mapping?: (item: any) => ScatterPoint
 
-  /** The actual color axis. */
-  colorAxis?: IColorAxis
+  private _colorAxis?: IColorAxis
+  /**
+   * Gets the color axis.
+   */
+  get colorAxis() {
+    return this._colorAxis
+  }
 
   /** The data points from the items source. */
   protected itemsSourcePoints?: ScatterPoint[]
 
   /** The actual fill color. */
   get actualMarkerFillColor(): OxyColor {
-    return this.markerFill.getActualColor(this.defaultMarkerFillColor)
+    return OxyColorHelper.getActualColor(this.markerFill, this._defaultMarkerFillColor)
   }
 
   /** The list of points. */
@@ -157,28 +193,37 @@ export class ScatterSeries extends XYAxisSeries {
     return (this.itemsSource ? this.itemsSourcePoints : this.points)!
   }
 
-  /** The maximum value of the points. */
-  maxValue: number = 0
+  private _minValue: number = 0
+  /**
+   * Gets the minimum value of the dataset.
+   */
+  get minValue(): number {
+    return this._minValue
+  }
 
-  /** The minimum value of the points. */
-  minValue: number = 0
+  private _maxValue: number = 0
+  /**
+   * Gets the maximum value of the dataset.
+   */
+  get maxValue(): number {
+    return this._maxValue
+  }
 
   /**
    * Initializes a new instance of the ScatterSeries class.
    * @protected
    */
-  constructor(opt?: CreateCreateXYAxisSeriesOptions) {
+  constructor(opt?: CreateScatterSeriesOptions) {
     super(opt)
-    this.markerFill = OxyColors.Automatic
-    this.markerSize = 5
-    this.markerType = MarkerType.Square
-    this.markerStroke = OxyColors.Automatic
-    this.markerStrokeThickness = 1
-    this.labelMargin = 6
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    if (opt?.points) {
+      this._points = opt.points
+      delete opt.points
     }
+    assignObject(this, DefaultScatterSeriesOptions, opt)
+  }
+
+  getElementName() {
+    return 'ScatterSeries'
   }
 
   /** Gets the nearest point. */
@@ -202,7 +247,7 @@ export class ScatterSeries extends XYAxisSeries {
 
     const colorAxisTitle = this.colorAxis
       ? (this.colorAxis as unknown as Axis).title
-      : undefined ?? ScatterSeries.defaultColorAxisTitle
+      : undefined ?? ScatterSeries._defaultColorAxisTitle
 
     const xmin = this.xAxis!.clipMinimum
     const xmax = this.xAxis!.clipMaximum
@@ -339,7 +384,7 @@ export class ScatterSeries extends XYAxisSeries {
           this.markerType,
           this.markerOutline,
           groupSizes.get(group)!,
-          this.markerFill.getActualColor(color),
+          OxyColorHelper.getActualColor(this.markerFill, color),
           markerIsStrokedOnly ? color : this.markerStroke,
           this.markerStrokeThickness,
           this.edgeRenderingMode,
@@ -387,8 +432,10 @@ export class ScatterSeries extends XYAxisSeries {
 
   /** Renders the legend symbol for the line series on the specified rendering context. */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
 
     const midpt = newScreenPoint(xmid, ymid)
 
@@ -412,7 +459,7 @@ export class ScatterSeries extends XYAxisSeries {
   ensureAxes(): void {
     super.ensureAxes()
 
-    this.colorAxis = (
+    this._colorAxis = (
       this.colorAxisKey ? this.plotModel.getAxis(this.colorAxisKey) : this.plotModel.defaultColorAxis
     ) as IColorAxis
   }
@@ -422,8 +469,8 @@ export class ScatterSeries extends XYAxisSeries {
    * @internal
    */
   setDefaultValues(): void {
-    if (this.markerFill.isAutomatic()) {
-      this.defaultMarkerFillColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.markerFill)) {
+      this._defaultMarkerFillColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -467,9 +514,9 @@ export class ScatterSeries extends XYAxisSeries {
         continue
       }
 
-      const pt = screenPointPlus(this.transform(dataPoint), new ScreenVector(0, -this.labelMargin))
+      const pt = screenPointPlus(this.transform(dataPoint), newScreenVector(0, -this.labelMargin))
 
-      if (!clippingRect.containsPoint(pt)) {
+      if (!OxyRectHelper.containsPoint(clippingRect, pt)) {
         continue
       }
 
@@ -583,11 +630,11 @@ export class ScatterSeries extends XYAxisSeries {
     }
 
     if (minvalue < Number_MAX_VALUE) {
-      this.minValue = minvalue
+      this._minValue = minvalue
     }
 
     if (maxvalue > Number_MIN_VALUE) {
-      this.maxValue = maxvalue
+      this._maxValue = maxvalue
     }
 
     if (this.colorAxis instanceof Axis) {
@@ -662,5 +709,17 @@ export class ScatterSeries extends XYAxisSeries {
       value: getOrDefault(item, this.dataFieldValue, Number.NaN),
       tag: getOrDefault(item, this.dataFieldTag, undefined),
     } as ScatterPoint
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultScatterSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this.points?.length) {
+      json.points = this.points
+    }
+    return json
   }
 }

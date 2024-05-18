@@ -1,5 +1,12 @@
-﻿import type { DataPoint, ITransposablePlotElement, IXyAxisPlotElement, ScreenPoint } from '@/oxyplot'
-import { OxyRect, PlotElementExtensions } from '@/oxyplot'
+﻿import {
+  type DataPoint,
+  type ITransposablePlotElement,
+  type IXyAxisPlotElement,
+  type OxyRect,
+  OxyRectHelper,
+  PlotElementExtensions,
+  type ScreenPoint,
+} from '@/oxyplot'
 
 /**
  * Provides utility functions for plot elements.
@@ -11,9 +18,9 @@ export class PlotElementUtilities {
    * @returns The clipping rectangle.
    */
   public static getClippingRect(element: IXyAxisPlotElement): OxyRect {
-    const xrect = OxyRect.fromScreenPoints(element.xAxis!.screenMin, element.xAxis!.screenMax)
-    const yrect = OxyRect.fromScreenPoints(element.yAxis!.screenMin, element.yAxis!.screenMax)
-    return xrect.intersect(yrect)
+    const xrect = OxyRectHelper.fromScreenPoints(element.xAxis!.screenMin, element.xAxis!.screenMax)
+    const yrect = OxyRectHelper.fromScreenPoints(element.yAxis!.screenMin, element.yAxis!.screenMax)
+    return OxyRectHelper.intersect(xrect, yrect)
   }
 
   /**

@@ -3,7 +3,7 @@ import {
   type IPlotController,
   type IPlotModel,
   type IPlotView,
-  OxyRect,
+  type OxyRect,
   PlotController,
   PlotModel,
   TrackerHitResult,

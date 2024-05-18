@@ -1000,7 +1000,7 @@ const getCached = <T1, T2>(key: T1, cache: Map<T1, T2>, create: () => T2): T2 =>
  * @returns The encoded text
  */
 const encodeString = (text: string, encoding: FontEncoding): string => {
-  // TODO
+  // todo
   return text
 }
 

@@ -6,9 +6,8 @@ import {
   LineAnnotationType,
   LinearAxis,
   LogarithmicAxis,
-  OxyColorExtensions,
+  newOxyThickness, OxyColorHelper,
   OxyColors,
-  OxyThickness,
   PlotModel,
   VerticalAlignment,
 } from 'oxyplot-js'
@@ -22,14 +21,14 @@ function lineAnnotationOnLinearAxes(): PlotModel {
   model.title = 'LineAnnotation on linear axes'
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, minimum: -20, maximum: 80 }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -10, maximum: 10 }))
-  const opacityWhite = OxyColorExtensions.changeOpacity(OxyColors.White, 0.75)
+  const opacityWhite = OxyColorHelper.changeOpacity(OxyColors.White, 0.75).hex
   model.annotations.push(
     new LineAnnotation({
       slope: 0.1,
       intercept: 1,
       text: 'First',
       borderBackground: opacityWhite,
-      borderPadding: new OxyThickness(5),
+      borderPadding: newOxyThickness(5),
     }),
   )
   model.annotations.push(
@@ -40,7 +39,7 @@ function lineAnnotationOnLinearAxes(): PlotModel {
       color: OxyColors.Red,
       text: 'Second',
       borderBackground: opacityWhite,
-      borderPadding: new OxyThickness(5),
+      borderPadding: newOxyThickness(5),
     }),
   )
   model.annotations.push(
@@ -51,7 +50,7 @@ function lineAnnotationOnLinearAxes(): PlotModel {
       color: OxyColors.Green,
       text: 'Vertical',
       borderBackground: opacityWhite,
-      borderPadding: new OxyThickness(5),
+      borderPadding: newOxyThickness(5),
     }),
   )
   model.annotations.push(
@@ -62,7 +61,7 @@ function lineAnnotationOnLinearAxes(): PlotModel {
       color: OxyColors.Gold,
       text: 'Horizontal',
       borderBackground: opacityWhite,
-      borderPadding: new OxyThickness(5),
+      borderPadding: newOxyThickness(5),
     }),
   )
   return model

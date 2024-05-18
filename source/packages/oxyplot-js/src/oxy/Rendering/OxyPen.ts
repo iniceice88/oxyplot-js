@@ -1,4 +1,4 @@
-﻿import { LineJoin, LineStyle, LineStyleHelper, OxyColor } from '@/oxyplot'
+﻿import { LineJoin, LineStyle, LineStyleHelper, type OxyColor, OxyColorHelper } from '@/oxyplot'
 
 /**
  * Describes a pen in terms of color, thickness, line style and line join type.
@@ -46,7 +46,7 @@ export class OxyPen {
     lineStyle: LineStyle = LineStyle.Solid,
     lineJoin: LineJoin = LineJoin.Miter,
   ): OxyPen | undefined {
-    if (color.isInvisible() || lineStyle === LineStyle.None || Math.abs(thickness) <= 0) {
+    if (OxyColorHelper.isInvisible(color) || lineStyle === LineStyle.None || Math.abs(thickness) <= 0) {
       return undefined
     }
 

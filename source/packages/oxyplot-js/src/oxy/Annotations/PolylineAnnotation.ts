@@ -1,12 +1,33 @@
-import type { CreatePathAnnotationOptions, DataPoint, IInterpolationAlgorithm, ScreenPoint } from '@/oxyplot'
-import { PathAnnotation, ScreenPointHelper } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import {
+  type CreatePathAnnotationOptions,
+  type DataPoint,
+  ExtendedDefaultPathAnnotationOptions,
+  type IInterpolationAlgorithm,
+  PathAnnotation,
+  type ScreenPoint,
+  ScreenPointHelper,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateSplineOptions extends CreatePathAnnotationOptions {
   /**
    * The interpolation algorithm.
    */
   interpolationAlgorithm?: IInterpolationAlgorithm
+  /**
+   * The points.
+   */
+  points?: DataPoint[]
+}
+
+export const DefaultPolylineOptions: CreateSplineOptions = {
+  interpolationAlgorithm: undefined,
+  points: undefined,
+}
+
+export const ExtendedDefaultPolylineOptions = {
+  ...ExtendedDefaultPathAnnotationOptions,
+  ...DefaultPolylineOptions,
 }
 
 /**
@@ -15,27 +36,22 @@ export interface CreateSplineOptions extends CreatePathAnnotationOptions {
 export class PolylineAnnotation extends PathAnnotation {
   constructor(opt?: CreateSplineOptions) {
     super(opt)
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultPolylineOptions, opt)
+  }
+
+  getElementName() {
+    return 'PolylineAnnotation'
   }
 
   /**
    * The points.
    */
-  private _points: DataPoint[] = []
+  public points: DataPoint[] = []
 
   /**
    * The interpolation algorithm.
    */
   public interpolationAlgorithm?: IInterpolationAlgorithm
-
-  /**
-   * Gets the points.
-   */
-  public get points(): DataPoint[] {
-    return this._points
-  }
 
   /**
    * Gets the screen points.
@@ -49,5 +65,9 @@ export class PolylineAnnotation extends PathAnnotation {
     }
 
     return this.points.map((x) => this.transform(x))
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPolylineOptions
   }
 }

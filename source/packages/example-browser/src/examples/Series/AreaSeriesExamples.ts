@@ -39,7 +39,9 @@ function trackerFormatString(): PlotModel {
   const areaSeries1 = createExampleAreaSeries()
   areaSeries1.title = 'X={2:0.0} Y={4:0.0}'
   // 'X={2:0.0} Y={4:0.0}'
-  areaSeries1.trackerStringFormatter = (args) => `X=${args.xValue.toFixed(1)} Y=${args.yValue.toFixed(1)}`
+  areaSeries1.trackerStringFormatter = function (args) {
+    return `X=${args.xValue.toFixed(1)} Y=${args.yValue.toFixed(1)}`
+  }
   model.series.push(areaSeries1)
   return model
 }

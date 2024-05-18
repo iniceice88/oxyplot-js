@@ -1,20 +1,27 @@
-import type { CreateLineSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLineSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultLineSeriesOptions,
+  type IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointDistanceTo,
   ScreenPointHelper,
   TrackerHitResult,
 } from '@/oxyplot'
-import { getOrDefault, Number_MAX_VALUE, removeUndef } from '@/patch'
+import { getOrDefault, Number_MAX_VALUE, assignObject } from '@/patch'
 
 export interface CreateAreaSeriesOptions extends CreateLineSeriesOptions {
   /**
@@ -47,6 +54,22 @@ export interface CreateAreaSeriesOptions extends CreateLineSeriesOptions {
    * Gets or sets a value indicating whether the second data collection should be reversed.
    */
   reverse2?: boolean
+
+  points2?: DataPoint[]
+}
+
+export const DefaultAreaSeriesOptions: CreateAreaSeriesOptions = {
+  constantY2: 0,
+  color2: OxyColors.Automatic,
+  fill: OxyColors.Automatic,
+  reverse2: true,
+  dataFieldX2: undefined,
+  dataFieldY2: undefined,
+}
+
+export const ExtendedDefaultAreaSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
+  ...DefaultAreaSeriesOptions,
 }
 
 /**
@@ -61,7 +84,7 @@ export class AreaSeries extends LineSeries {
   /**
    * The secondary data points from the ItemsSource collection.
    */
-  private readonly itemsSourcePoints2: DataPoint[] = []
+  private readonly _itemsSourcePoints2: DataPoint[] = []
 
   /**
    * The secondary data points from the Points2 list.
@@ -73,20 +96,22 @@ export class AreaSeries extends LineSeries {
    */
   constructor(opt?: CreateAreaSeriesOptions) {
     super(opt)
-    this.reverse2 = true
-    this.color2 = OxyColors.Automatic
-    this.fill = OxyColors.Automatic
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    if (opt?.points2) {
+      this._points2 = opt.points2
+      delete opt.points2
     }
+    assignObject(this, DefaultAreaSeriesOptions, opt)
+  }
+
+  getElementName() {
+    return 'AreaSeries'
   }
 
   /**
    * Gets or sets a constant value for the area definition.
    * This is used if DataFieldBase and BaselineValues are undefined.
    */
-  constantY2: number = 0
+  constantY2: number = DefaultAreaSeriesOptions.constantY2!
 
   /**
    * Gets or sets the data field to use for the X-coordinates of the second data set.
@@ -101,25 +126,25 @@ export class AreaSeries extends LineSeries {
   /**
    * Gets or sets the color of the line for the second data set.
    */
-  color2: OxyColor
+  color2: OxyColor = DefaultAreaSeriesOptions.color2!
 
   /**
    * Gets the actual color of the line for the second data set.
    */
   get actualColor2(): OxyColor {
-    return this.color2.getActualColor(this.actualColor)
+    return OxyColorHelper.getActualColor(this.color2, this.actualColor)
   }
 
   /**
    * Gets or sets the fill color of the area.
    */
-  fill: OxyColor
+  fill: OxyColor = DefaultAreaSeriesOptions.fill!
 
   /**
    * Gets the actual fill color of the area.
    */
   get actualFill(): OxyColor {
-    return this.fill.getActualColor(OxyColor.fromAColor(100, this.actualColor))
+    return OxyColorHelper.getActualColor(this.fill, OxyColorHelper.fromAColor(100, this.actualColor))
   }
 
   /**
@@ -132,13 +157,13 @@ export class AreaSeries extends LineSeries {
   /**
    * Gets or sets a value indicating whether the second data collection should be reversed.
    */
-  reverse2: boolean = false
+  reverse2: boolean = DefaultAreaSeriesOptions.reverse2!
 
   /**
    * Gets the actual points of the second data set.
    */
   protected get actualPoints2(): DataPoint[] {
-    return this.itemsSource ? this.itemsSourcePoints2 : this._actualPoints2!
+    return this.itemsSource ? this._itemsSourcePoints2 : this._actualPoints2!
   }
 
   /**
@@ -305,12 +330,14 @@ export class AreaSeries extends LineSeries {
    * @param legendBox The bounding rectangle of the legend box.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const y0 = legendBox.top * 0.2 + legendBox.bottom * 0.8
-    const y1 = legendBox.top * 0.4 + legendBox.bottom * 0.6
-    const y2 = legendBox.top * 0.8 + legendBox.bottom * 0.2
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const y0 = legendBox.top * 0.2 + bottom * 0.8
+    const y1 = legendBox.top * 0.4 + bottom * 0.6
+    const y2 = legendBox.top * 0.8 + bottom * 0.2
 
-    const pts0 = [newScreenPoint(legendBox.left, y0), newScreenPoint(legendBox.right, y0)]
-    const pts1 = [newScreenPoint(legendBox.right, y2), newScreenPoint(legendBox.left, y1)]
+    const pts0 = [newScreenPoint(legendBox.left, y0), newScreenPoint(right, y0)]
+    const pts1 = [newScreenPoint(right, y2), newScreenPoint(legendBox.left, y1)]
     const pts = [...pts0, ...pts1]
 
     if (this.strokeThickness > 0 && this.actualLineStyle !== LineStyle.None) {
@@ -358,7 +385,7 @@ export class AreaSeries extends LineSeries {
       return
     }
 
-    this.itemsSourcePoints2.length = 0
+    this._itemsSourcePoints2.length = 0
     this.isPoints2Defined = !!(this.dataFieldX2 && this.dataFieldY2)
 
     if (this.isPoints2Defined) {
@@ -367,10 +394,10 @@ export class AreaSeries extends LineSeries {
         const x = getOrDefault(item, this.dataFieldX2, Number.NaN)
         const y = getOrDefault(item, this.dataFieldY2, Number.NaN)
         const point = newDataPoint(this.xAxis!.itemToDouble(x), this.yAxis!.itemToDouble(y))
-        this.itemsSourcePoints2.push(point)
+        this._itemsSourcePoints2.push(point)
       }
     } else {
-      this.itemsSourcePoints2.push(...this.getConstantPoints2())
+      this._itemsSourcePoints2.push(...this.getConstantPoints2())
     }
   }
 
@@ -470,6 +497,22 @@ export class AreaSeries extends LineSeries {
       points.push(newDataPoint(x1, this.constantY2))
     }
     return points
+  }
+
+  protected getJsonIgnoreProperties() {
+    return [...super.getJsonIgnoreProperties(), 'windowStartIndex2', 'isPoints2Defined']
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultAreaSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this._points2) {
+      json.points2 = this.points2
+    }
+    return json
   }
 }
 

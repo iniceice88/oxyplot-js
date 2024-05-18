@@ -6,10 +6,10 @@
   type IRenderContext,
   MagnitudeAxis,
   MathRenderingExtensions,
+  newOxyRect,
   newScreenPoint,
   OxyColors,
   OxyPen,
-  OxyRect,
   PlotModel,
   type ScreenPoint,
   VerticalAlignment,
@@ -145,7 +145,7 @@ export class MagnitudeAxisRenderer extends AxisRendererBase<MagnitudeAxis> {
     const height = width
 
     await this.renderContext.drawEllipse(
-      new OxyRect(left, top, width, height),
+      newOxyRect(left, top, width, height),
       OxyColors.Undefined,
       pen.color,
       pen.thickness,

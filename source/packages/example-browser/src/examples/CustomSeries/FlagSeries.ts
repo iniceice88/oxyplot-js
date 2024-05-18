@@ -6,11 +6,14 @@ import {
   maxValueOfArray,
   minValueOfArray,
   newDataPoint,
+  newOxyRect,
   newScreenPoint,
   OxyColor,
   OxyColors,
   OxyRect,
+  OxyRectHelper,
   OxySize,
+  OxySize_Empty,
   ScreenPoint,
   TrackerHitResult,
   VerticalAlignment,
@@ -28,7 +31,7 @@ export class FlagSeries extends ItemsSeries {
   /**
    * The symbol text size.
    */
-  private symbolSize: OxySize = OxySize.Empty
+  private symbolSize: OxySize = OxySize_Empty
 
   /**
    * Initializes a new instance of the FlagSeries class.
@@ -40,7 +43,13 @@ export class FlagSeries extends ItemsSeries {
     this.fontSize = 10
     this.symbol = String.fromCharCode(0xea)
     this.font = 'Wingdings 2'
-    this.trackerStringFormatter = (args) => `${args.title}: ${args.item}`
+    this.trackerStringFormatter = function (args) {
+      return `${args.title}: ${args.item}`
+    }
+  }
+
+  getElementName() {
+    return 'FlagSeries'
   }
 
   /**
@@ -96,13 +105,13 @@ export class FlagSeries extends ItemsSeries {
       }
 
       const x = this.xAxis.transform(v)
-      const r = new OxyRect(
+      const r = newOxyRect(
         x - this.symbolSize.width / 2,
         this.symbolPosition - this.symbolSize.height,
         this.symbolSize.width,
         this.symbolSize.height,
       )
-      if (r.containsPoint(point)) {
+      if (OxyRectHelper.containsPoint(r, point)) {
         const text = this.trackerStringFormatter!({
           item: v,
           title: this.title,
@@ -128,7 +137,7 @@ export class FlagSeries extends ItemsSeries {
       return
     }
 
-    this.symbolPosition = this.plotModel.plotArea.bottom
+    this.symbolPosition = OxyRectHelper.bottom(this.plotModel.plotArea)
     this.symbolSize = rc.measureText(this.symbol, this.actualFont, this.actualFontSize, this.actualFontWeight)
     for (const v of this.values) {
       if (isNaN(v) || v < this.xAxis.clipMinimum || v > this.xAxis.clipMaximum) {
@@ -157,7 +166,7 @@ export class FlagSeries extends ItemsSeries {
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
     await rc.drawText(
-      legendBox.center,
+      OxyRectHelper.center(legendBox),
       this.symbol,
       this.color,
       this.actualFont,

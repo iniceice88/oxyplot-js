@@ -1,17 +1,20 @@
-import type { ITextMeasurer, ScreenPoint } from '@/oxyplot'
 import {
   ClippingRenderContext,
   EdgeRenderingMode,
   HorizontalAlignment,
+  type ITextMeasurer,
   LineJoin,
-  OxyColor,
+  newScreenVectorEx,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
-  OxyRect,
-  OxySize,
+  type OxyImage,
+  type OxyRect,
+  type OxySize,
+  OxySize_Empty,
+  type ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
   StringHelper,
   SvgWriter,
   VerticalAlignment,
@@ -52,7 +55,7 @@ export class SvgRenderContext extends ClippingRenderContext {
     this.textMeasurer = textMeasurer
     this.useVerticalTextAlignmentWorkaround = useVerticalTextAlignmentWorkaround
 
-    if (background.isVisible()) {
+    if (OxyColorHelper.isVisible(background)) {
       this.w.writeRectangle(
         0,
         0,
@@ -220,7 +223,7 @@ export class SvgRenderContext extends ClippingRenderContext {
 
     const textSize = this.measureText(text, fontFamily, fontSize, fontWeight)
     const lineHeight = textSize.height / lines.length
-    const lineOffset = new ScreenVector(
+    const lineOffset = newScreenVectorEx(
       -Math.sin((rotate / 180.0) * Math.PI) * lineHeight,
       +Math.cos((rotate / 180.0) * Math.PI) * lineHeight,
     )
@@ -276,7 +279,7 @@ export class SvgRenderContext extends ClippingRenderContext {
    */
   public measureText(text: string, fontFamily: string | undefined, fontSize: number, fontWeight: number): OxySize {
     if (text === '') {
-      return OxySize.Empty
+      return OxySize_Empty
     }
     return this.textMeasurer.measureText(text, fontFamily, fontSize, fontWeight)
   }

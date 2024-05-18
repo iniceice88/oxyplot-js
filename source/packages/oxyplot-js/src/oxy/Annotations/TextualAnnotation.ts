@@ -1,11 +1,15 @@
-import type { CreateTransposableAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateTransposableAnnotationOptions,
+  type DataPoint,
   DataPoint_isDefined,
   DataPoint_Undefined,
+  ExtendedDefaultTransposableAnnotationOptions,
   HorizontalAlignment,
+  type ScreenPoint,
   TransposableAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateTextualAnnotationOptions extends CreateTransposableAnnotationOptions {
   text?: string
@@ -13,6 +17,20 @@ export interface CreateTextualAnnotationOptions extends CreateTransposableAnnota
   textHorizontalAlignment?: HorizontalAlignment
   textVerticalAlignment?: VerticalAlignment
   textRotation?: number
+}
+
+export const DefaultTextualAnnotationOptions: CreateTextualAnnotationOptions = {
+  textHorizontalAlignment: HorizontalAlignment.Center,
+  textVerticalAlignment: VerticalAlignment.Middle,
+  textPosition: DataPoint_Undefined,
+  textRotation: 0,
+
+  text: undefined,
+}
+
+export const ExtendedDefaultTextualAnnotationOptions = {
+  ...ExtendedDefaultTransposableAnnotationOptions,
+  ...DefaultTextualAnnotationOptions,
 }
 
 /**
@@ -24,10 +42,7 @@ export abstract class TextualAnnotation extends TransposableAnnotation {
    */
   protected constructor(opt?: CreateTextualAnnotationOptions) {
     super(opt)
-    this.textHorizontalAlignment = HorizontalAlignment.Center
-    this.textVerticalAlignment = VerticalAlignment.Middle
-    this.textPosition = DataPoint_Undefined
-    this.textRotation = 0
+    assignObject(this, DefaultTextualAnnotationOptions, opt)
   }
 
   /**
@@ -39,23 +54,23 @@ export abstract class TextualAnnotation extends TransposableAnnotation {
    * Gets or sets the position of the text.
    * If the value is DataPoint.Undefined, the default position of the text will be used.
    */
-  public textPosition: DataPoint
+  public textPosition: DataPoint = DefaultTextualAnnotationOptions.textPosition!
 
   /**
    * Gets or sets the horizontal alignment of the text.
    */
-  public textHorizontalAlignment: HorizontalAlignment
+  public textHorizontalAlignment: HorizontalAlignment = DefaultTextualAnnotationOptions.textHorizontalAlignment!
 
   /**
    * Gets or sets the vertical alignment of the text.
    */
-  public textVerticalAlignment: VerticalAlignment
+  public textVerticalAlignment: VerticalAlignment = DefaultTextualAnnotationOptions.textVerticalAlignment!
 
   /**
    * Gets or sets the rotation of the text.
    * The text rotation in degrees.
    */
-  public textRotation: number
+  public textRotation: number = DefaultTextualAnnotationOptions.textRotation!
 
   /**
    * Gets the actual position of the text.

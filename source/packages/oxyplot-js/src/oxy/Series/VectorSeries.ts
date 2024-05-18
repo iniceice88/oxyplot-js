@@ -1,34 +1,37 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IColorAxis,
-  IRenderContext,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
 import {
   Axis,
   ColorAxisExtensions,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
   dataPointMinusVector,
   dataPointPlus,
   DataVector,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IColorAxis,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
-  OxyColor,
+  newScreenVectorEx,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointDistanceToSquared,
   screenPointMinus,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
+  type ScreenVector,
+  ScreenVectorEx,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { maxValueOfArray, minValueOfArray } from '@/patch'
+
+import { assignMethod, assignObject, maxValueOfArray, minValueOfArray } from '@/patch'
 
 /** Represents an item in a VectorSeries. */
 export interface VectorItem {
@@ -93,6 +96,30 @@ export interface CreateVectorSeriesOptions extends CreateXYAxisSeriesOptions {
   items?: VectorItem[]
 }
 
+export const DefaultVectorSeriesOptions: CreateVectorSeriesOptions = {
+  color: OxyColors.Automatic,
+  arrowHeadLength: 10,
+  arrowHeadWidth: 3,
+  arrowHeadPosition: 1,
+  lineJoin: LineJoin.Miter,
+  lineStyle: LineStyle.Solid,
+  strokeThickness: 2,
+  minimumSegmentLength: 2,
+  arrowVeeness: 0,
+  arrowStartPosition: 0,
+  arrowLabelPosition: 0,
+  labelFontSize: 0,
+
+  labelStringFormatter: undefined,
+  mapping: undefined,
+  items: undefined,
+}
+
+export const ExtendedDefaultVectorSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultVectorSeriesOptions,
+}
+
 export interface VectorSeriesTrackerStringFormatterArgs extends TrackerStringFormatterArgs {
   item?: VectorItem
   itemDirection?: DataVector
@@ -108,13 +135,13 @@ export class VectorSeries extends XYAxisSeries {
   private _actualItems?: VectorItem[]
 
   /** The default color. */
-  private defaultColor: OxyColor = OxyColors.Undefined
+  private _defaultColor: OxyColor = OxyColors.Undefined
 
   /** The default line style. */
-  private defaultLineStyle: LineStyle = LineStyle.Solid
+  private _defaultLineStyle: LineStyle = LineStyle.Solid
 
   /** The default tracker formatter */
-  public static readonly DefaultTrackerStringFormatter: VectorSeriesTrackerStringFormatterType = (args) => {
+  public static readonly DefaultTrackerStringFormatter: VectorSeriesTrackerStringFormatterType = function (args) {
     return `${args.title}
 ${args.xTitle}: ${args.xValue}
 ${args.yTitle}: ${args.yValue}
@@ -128,58 +155,56 @@ ${args.colorAxisTitle}: ${args.item!.value}
 
   constructor(opt?: CreateVectorSeriesOptions) {
     super(opt)
-    this.color = OxyColors.Automatic
-    this.minimumSegmentLength = 2
-    this.strokeThickness = 2
-    this.lineStyle = LineStyle.Solid
-    this.lineJoin = LineJoin.Miter
-
-    this.arrowHeadLength = 3
-    this.arrowHeadWidth = 2
-    this.arrowHeadPosition = 1
-    this.arrowVeeness = 0
-    this.arrowStartPosition = 0
-    this.arrowLabelPosition = 0
-
     this.trackerStringFormatter = VectorSeries.DefaultTrackerStringFormatter
-    this.labelStringFormatter = (item) => item.value.toFixed(2)
-    this.labelFontSize = 0
+    assignMethod(this, 'trackerStringFormatter', opt)
 
-    if (opt) {
-      Object.assign(this, opt)
+    this.labelStringFormatter = function (item) {
+      return item.value.toFixed(2)
     }
+    assignMethod(this, 'labelStringFormatter', opt)
+    assignObject(this, DefaultVectorSeriesOptions, opt, { exclude: ['trackerStringFormatter', 'labelStringFormatter'] })
+  }
+
+  getElementName() {
+    return 'VectorSeries'
   }
 
   /** Gets or sets the color of the arrow. */
-  public color: OxyColor
+  public color: OxyColor = DefaultVectorSeriesOptions.color!
 
   /** Gets the minimum value of the dataset. */
-  public minValue: number = 0
+  private _minValue: number = 0
+  get minValue() {
+    return this._minValue
+  }
 
   /** Gets the maximum value of the dataset. */
-  public maxValue: number = 0
+  private _maxValue: number = 0
+  get maxValue() {
+    return this._maxValue
+  }
 
   /** Gets or sets the length of the arrows heads (relative to the stroke thickness) (the default value is 10). */
-  public arrowHeadLength: number
+  public arrowHeadLength: number = DefaultVectorSeriesOptions.arrowHeadLength!
 
   /** Gets or sets the width of the arrows heads (relative to the stroke thickness) (the default value is 3). */
-  public arrowHeadWidth: number
+  public arrowHeadWidth: number = DefaultVectorSeriesOptions.arrowHeadWidth!
 
   /** Gets or sets the position of the arrow heads (relative to the end of the vector) (the default value is 1). */
-  public arrowHeadPosition: number
+  public arrowHeadPosition: number = DefaultVectorSeriesOptions.arrowHeadPosition!
 
   /** Gets or sets the line join type. */
-  public lineJoin: LineJoin
+  public lineJoin: LineJoin = DefaultVectorSeriesOptions.lineJoin!
 
   /** Gets or sets the line style. */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultVectorSeriesOptions.lineStyle!
 
   /** Gets or sets the stroke thickness (the default value is 2). */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultVectorSeriesOptions.strokeThickness!
 
   public get actualLineStyle(): LineStyle {
     if (this.lineStyle != LineStyle.Automatic) return this.lineStyle
-    return this.defaultLineStyle
+    return this._defaultLineStyle
   }
 
   /**
@@ -187,19 +212,29 @@ ${args.colorAxisTitle}: ${args.item!.value}
    * Increasing this number will increase performance,
    * but make the curve less accurate. The default is <c>2</c>.
    */
-  public minimumSegmentLength: number
+  public minimumSegmentLength: number = DefaultVectorSeriesOptions.minimumSegmentLength!
 
   /** Gets or sets the 'veeness' of the arrow head (relative to thickness) (the default value is 0). */
-  public arrowVeeness: number
+  public arrowVeeness: number = DefaultVectorSeriesOptions.arrowVeeness!
 
   /** Gets the start position of the arrows for each vector relative to the length of the vector (the default value is 0). */
-  public arrowStartPosition: number
+  public arrowStartPosition: number = DefaultVectorSeriesOptions.arrowStartPosition!
 
   /** Gets the positions of the label for each vector along the drawn arrow (the default value is 0). */
-  public arrowLabelPosition: number
+  public arrowLabelPosition: number = DefaultVectorSeriesOptions.arrowLabelPosition!
 
-  /** Gets or sets the color axis. */
-  public colorAxis?: IColorAxis
+  /**
+   * Gets the color axis.
+   */
+  get colorAxis() {
+    return this._colorAxis
+  }
+
+  protected set colorAxis(value) {
+    this._colorAxis = value
+  }
+
+  private _colorAxis?: IColorAxis
 
   /** Gets or sets the color axis key. */
   public colorAxisKey?: string
@@ -214,7 +249,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
   public trackerStringFormatter?: VectorSeriesTrackerStringFormatterType = undefined
 
   /** Gets or sets the font size of the labels. The default value is <c>0</c> (labels not visible). */
-  public labelFontSize: number
+  public labelFontSize: number = DefaultVectorSeriesOptions.labelFontSize!
 
   /** Gets or sets a value indicating whether the tracker can interpolate points. */
   public canTrackerInterpolatePoints: boolean = false
@@ -277,10 +312,10 @@ ${args.colorAxisTitle}: ${args.item!.value}
     let i = 0
     for (const item of items) {
       let vectorColor: OxyColor
-      if (this.colorAxis && (this.color.isUndefined() || this.color.isAutomatic())) {
+      if (this.colorAxis && (OxyColorHelper.isUndefined(this.color) || OxyColorHelper.isAutomatic(this.color))) {
         vectorColor = ColorAxisExtensions.getColor(this.colorAxis, item.value)
       } else {
-        vectorColor = this.color.getActualColor(this.defaultColor)
+        vectorColor = OxyColorHelper.getActualColor(this.color, this._defaultColor)
       }
 
       vectorColor = this.getSelectableColor(vectorColor, i)
@@ -331,9 +366,8 @@ ${args.colorAxisTitle}: ${args.item!.value}
     color: OxyColor,
   ): Promise<void> {
     // draws a line with an arrowhead glued on the tip (the arrowhead does not point to the end point)
-    const d = direction
-    d.normalize()
-    const n = new ScreenVector(d.y, -d.x)
+    const d = ScreenVectorEx.fromVector(direction).normalize()
+    const n = newScreenVectorEx(d.y, -d.x)
 
     const actualHeadLength = this.arrowHeadLength * this.strokeThickness
     const actualHeadWidth = this.arrowHeadWidth * this.strokeThickness
@@ -352,7 +386,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
     const dashArray = LineStyleHelper.getDashArray(lineStyle)
 
     if (this.arrowHeadPosition > 0 && this.arrowHeadPosition <= 1) {
-      // TODO: may see rendering artefacts from this on non-linear lines
+      // todo: may see rendering artefacts from this on non-linear lines
       // crop elements from points which would introduce on the head, and re-include end-point if necessary
       const cropDistanceSquared = actualHeadLength * this.arrowHeadPosition * actualHeadLength * this.arrowHeadPosition
       for (let i = points.length - 1; i >= 0; i--) {
@@ -415,9 +449,9 @@ ${args.colorAxisTitle}: ${args.item!.value}
    * @internal
    */
   setDefaultValues(): void {
-    if (this.color.isAutomatic() && this.colorAxis === undefined) {
-      this.defaultLineStyle = this.plotModel.getDefaultLineStyle()
-      this.defaultColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.color) && this.colorAxis === undefined) {
+      this._defaultLineStyle = this.plotModel.getDefaultLineStyle()
+      this._defaultColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -469,8 +503,8 @@ ${args.colorAxisTitle}: ${args.item!.value}
 
     if (actualItems && actualItems.length > 0) {
       const actualItemValues = actualItems.map((r) => r.value)
-      this.minValue = minValueOfArray(actualItemValues)
-      this.maxValue = maxValueOfArray(actualItemValues)
+      this._minValue = minValueOfArray(actualItemValues)
+      this._maxValue = maxValueOfArray(actualItemValues)
     }
   }
 
@@ -483,8 +517,12 @@ ${args.colorAxisTitle}: ${args.item!.value}
     if (!this.colorAxis) return
 
     const colorAxis = this.colorAxis as unknown as Axis
-    colorAxis.include(this.minValue)
+    colorAxis.include(this._minValue)
     colorAxis.include(this.maxValue)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultVectorSeriesOptions
   }
 }
 

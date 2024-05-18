@@ -1,34 +1,37 @@
-﻿import type {
-  CreateDataPointSeriesOptions,
-  DataPoint,
-  IInterpolationAlgorithm,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-} from '@/oxyplot'
-import {
+﻿import {
+  type CreateDataPointSeriesOptions,
+  type DataPoint,
   DataPointSeries,
+  ExtendedDefaultDataPointSeriesOptions,
   HorizontalAlignment,
+  type IInterpolationAlgorithm,
+  type IRenderContext,
+  type LabelStringFormatterType,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   MarkerType,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  newScreenVector,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
   screenPointPlus,
-  ScreenVector,
   TrackerHitResult,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { maxValueOfArray, minValueOfArray, Number_MAX_VALUE, removeUndef } from '@/patch'
+
+import { assignMethod, assignObject, maxValueOfArray, minValueOfArray, Number_MAX_VALUE } from '@/patch'
 
 /**
  * Specifies the position of legends rendered on a LineSeries.
@@ -74,6 +77,38 @@ export interface CreateLineSeriesOptions extends CreateDataPointSeriesOptions {
   strokeThickness?: number
 }
 
+export const DefaultLineSeriesOptions: CreateLineSeriesOptions = {
+  color: OxyColors.Automatic,
+  brokenLineColor: OxyColors.Undefined,
+  brokenLineStyle: LineStyle.Solid,
+  brokenLineThickness: 0,
+  labelMargin: 6,
+  lineJoin: LineJoin.Bevel,
+  lineStyle: LineStyle.Automatic,
+  lineLegendPosition: LineLegendPosition.None,
+  markerFill: OxyColors.Automatic,
+  markerResolution: 0,
+  markerSize: 3,
+  markerStroke: OxyColors.Automatic,
+  markerStrokeThickness: 1,
+  markerType: MarkerType.None,
+  minimumSegmentLength: 2,
+  strokeThickness: 2,
+
+  canTrackerInterpolatePoints: true,
+
+  dashes: undefined,
+  decimator: undefined,
+  labelStringFormatter: undefined,
+  markerOutline: undefined,
+  interpolationAlgorithm: undefined,
+} as const
+
+export const ExtendedDefaultLineSeriesOptions = {
+  ...ExtendedDefaultDataPointSeriesOptions,
+  ...DefaultLineSeriesOptions,
+}
+
 /**
  * Represents a line series.
  */
@@ -86,87 +121,71 @@ export class LineSeries extends DataPointSeries {
   /**
    * The output buffer.
    */
-  private outputBuffer?: ScreenPoint[]
+  private _outputBuffer?: ScreenPoint[]
 
   /**
    * The buffer for contiguous screen points.
    */
-  private contiguousScreenPointsBuffer?: ScreenPoint[]
+  private _contiguousScreenPointsBuffer?: ScreenPoint[]
 
   /**
    * The buffer for decimated points.
    */
-  private decimatorBuffer: ScreenPoint[] = []
+  private _decimatorBuffer: ScreenPoint[] = []
 
   /**
    * The default color.
    */
-  private defaultColor: OxyColor = OxyColors.Undefined
+  private _defaultColor: OxyColor = OxyColors.Undefined
 
   /**
    * The default marker fill color.
    */
-  private defaultMarkerFill: OxyColor = OxyColors.Undefined
+  private _defaultMarkerFill: OxyColor = OxyColors.Undefined
 
   /**
    * The default line style.
    */
-  private defaultLineStyle: LineStyle = LineStyle.Solid
+  private _defaultLineStyle: LineStyle = LineStyle.Solid
 
   /**
    * The smoothed points.
    */
-  private _smoothedPoints: DataPoint[]
+  private _smoothedPoints: DataPoint[] = []
 
   /**
    * Initializes a new instance of the LineSeries class.
    */
   constructor(opt?: CreateLineSeriesOptions) {
     super(opt)
-    this.strokeThickness = 2
-    this.lineJoin = LineJoin.Bevel
-    this.lineStyle = LineStyle.Automatic
 
-    this.color = OxyColors.Automatic
-    this.brokenLineColor = OxyColors.Undefined
+    assignMethod(this, 'labelStringFormatter', opt)
+    assignObject(this, DefaultLineSeriesOptions, opt, { exclude: ['labelStringFormatter'] })
+  }
 
-    this.markerFill = OxyColors.Automatic
-    this.markerStroke = OxyColors.Automatic
-    this.markerResolution = 0
-    this.markerSize = 3
-    this.markerStrokeThickness = 1
-    this.markerType = MarkerType.None
-
-    this.minimumSegmentLength = 2
-
-    this.canTrackerInterpolatePoints = true
-    this.labelMargin = 6
-    this._smoothedPoints = new Array<DataPoint>()
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'LineSeries'
   }
 
   /**
    * Gets or sets the color of the curve.
    */
-  public color: OxyColor
+  public color: OxyColor = DefaultLineSeriesOptions.color!
 
   /**
    * Gets or sets the color of the broken line segments. The default is OxyColors.Undefined. Set it to OxyColors.Automatic if it should follow the Color.
    */
-  public brokenLineColor: OxyColor
+  public brokenLineColor: OxyColor = DefaultLineSeriesOptions.brokenLineColor!
 
   /**
    * Gets or sets the broken line style. The default is LineStyle.Solid.
    */
-  public brokenLineStyle: LineStyle = LineStyle.Solid
+  public brokenLineStyle: LineStyle = DefaultLineSeriesOptions.brokenLineStyle!
 
   /**
    * Gets or sets the broken line thickness. The default is 0 (no line).
    */
-  public brokenLineThickness: number = 0
+  public brokenLineThickness: number = DefaultLineSeriesOptions.brokenLineThickness!
 
   /**
    * Gets or sets the dash array for the rendered line (overrides LineStyle). The default is null.
@@ -186,27 +205,27 @@ export class LineSeries extends DataPointSeries {
   /**
    * Gets or sets the label margins. The default is 6.
    */
-  public labelMargin: number
+  public labelMargin: number = DefaultLineSeriesOptions.labelMargin!
 
   /**
    * Gets or sets the line join. The default is LineJoin.Bevel.
    */
-  public lineJoin: LineJoin
+  public lineJoin: LineJoin = DefaultLineSeriesOptions.lineJoin!
 
   /**
    * Gets or sets the line style. The default is LineStyle.Automatic.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultLineSeriesOptions.lineStyle!
 
   /**
    * Gets or sets a value specifying the position of a legend rendered on the line. The default is LineLegendPosition.None.
    */
-  public lineLegendPosition: LineLegendPosition = LineLegendPosition.None
+  public lineLegendPosition: LineLegendPosition = DefaultLineSeriesOptions.lineLegendPosition!
 
   /**
    * Gets or sets the marker fill color. The default is OxyColors.Automatic.
    */
-  public markerFill: OxyColor
+  public markerFill: OxyColor = DefaultLineSeriesOptions.markerFill!
 
   /**
    * Gets or sets the custom polygon outline for the markers. Set MarkerType to MarkerType.Custom to use this property. The default is null.
@@ -216,34 +235,34 @@ export class LineSeries extends DataPointSeries {
   /**
    * Gets or sets the marker resolution. The default is 0.
    */
-  public markerResolution: number
+  public markerResolution: number = DefaultLineSeriesOptions.markerResolution!
 
   /**
    * Gets or sets the size of the marker. The default is 3.
    */
-  public markerSize: number
+  public markerSize: number = DefaultLineSeriesOptions.markerSize!
 
   /**
    * Gets or sets the marker stroke. The default is OxyColors.Automatic.
    */
-  public markerStroke: OxyColor
+  public markerStroke: OxyColor = DefaultLineSeriesOptions.markerStroke!
 
   /**
    * Gets or sets the marker stroke thickness. The default is 2.
    */
-  public markerStrokeThickness: number
+  public markerStrokeThickness: number = DefaultLineSeriesOptions.markerStrokeThickness!
 
   /**
    * Gets or sets the type of the marker. The default is MarkerType.None.
    */
-  public markerType: MarkerType
+  public markerType: MarkerType = DefaultLineSeriesOptions.markerType!
 
   /**
    * Gets or sets the minimum length of the segment.
    * Increasing this number will increase performance,
    * but make the curve less accurate. The default is 2.
    */
-  public minimumSegmentLength: number
+  public minimumSegmentLength: number = DefaultLineSeriesOptions.minimumSegmentLength!
 
   /**
    * Gets or sets a type of interpolation algorithm used for smoothing this DataPointSeries.
@@ -253,27 +272,27 @@ export class LineSeries extends DataPointSeries {
   /**
    * Gets or sets the thickness of the curve.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultLineSeriesOptions.strokeThickness!
 
   /**
    * Gets the actual color.
    */
   public get actualColor(): OxyColor {
-    return this.color.getActualColor(this.defaultColor)
+    return OxyColorHelper.getActualColor(this.color, this._defaultColor)
   }
 
   /**
    * Gets the actual marker fill color.
    */
   public get actualMarkerFill(): OxyColor {
-    return this.markerFill.getActualColor(this.defaultMarkerFill)
+    return OxyColorHelper.getActualColor(this.markerFill, this._defaultMarkerFill)
   }
 
   /**
    * Gets the actual line style.
    */
   protected get actualLineStyle(): LineStyle {
-    return this.lineStyle != LineStyle.Automatic ? this.lineStyle : this.defaultLineStyle
+    return this.lineStyle != LineStyle.Automatic ? this.lineStyle : this._defaultLineStyle
   }
 
   /**
@@ -299,7 +318,7 @@ export class LineSeries extends DataPointSeries {
   public getNearestPoint(point: ScreenPoint, interpolate: boolean): TrackerHitResult | undefined {
     if (interpolate) {
       // Cannot interpolate if there is no line
-      if (this.actualColor.isInvisible() || this.strokeThickness === 0) {
+      if (OxyColorHelper.isInvisible(this.actualColor) || this.strokeThickness === 0) {
         return undefined
       }
 
@@ -360,9 +379,11 @@ export class LineSeries extends DataPointSeries {
    * @param legendBox The bounding rectangle of the legend box.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
-    const pts = [newScreenPoint(legendBox.left, ymid), newScreenPoint(legendBox.right, ymid)]
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
+    const pts = [newScreenPoint(legendBox.left, ymid), newScreenPoint(right, ymid)]
     await rc.drawLine(
       pts,
       this.getSelectableColor(this.actualColor),
@@ -391,16 +412,16 @@ export class LineSeries extends DataPointSeries {
    */
   setDefaultValues(): void {
     if (this.lineStyle === LineStyle.Automatic) {
-      this.defaultLineStyle = this.plotModel.getDefaultLineStyle()
+      this._defaultLineStyle = this.plotModel.getDefaultLineStyle()
     }
 
-    if (this.color.isAutomatic()) {
-      this.defaultColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.color)) {
+      this._defaultColor = this.plotModel.getDefaultColor()
     }
 
-    if (this.markerFill.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.markerFill)) {
       // No color was explicitly provided. Use the line color if it was set, else use default.
-      this.defaultMarkerFill = this.color.isAutomatic() ? this.defaultColor : this.color
+      this._defaultMarkerFill = OxyColorHelper.isAutomatic(this.color) ? this._defaultColor : this.color
     }
   }
 
@@ -444,8 +465,8 @@ export class LineSeries extends DataPointSeries {
     const dashArray = areBrokenLinesRendered ? LineStyleHelper.getDashArray(this.brokenLineStyle) : undefined
     const broken = areBrokenLinesRendered ? [] : undefined
 
-    if (!this.contiguousScreenPointsBuffer) {
-      this.contiguousScreenPointsBuffer = []
+    if (!this._contiguousScreenPointsBuffer) {
+      this._contiguousScreenPointsBuffer = []
     }
 
     let startIdx = 0
@@ -467,7 +488,7 @@ export class LineSeries extends DataPointSeries {
         lastValidPoint,
         xmax,
         broken!,
-        this.contiguousScreenPointsBuffer,
+        this._contiguousScreenPointsBuffer,
       )
       i = pointIdx
       lastValidPoint = previousContiguousLineSegmentEndPoint
@@ -477,7 +498,9 @@ export class LineSeries extends DataPointSeries {
 
       if (areBrokenLinesRendered) {
         if (broken && broken.length > 0) {
-          const actualBrokenLineColor = this.brokenLineColor.isAutomatic() ? this.actualColor : this.brokenLineColor
+          const actualBrokenLineColor = OxyColorHelper.isAutomatic(this.brokenLineColor)
+            ? this.actualColor
+            : this.brokenLineColor
 
           await rc.drawLineSegments(
             broken,
@@ -494,19 +517,19 @@ export class LineSeries extends DataPointSeries {
       }
 
       if (this.decimator) {
-        if (!this.decimatorBuffer) {
-          this.decimatorBuffer = []
+        if (!this._decimatorBuffer) {
+          this._decimatorBuffer = []
         } else {
-          this.decimatorBuffer.length = 0
+          this._decimatorBuffer.length = 0
         }
 
-        this.decimator(this.contiguousScreenPointsBuffer, this.decimatorBuffer)
-        await this.renderLineAndMarkers(rc, this.decimatorBuffer)
+        this.decimator(this._contiguousScreenPointsBuffer, this._decimatorBuffer)
+        await this.renderLineAndMarkers(rc, this._decimatorBuffer)
       } else {
-        await this.renderLineAndMarkers(rc, this.contiguousScreenPointsBuffer)
+        await this.renderLineAndMarkers(rc, this._contiguousScreenPointsBuffer)
       }
 
-      this.contiguousScreenPointsBuffer.length = 0
+      this._contiguousScreenPointsBuffer.length = 0
     }
   }
 
@@ -609,7 +632,7 @@ export class LineSeries extends DataPointSeries {
         continue
       }
 
-      const pt = screenPointPlus(this.transform(point), new ScreenVector(0, -this.labelMargin))
+      const pt = screenPointPlus(this.transform(point), newScreenVector(0, -this.labelMargin))
 
       const item = this.getItem(index)
       const s = this.labelStringFormatter(item, [point.x, point.y])
@@ -660,7 +683,7 @@ export class LineSeries extends DataPointSeries {
     const res = PlotElementExtensions.orientateAlignment(this, ha, va)
     ha = res[0]
     va = res[1]
-    const ver = PlotElementExtensions.orientateVector(this, new ScreenVector(dx, 0))
+    const ver = PlotElementExtensions.orientateVector(this, newScreenVector(dx, 0))
     const pt = screenPointPlus(this.transform(point), ver)
 
     // Render the legend
@@ -723,8 +746,8 @@ export class LineSeries extends DataPointSeries {
   protected async renderLine(rc: IRenderContext, pointsToRender: ScreenPoint[]): Promise<void> {
     const dashArray = this.actualDashArray
 
-    if (!this.outputBuffer) {
-      this.outputBuffer = []
+    if (!this._outputBuffer) {
+      this._outputBuffer = []
     }
 
     await RenderingExtensions.drawReducedLine(
@@ -736,7 +759,7 @@ export class LineSeries extends DataPointSeries {
       this.edgeRenderingMode,
       dashArray,
       this.lineJoin,
-      this.outputBuffer,
+      this._outputBuffer,
     )
   }
 
@@ -746,5 +769,17 @@ export class LineSeries extends DataPointSeries {
   protected resetSmoothedPoints(): void {
     const tolerance = Math.abs(Math.max(this.maxX - this.minX, this.maxY - this.minY) / LineSeries.ToleranceDivisor)
     this._smoothedPoints = this.interpolationAlgorithm!.createSplineDp(this.actualPoints, false, tolerance)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLineSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this.points?.length) {
+      json.points = this.points
+    }
+    return json
   }
 }

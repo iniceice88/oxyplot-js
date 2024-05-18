@@ -1,4 +1,4 @@
-import { Axis, type IColorAxis, type INumericColorAxis, OxyColor } from '@/oxyplot'
+import { Axis, type IColorAxis, type INumericColorAxis, type OxyColor } from '@/oxyplot'
 import { Number_MIN_VALUE } from '@/patch'
 
 /** Provides extension methods for IColorAxis. */

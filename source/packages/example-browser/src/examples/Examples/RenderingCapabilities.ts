@@ -9,14 +9,18 @@ import {
   LineJoin,
   LineStyle,
   MathRenderingExtensions,
+  newOxyRect,
+  newOxySize,
+  newOxyThickness,
   newScreenPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   OxyPen,
   OxyRect,
-  OxySize,
-  OxySizeExtensions,
-  OxyThickness,
+  OxyRect_Empty,
+  OxyRectEx,
+  OxyRectHelper,
+  OxySizeEx,
   PlotModel,
   RenderingExtensions,
   ScreenPoint,
@@ -33,11 +37,12 @@ function drawTextColors(): PlotModel {
   const FontSize = 32
   const FontWeight = FontWeights.Bold
   const D = FontSize * 1.6
-  const X = 20
-  let y = 20 - D
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
+      const X = 20
+      let y = 20 - D
+
       await rc.drawText(newScreenPoint(X, (y += D)), 'Black', OxyColors.Black, Font, FontSize, FontWeight)
       await rc.drawText(newScreenPoint(X, (y += D)), 'Red', OxyColors.Red, Font, FontSize, FontWeight)
       await rc.drawText(newScreenPoint(X, (y += D)), 'Green', OxyColors.Green, Font, FontSize, FontWeight)
@@ -45,14 +50,14 @@ function drawTextColors(): PlotModel {
 
       await RenderingExtensions.fillRectangle(
         rc,
-        new OxyRect(X, y + D + 15, 200, 10),
+        newOxyRect(X, y + D + 15, 200, 10),
         OxyColors.Black,
         EdgeRenderingMode.Adaptive,
       )
       await rc.drawText(
         newScreenPoint(X, y + D),
         'Yellow 50%',
-        OxyColor.fromAColor(128, OxyColors.Yellow),
+        OxyColorHelper.fromAColor(128, OxyColors.Yellow),
         Font,
         FontSize,
         FontWeight,
@@ -71,11 +76,12 @@ function drawTextFonts(): PlotModel {
   const model = new PlotModel()
   const FontSize = 20
   const D = FontSize * 1.6
-  const X = 20
-  let y = 20 - D
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
+      const X = 20
+      let y = 20 - D
+
       await rc.drawText(newScreenPoint(X, (y += D)), 'Default font', OxyColors.Black, undefined, FontSize)
       await rc.drawText(newScreenPoint(X, (y += D)), 'Helvetica', OxyColors.Black, 'Helvetica', FontSize)
       await rc.drawText(newScreenPoint(X, (y += D)), 'Arial', OxyColors.Black, 'Arial', FontSize)
@@ -95,11 +101,12 @@ function drawTextFonts(): PlotModel {
  */
 function drawTextFontSizes(): PlotModel {
   const model = new PlotModel()
-  const X = 20
-  let y = 20
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
+      const X = 20
+      let y = 20
+
       // Font sizes
       for (const size of [10, 16, 24, 36, 48]) {
         await rc.drawText(newScreenPoint(X, y), `${size}pt`, OxyColors.Black, 'Arial', size)
@@ -216,7 +223,7 @@ function mathTextRotation(): PlotModel {
           VerticalAlignment.Middle,
         )
         const size = await MathRenderingExtensions.measureMathText(rc, text, fontFamily, fontSize, fontWeight)
-        const outline1 = OxySizeExtensions.getPolygon(
+        const outline1 = OxySizeEx.getPolygon(
           size,
           origin,
           rotation,
@@ -239,7 +246,7 @@ function mathTextRotation(): PlotModel {
           VerticalAlignment.Middle,
         )
         const size2 = rc.measureText(text2, fontFamily, fontSize, fontWeight)
-        const outline2 = OxySizeExtensions.getPolygon(
+        const outline2 = OxySizeEx.getPolygon(
           size2,
           origin2,
           rotation,
@@ -374,13 +381,14 @@ function drawTextMaxSize(): PlotModel {
   const FontSize = 32
   const FontWeight = FontWeights.Bold
   const D = FontSize * 1.6
-  const X = 20
-  const X2 = 200
-  let y = 20
   const testStrings = ['iii', 'jjj', 'OxyPlot', 'Bottom', '100', 'KML']
 
   model.annotations.push(
     new DelegateAnnotation(async (rc) => {
+      const X = 20
+      const X2 = 200
+      let y = 20
+
       for (const text of testStrings) {
         const maxSize = rc.measureText(text, Font, FontSize, FontWeight)
         const p = newScreenPoint(X, y)
@@ -396,11 +404,11 @@ function drawTextMaxSize(): PlotModel {
           undefined,
           maxSize,
         )
-        const rect = new OxyRect(p.x, p.y, maxSize.width, maxSize.height)
+        const rect = newOxyRect(p.x, p.y, maxSize.width, maxSize.height)
         await rc.drawRectangle(rect, OxyColors.Undefined, OxyColors.Black, 1, EdgeRenderingMode.Adaptive)
 
         const p2 = newScreenPoint(X2, y)
-        const maxSize2 = new OxySize(maxSize.width / 2, maxSize.height / 2)
+        const maxSize2 = newOxySize(maxSize.width / 2, maxSize.height / 2)
         await rc.drawText(
           p2,
           text,
@@ -413,7 +421,7 @@ function drawTextMaxSize(): PlotModel {
           undefined,
           maxSize2,
         )
-        const rect2 = new OxyRect(p2.x, p2.y, maxSize2.width, maxSize2.height)
+        const rect2 = newOxyRect(p2.x, p2.y, maxSize2.width, maxSize2.height)
         await rc.drawRectangle(rect2, OxyColors.Undefined, OxyColors.Black, 1, EdgeRenderingMode.Adaptive)
 
         y += D
@@ -446,7 +454,7 @@ function measureText(): PlotModel {
           const size = rc.measureText(s, font, fontSize, FontWeights.Normal)
           maxWidth = Math.max(maxWidth, size.width)
           await rc.drawRectangle(
-            new OxyRect(x, y, size.width, size.height),
+            newOxyRect(x, y, size.width, size.height),
             OxyColors.LightYellow,
             OxyColors.Black,
             1,
@@ -471,37 +479,23 @@ const clipping = (): PlotModel => {
     new DelegateAnnotation(async (rc: IRenderContext) => {
       const DrawClipRect = async (clipRect: OxyRect) => {
         const pen = new OxyPen(OxyColors.Black, 2, LineStyle.Dash)
+        const right = OxyRectHelper.right(clipRect)
+        const bottom = OxyRectHelper.bottom(clipRect)
         await RenderingExtensions.drawLine(
           rc,
           clipRect.left,
           clipRect.top,
-          clipRect.right,
+          right,
           clipRect.top,
           pen,
           EdgeRenderingMode.Automatic,
         )
-        await RenderingExtensions.drawLine(
-          rc,
-          clipRect.right,
-          clipRect.top,
-          clipRect.right,
-          clipRect.bottom,
-          pen,
-          EdgeRenderingMode.Automatic,
-        )
-        await RenderingExtensions.drawLine(
-          rc,
-          clipRect.right,
-          clipRect.bottom,
-          clipRect.left,
-          clipRect.bottom,
-          pen,
-          EdgeRenderingMode.Automatic,
-        )
+        await RenderingExtensions.drawLine(rc, right, clipRect.top, right, bottom, pen, EdgeRenderingMode.Automatic)
+        await RenderingExtensions.drawLine(rc, right, bottom, clipRect.left, bottom, pen, EdgeRenderingMode.Automatic)
         await RenderingExtensions.drawLine(
           rc,
           clipRect.left,
-          clipRect.bottom,
+          bottom,
           clipRect.left,
           clipRect.top,
           pen,
@@ -515,7 +509,7 @@ const clipping = (): PlotModel => {
       const clipRectMargin = 20
       const testCaseMargin = 20
       const descriptionMargin = 200
-      let rect = OxyRect.Empty
+      let rect = OxyRect_Empty
 
       const DrawCircle = async (center: ScreenPoint) => {
         await RenderingExtensions.drawCircle2(
@@ -565,7 +559,7 @@ const clipping = (): PlotModel => {
 
       const NextLine = () => {
         currentLine += lineHeight
-        rect = new OxyRect(clipRectMargin, currentLine - clipRectSize / 2, clipRectSize, clipRectSize)
+        rect = newOxyRect(clipRectMargin, currentLine - clipRectSize / 2, clipRectSize, clipRectSize)
       }
 
       await DrawHeader('Actual', clipRectMargin)
@@ -576,7 +570,9 @@ const clipping = (): PlotModel => {
       NextLine()
       rc.pushClip(rect)
       rc.popClip()
-      await DrawCircle(rect.center)
+      const center = () => OxyRectHelper.center(rect)
+
+      await DrawCircle(center())
 
       await DrawTestCase('1. Push clipping rectangle\n2. Pop clipping rectangle\n3. Draw circle')
       await DrawDescription('The circle should be fully drawn.')
@@ -584,7 +580,7 @@ const clipping = (): PlotModel => {
       //-------------
       NextLine()
       rc.pushClip(rect)
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
 
@@ -594,11 +590,11 @@ const clipping = (): PlotModel => {
 
       //-------------
       NextLine()
-      let rect2 = rect.deflate(new OxyThickness(rect.height * 0.25))
+      let rect2 = OxyRectHelper.deflate(rect, newOxyThickness(rect.height * 0.25))
       rc.pushClip(rect)
       rc.pushClip(rect2)
 
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
       rc.popClip()
@@ -610,11 +606,11 @@ const clipping = (): PlotModel => {
 
       //-------------
       NextLine()
-      rect2 = rect.deflate(new OxyThickness(rect.height * 0.25))
+      rect2 = OxyRectHelper.deflate(rect, newOxyThickness(rect.height * 0.25))
       rc.pushClip(rect2)
       rc.pushClip(rect)
 
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
       rc.popClip()
@@ -626,11 +622,12 @@ const clipping = (): PlotModel => {
 
       //-------------
       NextLine()
-      rect2 = rect.offset(rect.width / 2, rect.height / 2).deflate(new OxyThickness(rect.height * 0.25))
+      let offset = OxyRectHelper.offset(rect, rect.width / 2, rect.height / 2)
+      rect2 = OxyRectHelper.deflate(offset, newOxyThickness(rect.height * 0.25))
       rc.pushClip(rect)
       rc.pushClip(rect2)
 
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
       rc.popClip()
@@ -642,13 +639,14 @@ const clipping = (): PlotModel => {
 
       //-------------
       NextLine()
-      rect2 = rect.offset(rect.width / 2, rect.height / 2).deflate(new OxyThickness(rect.height * 0.25))
+      offset = OxyRectHelper.offset(rect, rect.width / 2, rect.height / 2)
+      rect2 = OxyRectHelper.deflate(offset, newOxyThickness(rect.height * 0.25))
       rc.pushClip(rect)
       rc.pushClip(rect2)
 
       rc.popClip()
 
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
 
@@ -661,12 +659,16 @@ const clipping = (): PlotModel => {
 
       //-------------
       NextLine()
-      const rect3 = rect.offset(rect.width / 3, rect.height / 3).deflate(new OxyThickness(rect.height * 0.25))
-      const rect4 = rect.offset(-rect.width / 3, -rect.height / 3).deflate(new OxyThickness(rect.height * 0.25))
+      const rect3 = OxyRectEx.fromRect(rect)
+        .offset(rect.width / 3, rect.height / 3)
+        .deflate(newOxyThickness(rect.height * 0.25)).rect
+      const rect4 = OxyRectEx.fromRect(rect)
+        .offset(-rect.width / 3, -rect.height / 3)
+        .deflate(newOxyThickness(rect.height * 0.25)).rect
       rc.pushClip(rect3)
       rc.pushClip(rect4)
 
-      await DrawCircle(rect.center)
+      await DrawCircle(center())
 
       rc.popClip()
       rc.popClip()
@@ -680,7 +682,7 @@ const clipping = (): PlotModel => {
       NextLine()
       const autoResetClipDisp = RenderingExtensions.autoResetClip(rc, rect)
       await rc.drawText(
-        rect.center,
+        center(),
         'OxyPlot',
         OxyColors.CornflowerBlue,
         undefined,
@@ -745,7 +747,7 @@ const rectangles = (): PlotModel => {
         )
         for (let i = 0; i < THICKNESS_STEPS; i++) {
           const left = OFFSET_LEFT + i * GRID_SIZE
-          const rect = new OxyRect(left, top, TILE_SIZE, TILE_SIZE)
+          const rect = newOxyRect(left, top, TILE_SIZE, TILE_SIZE)
           const strokeThickness = i * THICKNESS_STEP
           await rc.drawRectangle(rect, FILL_COLOR, OxyColors.Black, strokeThickness, edgeRenderingMode)
         }
@@ -909,7 +911,7 @@ const ellipses = (): PlotModel => {
         )
         for (let i = 0; i < THICKNESS_STEPS; i++) {
           const left = OFFSET_LEFT + i * GRID_SIZE
-          const rect = new OxyRect(left, top + TILE_SIZE * 0.1, TILE_SIZE, TILE_SIZE * 0.8)
+          const rect = newOxyRect(left, top + TILE_SIZE * 0.1, TILE_SIZE, TILE_SIZE * 0.8)
           const strokeThickness = i * THICKNESS_STEP
           await rc.drawEllipse(rect, FILL_COLOR, OxyColors.Black, strokeThickness, edgeRenderingMode)
         }
@@ -1001,13 +1003,14 @@ const ellipseDrawing = (): PlotModel => {
   const model = new PlotModel()
   model.annotations.push(
     new DelegateAnnotation(async (rc: IRenderContext) => {
-      const rect = new OxyRect(CENTER_X - RADIUS_X, CENTER_Y - RADIUS_Y, RADIUS_X * 2, RADIUS_Y * 2)
-
+      const rect = newOxyRect(CENTER_X - RADIUS_X, CENTER_Y - RADIUS_Y, RADIUS_X * 2, RADIUS_Y * 2)
+      const right = OxyRectHelper.right(rect)
+      const bottom = OxyRectHelper.bottom(rect)
       const points = new Array<ScreenPoint>(n)
-      const cx = (rect.left + rect.right) / 2
-      const cy = (rect.top + rect.bottom) / 2
-      const rx = (rect.right - rect.left) / 2
-      const ry = (rect.bottom - rect.top) / 2
+      const cx = (rect.left + right) / 2
+      const cy = (rect.top + bottom) / 2
+      const rx = (right - rect.left) / 2
+      const ry = (bottom - rect.top) / 2
       for (let i = 0; i < n; i++) {
         const a = (Math.PI * 2 * i) / (n - 1)
         points[i] = newScreenPoint(cx + rx * Math.cos(a), cy + ry * Math.sin(a))

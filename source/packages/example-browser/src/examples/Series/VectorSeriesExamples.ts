@@ -6,8 +6,8 @@ import {
   LinearColorAxis,
   LogarithmicAxis,
   newDataPoint,
-  OxyColor,
-  OxyPalette,
+  newOxyPalette,
+  OxyColorHelper,
   OxyPalettes,
   PlotModel,
   type VectorItem,
@@ -144,7 +144,7 @@ function getModel(includeColorAxis: boolean): {
     model.axes.push(
       new LinearColorAxis({
         position: AxisPosition.Right,
-        palette: new OxyPalette(OxyPalettes.cool(10).colors.map((c) => OxyColor.fromAColor(100, c))),
+        palette: newOxyPalette(OxyPalettes.cool(10).colors.map((c) => OxyColorHelper.fromAColor(100, c))),
         minimum: 0.0,
         maximum: max,
       }),

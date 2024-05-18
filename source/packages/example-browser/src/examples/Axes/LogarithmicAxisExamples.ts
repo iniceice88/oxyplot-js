@@ -11,9 +11,9 @@ import {
   LogarithmicAxis,
   MarkerType,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyThickness,
+  newOxyThickness,
   PlotModel,
   TickStyle,
 } from 'oxyplot-js'
@@ -34,7 +34,7 @@ function amdahlsLaw(): PlotModel {
   // http://en.wikipedia.org/wiki/Amdahl's_law
   const maxSpeedup = (p: number, n: number) => 1.0 / (1.0 - p + p / n)
   const createSpeedupCurve = (p: number) => {
-    // todo: tracker does not work when smoothing = true (too few points interpolated on the left end of the curve)
+    // note: tracker does not work when smoothing = true (too few points interpolated on the left end of the curve)
     const ls = new LineSeries({ title: p.toFixed(0) })
     for (let n = 1; n <= 65536; n *= 2) ls.points.push(newDataPoint(n, maxSpeedup(p, n)))
     return ls
@@ -72,7 +72,7 @@ function amdahlsLaw(): PlotModel {
 function richterMagnitudes(): PlotModel {
   const richterMagnitudes = new PlotModel({
     title: 'The Richter magnitude scale',
-    plotMargins: new OxyThickness(80, 0, 80, 40),
+    plotMargins: newOxyThickness(80, 0, 80, 40),
   })
 
   const l = new Legend({
@@ -95,9 +95,9 @@ function richterMagnitudes(): PlotModel {
 
   const frequencyCurve = new LineSeries({
     title: 'Frequency',
-    color: OxyColor.fromUInt32(0xff3c6c9e),
+    color: OxyColorHelper.fromUInt32(0xff3c6c9e),
     strokeThickness: 3,
-    markerStroke: OxyColor.fromUInt32(0xff3c6c9e),
+    markerStroke: OxyColorHelper.fromUInt32(0xff3c6c9e),
     markerFill: OxyColors.White,
     markerType: MarkerType.Circle,
     markerSize: 4,
@@ -128,9 +128,9 @@ function richterMagnitudes(): PlotModel {
 
   const energyCurve = new LineSeries({
     title: 'Energy',
-    color: OxyColor.fromUInt32(0xff9e6c3c),
+    color: OxyColorHelper.fromUInt32(0xff9e6c3c),
     strokeThickness: 3,
-    markerStroke: OxyColor.fromUInt32(0xff9e6c3c),
+    markerStroke: OxyColorHelper.fromUInt32(0xff9e6c3c),
     markerFill: OxyColors.White,
     markerType: MarkerType.Circle,
     markerSize: 4,

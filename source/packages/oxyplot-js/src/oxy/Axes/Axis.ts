@@ -1,25 +1,44 @@
-﻿import type { AxisChangedEventArgs, CreatePlotElementOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
+  type AxisChangedEventArgs,
   AxisChangeTypes,
   AxisLayer,
   AxisPosition,
   AxisUtilities,
+  type CreatePlotElementOptions,
+  type DataPoint,
+  ExtendedDefaultPlotElementOptions,
   FontWeights,
   HorizontalAndVerticalAxisRenderer,
+  type IRenderContext,
   LineStyle,
   newDataPoint,
+  newOxySize,
+  newOxyThickness,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
-  OxySize,
-  OxyThickness,
+  type OxyRect,
+  OxyRectHelper,
+  OxySizeEx,
+  type OxyThickness,
+  OxyThickness_Zero,
   PlotElement,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_Undefined,
   TickStyle,
 } from '@/oxyplot'
-import { isInfinity, isNullOrUndef, Number_MAX_VALUE, Number_MIN_VALUE, pettyNumber } from '@/patch'
+import {
+  assignMethod,
+  assignObject,
+  isInfinity,
+  isNaNOrUndef,
+  isNullOrUndef,
+  Number_MAX_VALUE,
+  Number_MIN_VALUE,
+  pettyNumber,
+} from '@/patch'
 
 export type AxisStringFormatterType = (x: any, ...args: any[]) => string
 export type AxisLabelFormatType = AxisStringFormatterType
@@ -34,13 +53,11 @@ export interface TickValuesType {
   minorTickValues: number[]
 }
 
-export interface CreateAxisAxisOptions extends CreatePlotElementOptions {
+export interface CreateAxisOptions extends CreatePlotElementOptions {
   position?: AxisPosition
   positionTier?: number
   isAxisVisible?: boolean
   layer?: AxisLayer
-  viewMaximum?: number
-  viewMinimum?: number
   absoluteMaximum?: number
   absoluteMinimum?: number
   minimum?: number
@@ -88,7 +105,7 @@ export interface CreateAxisAxisOptions extends CreatePlotElementOptions {
   titleClippingLength?: number
   titleColor?: OxyColor
   titleFontSize?: number
-  titleFontWeight?: FontWeights
+  titleFontWeight?: number
   clipTitle?: boolean
   angle?: number
   isZoomEnabled?: boolean
@@ -96,7 +113,7 @@ export interface CreateAxisAxisOptions extends CreatePlotElementOptions {
   isPanEnabled?: boolean
   filterMinValue?: number
   filterMaxValue?: number
-  filterFunction?: any
+  filterFunction?: (value: number) => boolean
   intervalLength?: number
   axisDistance?: number
   axisTitleDistance?: number
@@ -106,12 +123,100 @@ export interface CreateAxisAxisOptions extends CreatePlotElementOptions {
   labelFormatter?: AxisLabelFormatType
   positionAtZeroCrossing?: boolean
   cropGridlines?: boolean
+  positionTierMaxShift?: number
+  positionTierMinShift?: number
+  positionTierSize?: number
+}
+
+export const DefaultAxisOptions: CreateAxisOptions = {
+  position: AxisPosition.Left,
+  positionTier: 0,
+  isAxisVisible: true,
+  layer: AxisLayer.BelowSeries,
+  absoluteMaximum: Number_MAX_VALUE,
+  absoluteMinimum: Number_MIN_VALUE,
+  minimum: Number.NaN,
+  maximum: Number.NaN,
+  minorStep: Number.NaN,
+  majorStep: Number.NaN,
+  minimumMinorStep: 0,
+  minimumMajorStep: 0,
+  minimumMajorIntervalCount: 2,
+  maximumMajorIntervalCount: Number_MAX_VALUE,
+  minimumPadding: 0.01,
+  maximumPadding: 0.01,
+  minimumRange: 0,
+  maximumRange: Number.POSITIVE_INFINITY,
+  minimumDataMargin: 0,
+  maximumDataMargin: 0,
+  minimumMargin: 0,
+  maximumMargin: 0,
+  tickStyle: TickStyle.Outside,
+  ticklineColor: OxyColors.Black,
+  minorTicklineColor: OxyColors.Automatic,
+  axislineStyle: LineStyle.None,
+  axislineColor: OxyColors.Black,
+  axislineThickness: 1.0,
+  majorGridlineStyle: LineStyle.None,
+  majorGridlineColor: OxyColorHelper.fromArgb(0x40, 0, 0, 0),
+  majorGridlineThickness: 1,
+  minorGridlineStyle: LineStyle.None,
+  minorGridlineColor: OxyColorHelper.fromArgb(0x20, 0, 0, 0x00),
+  minorGridlineThickness: 1,
+  extraGridlineStyle: LineStyle.Solid,
+  extraGridlineColor: OxyColors.Black,
+  extraGridlineThickness: 1,
+  minorTickSize: 4,
+  majorTickSize: 7,
+  startPosition: 0,
+  endPosition: 1,
+  titlePosition: 0.5,
+  titleFormatter: undefined,
+  titleClippingLength: 0.9,
+  titleColor: OxyColors.Automatic,
+  titleFontSize: Number.NaN,
+  titleFontWeight: FontWeights.Normal,
+  clipTitle: true,
+  useSuperExponentialFormat: false,
+  angle: 0,
+  isZoomEnabled: true,
+  isPanEnabled: true,
+  positionAtZeroCrossing: false,
+  intervalLength: 60,
+  cropGridlines: false,
+  axisTickToLabelDistance: 4,
+  axisTitleDistance: 4,
+  axisDistance: 0,
+  filterMinValue: Number_MIN_VALUE,
+  filterMaxValue: Number_MAX_VALUE,
+  positionTierMaxShift: 0,
+  positionTierMinShift: 0,
+  positionTierSize: 0,
+
+  extraGridlines: undefined,
+  stringFormatter: undefined,
+  title: undefined,
+  unit: undefined,
+  key: undefined,
+  filterFunction: undefined,
+  dataMaximum: undefined,
+  dataMinimum: undefined,
+  labelFormatter: undefined,
+} as const
+
+export const ExtendedDefaultAxisOptions = {
+  ...ExtendedDefaultPlotElementOptions,
+  ...DefaultAxisOptions,
 }
 
 /**
  * Provides an abstract base class for axes.
  */
 export abstract class Axis extends PlotElement {
+  public static readonly DefaultTitleFormatter = function (title: string, unit: string) {
+    return `${title || ''} [${unit || ''}]`
+  }
+
   /**
    * Exponent function.
    */
@@ -142,88 +247,21 @@ export abstract class Axis extends PlotElement {
   /**
    * Initializes a new instance of the Axis class.
    */
-  protected constructor(opt?: CreateAxisAxisOptions) {
+  protected constructor(opt?: CreateAxisOptions) {
     super(opt)
-    this.position = AxisPosition.Left
-    this.positionTier = 0
-    this.isAxisVisible = true
-    this.layer = AxisLayer.BelowSeries
 
-    this.viewMaximum = Number.NaN
-    this.viewMinimum = Number.NaN
+    this.titleFormatter = Axis.DefaultTitleFormatter
+    assignMethod(this, 'titleFormatter', opt)
+    assignMethod(this, 'stringFormatter', opt)
+    assignMethod(this, 'labelFormatter', opt)
+    assignObject(this, DefaultAxisOptions, opt, {
+      exclude: ['titleFormatter', 'stringFormatter', 'labelFormatter'],
+    })
 
-    this.absoluteMaximum = Number_MAX_VALUE
-    this.absoluteMinimum = Number_MIN_VALUE
-
-    this.minimum = Number.NaN
-    this.maximum = Number.NaN
-    this.minorStep = Number.NaN
-    this.majorStep = Number.NaN
-    this.minimumMinorStep = 0
-    this.minimumMajorStep = 0
-    this.minimumMajorIntervalCount = 2
-    this.maximumMajorIntervalCount = Number_MAX_VALUE
-
-    this.minimumPadding = 0.01
-    this.maximumPadding = 0.01
-    this.minimumRange = 0
-    this.maximumRange = Number.POSITIVE_INFINITY
-    this.minimumDataMargin = 0
-    this.maximumDataMargin = 0
-    this.minimumMargin = 0
-    this.maximumMargin = 0
-
-    this.tickStyle = TickStyle.Outside
-    this.ticklineColor = OxyColors.Black
-    this.minorTicklineColor = OxyColors.Automatic
-
-    this.axislineStyle = LineStyle.None
-    this.axislineColor = OxyColors.Black
-    this.axislineThickness = 1.0
-
-    this.majorGridlineStyle = LineStyle.None
-    this.majorGridlineColor = OxyColor.fromArgb(0x40, 0, 0, 0)
-    this.majorGridlineThickness = 1
-
-    this.minorGridlineStyle = LineStyle.None
-    this.minorGridlineColor = OxyColor.fromArgb(0x20, 0, 0, 0x00)
-    this.minorGridlineThickness = 1
-
-    this.extraGridlineStyle = LineStyle.Solid
-    this.extraGridlineColor = OxyColors.Black
-    this.extraGridlineThickness = 1
-
-    this.minorTickSize = 4
-    this.majorTickSize = 7
-
-    this.startPosition = 0
-    this.endPosition = 1
-
-    this.titlePosition = 0.5
-    this.titleFormatter = (title: string, unit: string) => `${title || ''} [${unit || ''}]`
-    this.titleClippingLength = 0.9
-    this.titleColor = OxyColors.Automatic
-    this.titleFontSize = Number.NaN
-    this.titleFontWeight = FontWeights.Normal
-    this.clipTitle = true
-
-    this.angle = 0
-
-    this.isZoomEnabled = true
-    this.isPanEnabled = true
-
-    this.filterMinValue = Number_MIN_VALUE
-    this.filterMaxValue = Number_MAX_VALUE
-    this.filterFunction = undefined
-
-    this.intervalLength = 60
-
-    this.axisDistance = 0
-    this.axisTitleDistance = 4
-    this.axisTickToLabelDistance = 4
-
-    this.dataMaximum = Number.NaN
-    this.dataMinimum = Number.NaN
+    // POSITIVE_INFINITY becomes null after JSON serialization
+    if (isNaNOrUndef(this.maximumRange)) {
+      this.maximumRange = DefaultAxisOptions.maximumRange!
+    }
   }
 
   /**
@@ -241,12 +279,12 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the absolute maximum. This is only used for the UI control. It will not be possible to zoom/pan beyond this limit. The default value is Number.MAX_VALUE.
    */
-  public absoluteMaximum: number
+  public absoluteMaximum: number = DefaultAxisOptions.absoluteMaximum!
 
   /**
    * Gets or sets the absolute minimum. This is only used for the UI control. It will not be possible to zoom/pan beyond this limit. The default value is Number.MIN_VALUE.
    */
-  public absoluteMinimum: number
+  public absoluteMinimum: number = DefaultAxisOptions.absoluteMinimum!
 
   private _actualMajorStep: number = 0
   /**
@@ -264,7 +302,7 @@ export abstract class Axis extends PlotElement {
    * Gets or sets the minimum number of major intervals on the axis.
    * Non-integer values are accepted.
    */
-  public minimumMajorIntervalCount: number
+  public minimumMajorIntervalCount: number = DefaultAxisOptions.minimumMajorIntervalCount!
 
   /**
    * Gets or sets the minimum number of major intervals on the axis.
@@ -272,7 +310,7 @@ export abstract class Axis extends PlotElement {
    * The maximum will be bounded according to the IntervalLength.
    * The MinimumMajorIntervalCount takes precedence over the MaximumMajorIntervalCount when determining the major step.
    */
-  public maximumMajorIntervalCount: number
+  public maximumMajorIntervalCount: number = DefaultAxisOptions.maximumMajorIntervalCount!
 
   private _actualMaximum: number = 0
   /**
@@ -369,49 +407,49 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the orientation angle (degrees) for the axis labels. The default value is 0.
    */
-  public angle: number
+  public angle: number = DefaultAxisOptions.angle!
 
   /**
    * Gets or sets the distance from the end of the tick lines to the labels. The default value is 4.
    */
-  public axisTickToLabelDistance: number
+  public axisTickToLabelDistance: number = DefaultAxisOptions.axisTickToLabelDistance!
 
   /**
    * Gets or sets the minimum distance from the axis labels to the axis title. The default value is 4.
    */
-  public axisTitleDistance: number
+  public axisTitleDistance: number = DefaultAxisOptions.axisTitleDistance!
 
   /**
    * Gets or sets the distance between the plot area and the axis. The default value is 0.
    */
-  public axisDistance: number
+  public axisDistance: number = DefaultAxisOptions.axisDistance!
 
   /**
    * Gets or sets the color of the axis line. The default value is OxyColors.Black.
    */
-  public axislineColor: OxyColor
+  public axislineColor: OxyColor = DefaultAxisOptions.axislineColor!
 
   /**
    * Gets or sets the line style of the axis line. The default value is LineStyle.None.
    */
-  public axislineStyle: LineStyle
+  public axislineStyle: LineStyle = DefaultAxisOptions.axislineStyle!
 
   /**
    * Gets or sets the thickness of the axis line. The default value is 1.
    */
-  public axislineThickness: number
+  public axislineThickness: number = DefaultAxisOptions.axislineThickness!
 
   /**
    * Gets or sets a value indicating whether to clip the axis title. The default value is true.
    */
-  public clipTitle: boolean
+  public clipTitle: boolean = DefaultAxisOptions.clipTitle!
 
   /**
    * Gets or sets a value indicating whether to crop gridlines with perpendicular axes Start/EndPositions. The default value is false.
    */
-  public cropGridlines: boolean = false
+  public cropGridlines: boolean = DefaultAxisOptions.cropGridlines!
 
-  private _dataMaximum: number = 0
+  private _dataMaximum: number = Number.NaN
   /**
    * Gets or sets the maximum value of the data displayed on this axis.
    */
@@ -423,7 +461,7 @@ export abstract class Axis extends PlotElement {
     this._dataMaximum = value
   }
 
-  private _dataMinimum: number = 0
+  private _dataMinimum: number = Number.NaN
   /**
    * Gets or sets the minimum value of the data displayed on this axis.
    */
@@ -440,22 +478,22 @@ export abstract class Axis extends PlotElement {
    * The position is defined by a fraction in the range from 0 to 1, where 0 is at the bottom/left
    * and 1 is at the top/right.
    */
-  public endPosition: number
+  public endPosition: number = DefaultAxisOptions.endPosition!
 
   /**
    * Gets or sets the color of the extra gridlines. The default value is OxyColors.Black.
    */
-  public extraGridlineColor: OxyColor
+  public extraGridlineColor: OxyColor = DefaultAxisOptions.extraGridlineColor!
 
   /**
    * Gets or sets the line style of the extra gridlines. The default value is LineStyle.Solid.
    */
-  public extraGridlineStyle: LineStyle
+  public extraGridlineStyle: LineStyle = DefaultAxisOptions.extraGridlineStyle!
 
   /**
    * Gets or sets the thickness of the extra gridlines. The default value is 1.
    */
-  public extraGridlineThickness: number
+  public extraGridlineThickness: number = DefaultAxisOptions.extraGridlineThickness!
 
   /**
    * Gets or sets the values for the extra gridlines. The default value is null.
@@ -470,27 +508,27 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the maximum value that can be shown using this axis. Values greater or equal to this value will not be shown. The default value is Number.MAX_VALUE.
    */
-  public filterMaxValue: number
+  public filterMaxValue: number = DefaultAxisOptions.filterMaxValue!
 
   /**
    * Gets or sets the minimum value that can be shown using this axis. Values smaller or equal to this value will not be shown. The default value is Number.MIN_VALUE.
    */
-  public filterMinValue: number
+  public filterMinValue: number = DefaultAxisOptions.filterMinValue!
 
   /**
    * Gets or sets the maximum length (screen space) of the intervals. The available length of the axis will be divided by this length to get the approximate number of major intervals on the axis. The default value is 60.
    */
-  public intervalLength: number
+  public intervalLength: number = DefaultAxisOptions.intervalLength!
 
   /**
    * Gets or sets a value indicating whether this axis is visible. The default value is true.
    */
-  public isAxisVisible: boolean
+  public isAxisVisible: boolean = DefaultAxisOptions.isAxisVisible!
 
   /**
    * Gets or sets a value indicating whether panning is enabled. The default value is true.
    */
-  public isPanEnabled: boolean
+  public isPanEnabled: boolean = DefaultAxisOptions.isAxisVisible!
 
   /**
    * Gets a value indicating whether this axis is reversed. It is reversed if StartPosition > EndPosition.
@@ -502,7 +540,7 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets a value indicating whether zooming is enabled. The default value is true.
    */
-  public isZoomEnabled: boolean
+  public isZoomEnabled: boolean = DefaultAxisOptions.isZoomEnabled!
 
   /**
    * Gets or sets the key of the axis. This can be used to specify an axis if you have defined multiple axes in a plot. The default value is null.
@@ -518,130 +556,130 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the layer of the axis. The default value is AxisLayer.BelowSeries.
    */
-  public layer: AxisLayer
+  public layer: AxisLayer = DefaultAxisOptions.layer!
 
   /**
    * Gets or sets the color of the major gridlines. The default value is #40000000.
    */
-  public majorGridlineColor: OxyColor
+  public majorGridlineColor: OxyColor = DefaultAxisOptions.majorGridlineColor!
 
   /**
    * Gets or sets the line style of the major gridlines. The default value is LineStyle.None.
    */
-  public majorGridlineStyle: LineStyle
+  public majorGridlineStyle: LineStyle = DefaultAxisOptions.majorGridlineStyle!
 
   /**
    * Gets or sets the thickness of the major gridlines. The default value is 1.
    */
-  public majorGridlineThickness: number
+  public majorGridlineThickness: number = DefaultAxisOptions.majorGridlineThickness!
 
   /**
    * Gets or sets the interval between major ticks. The default value is NaN.
    */
-  public majorStep: number
+  public majorStep: number = DefaultAxisOptions.majorStep!
 
   /**
    * Gets or sets the size of the major ticks. The default value is 7.
    */
-  public majorTickSize: number
+  public majorTickSize: number = DefaultAxisOptions.majorTickSize!
 
   /**
    * Gets or sets the maximum value of the axis. The default value is NaN.
    */
-  public maximum: number
+  public maximum: number = DefaultAxisOptions.maximum!
 
   /**
    * Gets or sets the 'padding' fraction of the maximum value. The default value is 0.01.
    * A value of 0.01 gives 1% more space on the maximum end of the axis. This property is not used if the Maximum property is set.
    */
-  public maximumPadding: number
+  public maximumPadding: number = DefaultAxisOptions.maximumPadding!
 
   /**
    * Gets or sets the screen-space data margin at the maximum. The default value is 0.
    * The number of device independent units to included between the ClipMaximum and ActualMaximum.
    */
-  public maximumDataMargin: number
+  public maximumDataMargin: number = DefaultAxisOptions.maximumDataMargin!
 
   /**
    * Gets or sets the screen-space margin at the maximum. The default value is 0.
    * The number of device independent units to be left empty between the axis and the EndPosition.
    */
-  public maximumMargin: number
+  public maximumMargin: number = DefaultAxisOptions.maximumMargin!
 
   /**
    * Gets or sets the maximum range of the axis. Setting this property ensures that ActualMaximum-ActualMinimum < MaximumRange. The default value is Number.POSITIVE_INFINITY.
    */
-  public maximumRange: number
+  public maximumRange: number = DefaultAxisOptions.maximumRange!
 
   /**
    * Gets or sets the minimum value of the axis. The default value is NaN.
    */
-  public minimum: number
+  public minimum: number = DefaultAxisOptions.minimum!
 
   /**
    * Gets or sets the minimum value for the interval between major ticks. The default value is 0.
    */
-  public minimumMajorStep: number
+  public minimumMajorStep: number = DefaultAxisOptions.minimumMajorStep!
 
   /**
    * Gets or sets the minimum value for the interval between minor ticks. The default value is 0.
    */
-  public minimumMinorStep: number
+  public minimumMinorStep: number = DefaultAxisOptions.minimumMinorStep!
 
   /**
    * Gets or sets the 'padding' fraction of the minimum value. The default value is 0.01.
    * A value of 0.01 gives 1% more space on the minimum end of the axis. This property is not used if the Minimum property is set.
    */
-  public minimumPadding: number
+  public minimumPadding: number = DefaultAxisOptions.minimumPadding!
 
   /**
    * Gets or sets the screen-space data margin at the minimum. The default value is 0.
    * The number of device independent units to included between the ClipMinimum and ActualMinimum.
    */
-  public minimumDataMargin: number
+  public minimumDataMargin: number = DefaultAxisOptions.minimumDataMargin!
 
   /**
    * Gets or sets the screen-space margin at the minimum. The default value is 0.
    * The number of device independent units to be left empty between the axis the StartPosition.
    */
-  public minimumMargin: number
+  public minimumMargin: number = DefaultAxisOptions.minimumMargin!
 
   /**
    * Gets or sets the minimum range of the axis. Setting this property ensures that ActualMaximum-ActualMinimum > MinimumRange. The default value is 0.
    */
-  public minimumRange: number
+  public minimumRange: number = DefaultAxisOptions.minimumRange!
 
   /**
    * Gets or sets the color of the minor gridlines. The default value is #20000000.
    */
-  public minorGridlineColor: OxyColor
+  public minorGridlineColor: OxyColor = DefaultAxisOptions.minorGridlineColor!
 
   /**
    * Gets or sets the line style of the minor gridlines. The default value is LineStyle.None.
    */
-  public minorGridlineStyle: LineStyle
+  public minorGridlineStyle: LineStyle = DefaultAxisOptions.minorGridlineStyle!
 
   /**
    * Gets or sets the thickness of the minor gridlines. The default value is 1.
    */
-  public minorGridlineThickness: number
+  public minorGridlineThickness: number = DefaultAxisOptions.minorGridlineThickness!
 
   /**
    * Gets or sets the interval between minor ticks. The default value is NaN.
    */
-  public minorStep: number
+  public minorStep: number = DefaultAxisOptions.majorStep!
 
   /**
    * Gets or sets the color of the minor ticks. The default value is OxyColors.Automatic.
    * If the value is OxyColors.Automatic, the value of
    * Axis.TicklineColor will be used.
    */
-  public minorTicklineColor: OxyColor
+  public minorTicklineColor: OxyColor = DefaultAxisOptions.minorTicklineColor!
 
   /**
    * Gets or sets the size of the minor ticks. The default value is 4.
    */
-  public minorTickSize: number
+  public minorTickSize: number = DefaultAxisOptions.minorTickSize!
 
   /**
    * Gets the offset. This is used to transform between data and screen coordinates.
@@ -653,18 +691,18 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the position of the axis. The default value is AxisPosition.Left.
    */
-  public position: AxisPosition = AxisPosition.Left
+  public position: AxisPosition = DefaultAxisOptions.position!
 
   /**
    * Gets or sets a value indicating whether the axis should be positioned at the zero-crossing of the related axis. The default value is false.
    */
-  public positionAtZeroCrossing = false
+  public positionAtZeroCrossing = DefaultAxisOptions.positionAtZeroCrossing!
 
   /**
    * Gets or sets the position tier which defines in which tier the axis is displayed. The default value is 0.
    * The bigger the value the further afar is the axis from the graph.
    */
-  public positionTier = 0
+  public positionTier = DefaultAxisOptions.positionTier!
 
   /**
    * Gets the scaling factor of the axis. This is used to transform between data and screen coordinates.
@@ -685,10 +723,10 @@ export abstract class Axis extends PlotElement {
     this._screenMax = value
   }
 
-  private _screenMin: ScreenPoint = ScreenPoint_Undefined
   /**
    * Gets or sets the screen coordinate of the minimum end of the axis.
    */
+  private _screenMin: ScreenPoint = ScreenPoint_Undefined
   public get screenMin(): ScreenPoint {
     return this._screenMin
   }
@@ -702,7 +740,7 @@ export abstract class Axis extends PlotElement {
    * The position is defined by a fraction in the range from 0 to 1, where 0 is at the bottom/left
    * and 1 is at the top/right.
    */
-  public startPosition: number
+  public startPosition: number = DefaultAxisOptions.startPosition!
 
   /**
    * Gets or sets the string format used for formatting the axis values. The default value is null.
@@ -712,12 +750,12 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the tick style for major and minor ticks. The default value is TickStyle.Outside.
    */
-  public tickStyle: TickStyle
+  public tickStyle: TickStyle = DefaultAxisOptions.tickStyle!
 
   /**
    * Gets or sets the color of the major and minor ticks. The default value is OxyColors.Black.
    */
-  public ticklineColor: OxyColor
+  public ticklineColor: OxyColor = DefaultAxisOptions.ticklineColor!
 
   /**
    * Gets or sets the title of the axis. The default value is null.
@@ -727,13 +765,13 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the length of the title clipping rectangle (fraction of the available length of the axis). The default value is 0.9.
    */
-  public titleClippingLength: number
+  public titleClippingLength: number = DefaultAxisOptions.titleClippingLength!
 
   /**
    * Gets or sets the color of the title. The default value is OxyColors.Automatic.
    * If the value is null, the PlotModel.TextColor will be used.
    */
-  public titleColor: OxyColor
+  public titleColor: OxyColor = DefaultAxisOptions.titleColor!
 
   /**
    * Gets or sets the title font. The default value is null.
@@ -743,25 +781,25 @@ export abstract class Axis extends PlotElement {
   /**
    * Gets or sets the size of the title font. The default value is NaN.
    */
-  public titleFontSize: number
+  public titleFontSize: number = DefaultAxisOptions.titleFontSize!
 
   /**
    * Gets or sets the weight of the title font. The default value is FontWeights.Normal.
    */
-  public titleFontWeight: number
+  public titleFontWeight: number = DefaultAxisOptions.titleFontWeight!
 
   /**
    * Gets or sets the formatter used for formatting the title and unit when Unit is defined.
    * The default value is "{0} [{1}]", where {0} refers to the Title and {1} refers to the Unit.
    * If Unit is null, the actual title is defined by Title only.
    */
-  public titleFormatter: AxisTitleFormatterType
+  public titleFormatter: AxisTitleFormatterType = DefaultAxisOptions.titleFormatter!
 
   /**
    * Gets or sets the position of the title. The default value is 0.5.
    * The position is defined by a fraction in the range 0 to 1.
    */
-  public titlePosition: number
+  public titlePosition: number = DefaultAxisOptions.titlePosition!
 
   /**
    * Gets or sets the unit of the axis. The default value is null.
@@ -774,9 +812,9 @@ export abstract class Axis extends PlotElement {
    * This format will convert 1.5E+03 to 1.5·10^{3} and render the superscript properly.
    * If StringFormatter is null, 1.0E+03 will be converted to 10^{3}, otherwise it will use the formatter for the mantissa.
    */
-  public useSuperExponentialFormat: boolean = false
+  public useSuperExponentialFormat: boolean = DefaultAxisOptions.useSuperExponentialFormat!
 
-  private _desiredMargin: OxyThickness = OxyThickness.Zero
+  private _desiredMargin: OxyThickness = OxyThickness_Zero
   /**
    * Gets or sets the desired margins such that the axis text ticks will not be clipped.
    * The actual margins may be smaller or larger than the desired margins if they are set manually.
@@ -793,26 +831,26 @@ export abstract class Axis extends PlotElement {
    * Gets or sets the position tier max shift.
    * @internal
    */
-  positionTierMaxShift: number = 0
+  positionTierMaxShift: number = DefaultAxisOptions.positionTierMaxShift!
 
   /**
    * Gets or sets the position tier min shift.
    * @internal
    */
-  positionTierMinShift: number = 0
+  positionTierMinShift: number = DefaultAxisOptions.positionTierMinShift!
 
   /**
    * Gets or sets the size of the position tier.
    * @internal
    */
-  positionTierSize: number = 0
+  positionTierSize: number = DefaultAxisOptions.positionTierSize!
 
   /**
    * Gets the actual color of the title.
    * @internal
    */
   get actualTitleColor(): OxyColor {
-    return this.titleColor.getActualColor(this.plotModel.textColor)
+    return OxyColorHelper.getActualColor(this.titleColor, this.plotModel.textColor)
   }
 
   /**
@@ -828,7 +866,7 @@ export abstract class Axis extends PlotElement {
    * @internal
    */
   get actualTitleFontSize(): number {
-    return !isNaN(this.titleFontSize) ? this.titleFontSize : this.actualFontSize
+    return !isNaNOrUndef(this.titleFontSize) ? this.titleFontSize : this.actualFontSize
   }
 
   /**
@@ -836,18 +874,18 @@ export abstract class Axis extends PlotElement {
    * @internal
    */
   get actualTitleFontWeight(): number {
-    return !isNaN(this.titleFontWeight) ? this.titleFontWeight : this.actualFontWeight
+    return !isNaNOrUndef(this.titleFontWeight) ? this.titleFontWeight : this.actualFontWeight
   }
 
   /**
    * Gets or sets the current view's maximum. This value is used when the user zooms or pans.
    */
-  protected viewMaximum: number
+  protected viewMaximum: number = Number.NaN
 
   /**
    * Gets or sets the current view's minimum. This value is used when the user zooms or pans.
    */
-  protected viewMinimum: number
+  protected viewMinimum: number = Number.NaN
 
   /**
    * Converts the specified value to a number.
@@ -861,8 +899,8 @@ export abstract class Axis extends PlotElement {
   /**
    * Transforms the specified point from screen space to data space.
    * @param p The point.
-   * @param xaxis The x axis.
-   * @param yaxis The y axis.
+   * @param xaxis The x-axis.
+   * @param yaxis The y-axis.
    * @returns The data point.
    */
   public static inverseTransform(p: ScreenPoint, xaxis: Axis, yaxis: Axis): DataPoint {
@@ -982,13 +1020,13 @@ export abstract class Axis extends PlotElement {
    */
   public measure(rc: IRenderContext): void {
     if (this.position === AxisPosition.None) {
-      this.desiredMargin = new OxyThickness(0)
+      this.desiredMargin = newOxyThickness(0)
       return
     }
 
     const { majorLabelValues } = this.getTickValues()
 
-    let maximumTextSize = new OxySize()
+    let maximumTextSize = newOxySize()
     for (const v of majorLabelValues) {
       const s = this.formatValue(v)
       const size = RenderingExtensions.measureText(
@@ -999,7 +1037,7 @@ export abstract class Axis extends PlotElement {
         this.actualFontWeight,
         this.angle,
       )
-      maximumTextSize = maximumTextSize.include(size)
+      maximumTextSize = OxySizeEx.include(maximumTextSize, size)
     }
 
     const titleTextSize = rc.measureText(
@@ -1138,7 +1176,7 @@ export abstract class Axis extends PlotElement {
       }
     }
 
-    this.desiredMargin = new OxyThickness(marginLeft, marginTop, marginRight, marginBottom)
+    this.desiredMargin = newOxyThickness(marginLeft, marginTop, marginRight, marginBottom)
   }
 
   pan(ppt_or_delta: ScreenPoint | number, cpt?: ScreenPoint): void
@@ -1432,8 +1470,8 @@ export abstract class Axis extends PlotElement {
       return
     }
 
-    this.dataMinimum = isNaN(this.dataMinimum) ? value : Math.min(this.dataMinimum, value)
-    this.dataMaximum = isNaN(this.dataMaximum) ? value : Math.max(this.dataMaximum, value)
+    this.dataMinimum = isNaNOrUndef(this.dataMinimum) ? value : Math.min(this.dataMinimum, value)
+    this.dataMaximum = isNaNOrUndef(this.dataMaximum) ? value : Math.max(this.dataMaximum, value)
   }
 
   /**
@@ -1449,17 +1487,17 @@ export abstract class Axis extends PlotElement {
    * @internal
    */
   updateActualMaxMin(): void {
-    if (!isNaN(this.viewMaximum)) {
+    if (!isNaNOrUndef(this.viewMaximum)) {
       this.actualMaximum = this.viewMaximum
-    } else if (!isNaN(this.maximum)) {
+    } else if (!isNaNOrUndef(this.maximum)) {
       this.actualMaximum = this.maximum
     } else {
       this.actualMaximum = this.calculateActualMaximum()
     }
 
-    if (!isNaN(this.viewMinimum)) {
+    if (!isNaNOrUndef(this.viewMinimum)) {
       this.actualMinimum = this.viewMinimum
-    } else if (!isNaN(this.minimum)) {
+    } else if (!isNaNOrUndef(this.minimum)) {
       this.actualMinimum = this.minimum
     } else {
       this.actualMinimum = this.calculateActualMinimum()
@@ -1477,17 +1515,19 @@ export abstract class Axis extends PlotElement {
     const labelSize = this.intervalLength
     let length = this.isHorizontal() ? plotArea.width : plotArea.height
     length *= Math.abs(this.endPosition - this.startPosition)
-    this.actualMajorStep = !isNaN(this.majorStep)
+    this.actualMajorStep = !isNaNOrUndef(this.majorStep)
       ? this.majorStep
       : this.calculateActualInterval(length, labelSize, this.minimumMajorIntervalCount, this.maximumMajorIntervalCount)
 
-    this.actualMinorStep = !isNaN(this.minorStep) ? this.minorStep : this.calculateMinorInterval(this.actualMajorStep)
+    this.actualMinorStep = !isNaNOrUndef(this.minorStep)
+      ? this.minorStep
+      : this.calculateMinorInterval(this.actualMajorStep)
 
-    if (isNaN(this.actualMinorStep)) {
+    if (isNaNOrUndef(this.actualMinorStep)) {
       this.actualMinorStep = 2
     }
 
-    if (isNaN(this.actualMajorStep)) {
+    if (isNaNOrUndef(this.actualMajorStep)) {
       this.actualMajorStep = 10
     }
 
@@ -1504,8 +1544,8 @@ export abstract class Axis extends PlotElement {
    */
   updateTransform(bounds: OxyRect): void {
     const x0 = bounds.left
-    const x1 = bounds.right
-    const y0 = bounds.bottom
+    const x1 = OxyRectHelper.right(bounds)
+    const y0 = OxyRectHelper.bottom(bounds)
     const y1 = bounds.top
 
     let a0 = this.isHorizontal() ? x0 : y0
@@ -1657,12 +1697,12 @@ export abstract class Axis extends PlotElement {
     }
 
     // Coerce actual minimum
-    if (isNaN(this.actualMinimum) || isInfinity(this.actualMinimum)) {
+    if (isNaNOrUndef(this.actualMinimum) || isInfinity(this.actualMinimum)) {
       this.actualMinimum = 0
     }
 
     // Coerce actual maximum
-    if (isNaN(this.actualMaximum) || isInfinity(this.actualMaximum)) {
+    if (isNaNOrUndef(this.actualMaximum) || isInfinity(this.actualMaximum)) {
       this.actualMaximum = 100
     }
 
@@ -1788,7 +1828,7 @@ export abstract class Axis extends PlotElement {
       actualMaximum += zeroRange * 0.5
     }
 
-    if (!isNaN(this.dataMinimum) && !isNaN(actualMaximum)) {
+    if (!isNaNOrUndef(this.dataMinimum) && !isNaNOrUndef(actualMaximum)) {
       const x1 = this.preTransform(actualMaximum)
       const x0 = this.preTransform(this.dataMinimum)
       const dx = this.maximumPadding * (x1 - x0)
@@ -1812,7 +1852,7 @@ export abstract class Axis extends PlotElement {
       actualMinimum -= zeroRange * 0.5
     }
 
-    if (!isNaN(this.actualMaximum)) {
+    if (!isNaNOrUndef(this.actualMaximum)) {
       const x1 = this.preTransform(this.actualMaximum)
       const x0 = this.preTransform(actualMinimum)
       const existingPadding = this.maximumPadding
@@ -1898,7 +1938,7 @@ export abstract class Axis extends PlotElement {
         break
       }
 
-      if (isNaN(intervalCandidate) || isInfinity(intervalCandidate)) {
+      if (isNaNOrUndef(intervalCandidate) || isInfinity(intervalCandidate)) {
         break
       }
 
@@ -1929,5 +1969,16 @@ export abstract class Axis extends PlotElement {
     if (handler) {
       handler(this)
     }
+  }
+
+  protected getJsonIgnoreProperties(): string[] {
+    return [
+      ...super.getJsonIgnoreProperties(),
+      'viewMaximum',
+      'viewMinimum',
+      'positionTierMaxShift',
+      'positionTierMinShift',
+      'positionTierSize',
+    ]
   }
 }

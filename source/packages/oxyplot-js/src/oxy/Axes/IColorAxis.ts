@@ -1,4 +1,4 @@
-﻿import { IPlotElement, OxyColor } from '@/oxyplot'
+﻿import { IPlotElement, type OxyColor } from '@/oxyplot'
 
 /**
  * Specifies functionality for color axes.

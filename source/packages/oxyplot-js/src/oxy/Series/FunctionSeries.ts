@@ -1,4 +1,4 @@
-import { type CreateLineSeriesOptions, LineSeries, newDataPoint } from '@/oxyplot'
+import { type CreateLineSeriesOptions, ExtendedDefaultLineSeriesOptions, LineSeries, newDataPoint } from '@/oxyplot'
 import { assertInteger } from '@/patch'
 
 export interface CreateFunctionSeriesOptions extends CreateLineSeriesOptions {
@@ -14,8 +14,10 @@ export interface CreateFunctionSeriesOptions extends CreateLineSeriesOptions {
   t0?: number
   t1?: number
   dt?: number
+}
 
-  title?: string
+export const ExtendedDefaultFunctionSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
 }
 
 /**
@@ -28,9 +30,6 @@ export interface CreateFunctionSeriesOptions extends CreateLineSeriesOptions {
 export class FunctionSeries extends LineSeries {
   constructor(opt: CreateFunctionSeriesOptions) {
     super(opt)
-
-    if (opt.title) this.title = opt.title
-
     if (opt.f) {
       if (opt.dx) {
         this.f1(opt.f, opt.x0!, opt.x1!, opt.dx)
@@ -46,6 +45,10 @@ export class FunctionSeries extends LineSeries {
         this.f4(opt.fx, opt.fy, opt.t0!, opt.t1!, opt.n)
       }
     }
+  }
+
+  getElementName() {
+    return 'FunctionSeries'
   }
 
   static fromDx(f: (x: number) => number, x0: number, x1: number, dx: number, title?: string): FunctionSeries {
@@ -154,5 +157,9 @@ export class FunctionSeries extends LineSeries {
    */
   private f4(fx: (t: number) => number, fy: (t: number) => number, t0: number, t1: number, n: number) {
     this.f3(fx, fy, t0, t1, (t1 - t0) / (n - 1))
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultFunctionSeriesOptions
   }
 }

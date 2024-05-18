@@ -1,9 +1,28 @@
-import { type CreateTextualAnnotationOptions, OxyColor, OxyColors, TextualAnnotation } from '@/oxyplot'
+import {
+  type CreateTextualAnnotationOptions,
+  DefaultTextualAnnotationOptions,
+  ExtendedDefaultTextualAnnotationOptions,
+  type OxyColor,
+  OxyColors,
+  TextualAnnotation,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateShapeAnnotationOptions extends CreateTextualAnnotationOptions {
   fill?: OxyColor
   stroke?: OxyColor
   strokeThickness?: number
+}
+
+export const DefaultShapeAnnotationOptions: CreateShapeAnnotationOptions = {
+  fill: OxyColors.LightBlue,
+  stroke: OxyColors.Black,
+  strokeThickness: 0,
+}
+
+export const ExtendedDefaultShapeAnnotationOptions = {
+  ...ExtendedDefaultTextualAnnotationOptions,
+  ...DefaultTextualAnnotationOptions,
 }
 
 /**
@@ -15,22 +34,21 @@ export abstract class ShapeAnnotation extends TextualAnnotation {
    */
   protected constructor(opt?: CreateShapeAnnotationOptions) {
     super(opt)
-    this.stroke = OxyColors.Black
-    this.fill = OxyColors.LightBlue
+    assignObject(this, DefaultShapeAnnotationOptions, opt)
   }
 
   /**
    * The fill color.
    */
-  public fill: OxyColor
+  public fill: OxyColor = DefaultShapeAnnotationOptions.fill!
 
   /**
    * The stroke color.
    */
-  public stroke: OxyColor
+  public stroke: OxyColor = DefaultShapeAnnotationOptions.stroke!
 
   /**
    * The stroke thickness.
    */
-  public strokeThickness: number = 0
+  public strokeThickness: number = DefaultShapeAnnotationOptions.strokeThickness!
 }

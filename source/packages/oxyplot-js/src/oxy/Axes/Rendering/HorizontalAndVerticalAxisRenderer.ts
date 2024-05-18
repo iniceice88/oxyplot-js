@@ -1,15 +1,19 @@
-﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
   Axis,
   AxisPosition,
   AxisRendererBase,
   EdgeRenderingMode,
   HorizontalAlignment,
+  type IRenderContext,
   MathRenderingExtensions,
+  newOxySize,
   newScreenPoint,
-  OxySize,
+  OxyColorHelper,
+  OxyRectHelper,
+  type OxySize,
   PlotModel,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
   TickStyle,
   VerticalAlignment,
@@ -43,9 +47,9 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
 
     // store properties locally for performance
     const plotAreaLeft = this.plot.plotArea.left
-    const plotAreaRight = this.plot.plotArea.right
+    const plotAreaRight = OxyRectHelper.right(this.plot.plotArea)
     const plotAreaTop = this.plot.plotArea.top
-    const plotAreaBottom = this.plot.plotArea.bottom
+    const plotAreaBottom = OxyRectHelper.bottom(this.plot.plotArea)
 
     // Axis position (x or y screen coordinate)
     let axisPosition = 0
@@ -92,7 +96,11 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
           ? this.plot.plotAreaBorderThickness.top
           : this.plot.plotAreaBorderThickness.left
         const borderPosition = axis.isHorizontal() ? this.plot.plotArea.top : this.plot.plotArea.left
-        if (axisPosition <= borderPosition && borderThickness > 0 && this.plot.plotAreaBorderColor.isVisible()) {
+        if (
+          axisPosition <= borderPosition &&
+          borderThickness > 0 &&
+          OxyColorHelper.isVisible(this.plot.plotAreaBorderColor)
+        ) {
           // there is already a line here...
           drawAxisLine = false
         }
@@ -104,8 +112,12 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
         const borderThickness = axis.isHorizontal()
           ? this.plot.plotAreaBorderThickness.bottom
           : this.plot.plotAreaBorderThickness.right
-        const borderPosition = axis.isHorizontal() ? this.plot.plotArea.bottom : this.plot.plotArea.right
-        if (axisPosition >= borderPosition && borderThickness > 0 && this.plot.plotAreaBorderColor.isVisible()) {
+        const borderPosition = axis.isHorizontal() ? plotAreaBottom : plotAreaRight
+        if (
+          axisPosition >= borderPosition &&
+          borderThickness > 0 &&
+          OxyColorHelper.isVisible(this.plot.plotAreaBorderColor)
+        ) {
           // there is already a line here...
           drawAxisLine = false
         }
@@ -248,7 +260,7 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
         ? Math.abs(axis.screenMax.x - axis.screenMin.x)
         : Math.abs(axis.screenMax.y - axis.screenMin.y)
 
-      maxSize = new OxySize(screenLength * axis.titleClippingLength, Number_MAX_VALUE)
+      maxSize = newOxySize(screenLength * axis.titleClippingLength, Number_MAX_VALUE)
     }
 
     const { point, angle, halign, valign } = this.getAxisTitlePositionAndAlignment(axis, titlePosition)
@@ -287,9 +299,9 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
     const clipMaximum = axis.clipMaximum
 
     const plotAreaLeft = this.plot.plotArea.left
-    const plotAreaRight = this.plot.plotArea.right
+    const plotAreaRight = OxyRectHelper.right(this.plot.plotArea)
     const plotAreaTop = this.plot.plotArea.top
-    const plotAreaBottom = this.plot.plotArea.bottom
+    const plotAreaBottom = OxyRectHelper.bottom(this.plot.plotArea)
     const isHorizontal = axis.isHorizontal()
     const cropGridlines = axis.cropGridlines
 
@@ -493,9 +505,9 @@ export class HorizontalAndVerticalAxisRenderer<T extends Axis = Axis> extends Ax
     const eps = axis.actualMinorStep * 1e-3
 
     const plotAreaLeft = this.plot.plotArea.left
-    const plotAreaRight = this.plot.plotArea.right
+    const plotAreaRight = OxyRectHelper.right(this.plot.plotArea)
     const plotAreaTop = this.plot.plotArea.top
-    const plotAreaBottom = this.plot.plotArea.bottom
+    const plotAreaBottom = OxyRectHelper.bottom(this.plot.plotArea)
     const cropGridlines = axis.cropGridlines
     const isHorizontal = axis.isHorizontal()
 

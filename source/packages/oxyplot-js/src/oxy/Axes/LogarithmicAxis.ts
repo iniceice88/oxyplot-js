@@ -1,10 +1,28 @@
-import type { CreateAxisAxisOptions, ScreenPoint, TickValuesType } from '@/oxyplot'
-import { Axis, AxisChangeTypes, AxisUtilities } from '@/oxyplot'
-import { isInfinity, log, removeUndef, round } from '@/patch'
+import {
+  Axis,
+  AxisChangeTypes,
+  AxisUtilities,
+  type CreateAxisOptions,
+  ExtendedDefaultAxisOptions,
+  type ScreenPoint,
+  type TickValuesType,
+} from '@/oxyplot'
+import { assignObject, isInfinity, isNaNOrUndef, log, round } from '@/patch'
 
-export interface CreateLogarithmicAxisOptions extends CreateAxisAxisOptions {
+export interface CreateLogarithmicAxisOptions extends CreateAxisOptions {
   base?: number
   powerPadding?: boolean
+}
+
+export const DefaultLogarithmicAxisOptions: CreateLogarithmicAxisOptions = {
+  base: 10,
+  powerPadding: true,
+  filterMinValue: 0,
+} as const
+
+export const ExtendedDefaultLogarithmicAxisOptions = {
+  ...ExtendedDefaultAxisOptions,
+  ...DefaultLogarithmicAxisOptions,
 }
 
 /**
@@ -15,22 +33,22 @@ export class LogarithmicAxis extends Axis {
   /**
    * The logarithmic base (normally 10).
    */
-  public base: number
+  public base: number = DefaultLogarithmicAxisOptions.base!
 
   /**
    * A value indicating whether the actualMaximum and actualMinimum values should be padded to the nearest power of the Base.
    */
-  public powerPadding: boolean
+  public powerPadding: boolean = DefaultLogarithmicAxisOptions.powerPadding!
 
   /**
    * The logarithmic actual maximum value of the axis.
    */
-  protected logActualMaximum: number = 0
+  protected actualLogMaximum: number = 0
 
   /**
    * The logarithmic actual minimum value of the axis.
    */
-  protected logActualMinimum: number = 0
+  protected actualLogMinimum: number = 0
 
   /**
    * The logarithmic clip maximum value of the axis.
@@ -47,13 +65,11 @@ export class LogarithmicAxis extends Axis {
    */
   constructor(opt?: CreateLogarithmicAxisOptions) {
     super(opt)
-    this.powerPadding = true
-    this.base = 10
-    this.filterMinValue = 0
+    assignObject(this, DefaultLogarithmicAxisOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'LogarithmicAxis'
   }
 
   /**
@@ -540,8 +556,8 @@ export class LogarithmicAxis extends Axis {
    * Invoked when actualMinimum, actualMaximum, clipMinimum, and clipMaximum are changed.
    */
   protected actualMaximumAndMinimumChangedOverride(): void {
-    this.logActualMinimum = this.preTransform(this.actualMinimum)
-    this.logActualMaximum = this.preTransform(this.actualMaximum)
+    this.actualLogMinimum = this.preTransform(this.actualMinimum)
+    this.actualLogMaximum = this.preTransform(this.actualMaximum)
     this.logClipMinimum = this.preTransform(this.clipMinimum)
     this.logClipMaximum = this.preTransform(this.clipMaximum)
   }
@@ -601,7 +617,7 @@ export class LogarithmicAxis extends Axis {
       actualMaximum += zeroRange * 0.5
     }
 
-    if (!isNaN(this.dataMinimum) && !isNaN(actualMaximum)) {
+    if (!isNaNOrUndef(this.dataMinimum) && !isNaNOrUndef(actualMaximum)) {
       const x1 = actualMaximum
       const x0 = this.dataMinimum
       return Math.pow(x1, this.maximumPadding + 1) * (x0 > Number.EPSILON ? Math.pow(x0, -this.maximumPadding) : 1)
@@ -647,5 +663,9 @@ export class LogarithmicAxis extends Axis {
     }
 
     return actualMinimum
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLogarithmicAxisOptions
   }
 }

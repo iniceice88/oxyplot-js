@@ -1,14 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './src/**/*.html',
-    './src/**/*.vue'
-  ],
+  content: ['./src/**/*.html', './src/**/*.vue'],
   theme: {
-    extend: {}
+    extend: {},
   },
-  plugins: [
-    require('@headlessui/tailwindcss')
-  ]
+  plugins: [],
 }
-

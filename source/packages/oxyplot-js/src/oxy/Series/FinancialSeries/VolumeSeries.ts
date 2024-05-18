@@ -1,54 +1,56 @@
-import type { CreateXYAxisSeriesOptions, IRenderContext, ScreenPoint, TrackerStringFormatterType } from '@/oxyplot'
 import {
+  type CreateXYAxisSeriesOptions,
+  ExtendedDefaultXYAxisSeriesOptions,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
+  newOxyRect,
   newScreenPoint,
-  OxyColor,
-  OxyColorExtensions,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
+  type ScreenPoint,
   TrackerHitResult,
+  type TrackerStringFormatterType,
   XYAxisSeries,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
+import { assignMethod, assignObject, isNullOrUndef, Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
 
 /**
  * Represents an item in a CandleStickAndVolumeSeries.
  */
-export class OhlcvItem {
-  /**
-   * The undefined.
-   */
-  public static readonly Undefined = new OhlcvItem(NaN, NaN, NaN)
-
+export interface OhlcvItem {
   /**
    * The X value (time).
    */
-  public x: number
+  x: number
 
   /**
    * The buy volume.
    */
-  public buyVolume: number
+  buyVolume: number
 
   /**
    * The sell volume.
    */
-  public sellVolume: number
+  sellVolume: number
+}
 
-  constructor(x: number = NaN, buyVolume: number, sellVolume: number) {
-    this.x = x || NaN
-    this.buyVolume = buyVolume
-    this.sellVolume = sellVolume
-  }
+export function newOhlcvItem(x: number, buyVolume: number, sellVolume: number): OhlcvItem {
+  return { x: x ?? NaN, buyVolume, sellVolume }
+}
 
+export class OhlcvItemHelper {
   /**
    * Find index of max(x) <= target x in a list of OHLCV items
    */
-  public static findIndex(items: OhlcvItem[], targetX: number, guessIdx: number): number {
+  static findIndex(items: OhlcvItem[], targetX: number, guessIdx: number): number {
     let lastGuess = 0
     let start = 0
     let end = items.length - 1
@@ -92,8 +94,8 @@ export class OhlcvItem {
   /**
    * Indicate whether is valid for rendering or not
    */
-  public isValid(): boolean {
-    return !isNaN(this.x) && !isNaN(this.buyVolume) && !isNaN(this.sellVolume)
+  static isValid(item: OhlcvItem): boolean {
+    return !isNaN(item.x) && !isNaN(item.buyVolume) && !isNaN(item.sellVolume)
   }
 }
 
@@ -183,10 +185,31 @@ export interface CreateVolumeSeriesOptions extends CreateXYAxisSeriesOptions {
 
   /**
    * The bar width in data units (for example if the X axis is date/time based, then should
-   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default candlestick
+   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default, candlestick
    * series will use 0.80 x the minimum difference in data points.
    */
   barWidth?: number
+}
+
+export const DefaultVolumeSeriesOptions: CreateVolumeSeriesOptions = {
+  positiveColor: OxyColors.DarkGreen,
+  negativeColor: OxyColors.Red,
+  barWidth: 0,
+  strokeThickness: 1,
+  negativeHollow: false,
+  positiveHollow: true,
+  strokeIntensity: 0.8,
+  volumeStyle: VolumeStyle.Combined,
+  interceptColor: OxyColors.Gray,
+  interceptLineStyle: LineStyle.Dash,
+  interceptStrokeThickness: 1,
+
+  items: undefined,
+}
+
+export const ExtendedDefaultVolumeSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultVolumeSeriesOptions,
 }
 
 /**
@@ -197,7 +220,7 @@ export class VolumeSeries extends XYAxisSeries {
   /**
    * The default tracker formatter.
    */
-  public static readonly DefaultTrackerStringFormatter: TrackerStringFormatterType = (args) => {
+  public static readonly DefaultTrackerStringFormatter: TrackerStringFormatterType = function (args) {
     const item = args.item as OhlcvItem
     //'Time: {0}\nBuy Volume: {1}\nSell Volume: {2}'
     return `Time: ${args.xValue}\nBuy Volume: ${item.buyVolume}\nSell Volume: ${item.sellVolume}`
@@ -206,113 +229,107 @@ export class VolumeSeries extends XYAxisSeries {
   /**
    * The data series.
    */
-  private data: OhlcvItem[] = []
+  private _items: OhlcvItem[] = []
 
   /**
    * The minimum X gap between successive data items.
    */
-  private minDx: number = 0
+  private _minDx: number = 0
 
   /**
    * The index of the data item at the start of visible window.
    */
-  private winIndex: number = 0
+  private _winIndex: number = 0
 
   /**
    * Initializes a new instance of the VolumeSeries class.
    */
   constructor(opt?: CreateVolumeSeriesOptions) {
     super(opt)
-    this.positiveColor = OxyColors.DarkGreen
-    this.negativeColor = OxyColors.Red
-    this.barWidth = 0
-    this.strokeThickness = 1
-    this.negativeHollow = false
-    this.positiveHollow = true
-    this.strokeIntensity = 0.8
-    this.volumeStyle = VolumeStyle.Combined
 
-    this.interceptColor = OxyColors.Gray
-    this.interceptLineStyle = LineStyle.Dash
-    this.interceptStrokeThickness = 1
-
-    this.trackerStringFormatter = VolumeSeries.DefaultTrackerStringFormatter
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    if (opt?.items) {
+      this.items = opt.items
+      delete opt.items
     }
+    this.trackerStringFormatter = VolumeSeries.DefaultTrackerStringFormatter
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignObject(this, DefaultVolumeSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
+  }
+
+  getElementName() {
+    return 'VolumeSeries'
   }
 
   /**
    * Gets or sets the items of the series.
    */
   get items(): OhlcvItem[] {
-    return this.data
+    return this._items
   }
 
   set items(value: OhlcvItem[]) {
-    this.data = value
+    this._items = value
   }
 
   /**
    * Gets or sets the style of volume rendering (defaults to Combined).
    */
-  volumeStyle: VolumeStyle
+  volumeStyle: VolumeStyle = DefaultVolumeSeriesOptions.volumeStyle!
 
   /**
    * Gets or sets the thickness of the bar lines.
    */
-  strokeThickness: number
+  strokeThickness: number = DefaultVolumeSeriesOptions.strokeThickness!
 
   /**
    * Gets or sets the stroke intensity scale (used to generate stroke color from positive or negative color).
    * For example, 1.0 = same color and 0.5 is 1/2 of the intensity of the source fill color.
    */
-  strokeIntensity: number
+  strokeIntensity: number = DefaultVolumeSeriesOptions.strokeIntensity!
 
   /**
    * Gets or sets the color used when the closing value is greater than opening value or
    * for buying volume.
    */
-  positiveColor: OxyColor
+  positiveColor: OxyColor = DefaultVolumeSeriesOptions.positiveColor!
 
   /**
    * Gets or sets the fill color used when the closing value is less than opening value or
    * for selling volume.
    */
-  negativeColor: OxyColor
+  negativeColor: OxyColor = DefaultVolumeSeriesOptions.negativeColor!
 
   /**
    * Gets or sets the stroke color of the Y=0 intercept.
    */
-  interceptColor: OxyColor
+  interceptColor: OxyColor = DefaultVolumeSeriesOptions.interceptColor!
 
   /**
    * Gets or sets the thickness of the Y=0 intercept.
    */
-  interceptStrokeThickness: number
+  interceptStrokeThickness: number = DefaultVolumeSeriesOptions.interceptStrokeThickness!
 
   /**
    * Gets or sets the line style of the Y=0 intercept.
    */
-  interceptLineStyle: LineStyle
+  interceptLineStyle: LineStyle = DefaultVolumeSeriesOptions.interceptLineStyle!
 
   /**
    * Gets or sets a value indicating whether positive bars are shown as filled (false) or hollow (true) candlesticks.
    */
-  positiveHollow: boolean
+  positiveHollow: boolean = DefaultVolumeSeriesOptions.positiveHollow!
 
   /**
    * Gets or sets a value indicating whether negative bars are shown as filled (false) or hollow (true) candlesticks.
    */
-  negativeHollow: boolean
+  negativeHollow: boolean = DefaultVolumeSeriesOptions.negativeHollow!
 
   /**
    * Gets or sets the bar width in data units (for example if the X axis is date/time based, then should
-   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default candlestick
+   * use the difference of DateTimeAxis.toDouble(date) to indicate the width).  By default, candlestick
    * series will use 0.80 x the minimum difference in data points.
    */
-  barWidth: number
+  barWidth: number = DefaultVolumeSeriesOptions.barWidth!
 
   /**
    * Gets or sets the minimum volume seen in the data series.
@@ -334,15 +351,15 @@ export class VolumeSeries extends XYAxisSeries {
    * @param bar The Bar.
    */
   public append(bar: OhlcvItem): void {
-    if (this.data === null) {
-      this.data = []
+    if (isNullOrUndef(this._items)) {
+      this._items = []
     }
 
-    if (this.data.length > 0 && this.data[this.data.length - 1].x > bar.x) {
+    if (this._items.length > 0 && this._items[this._items.length - 1].x > bar.x) {
       throw new Error('cannot append bar out of order, must be sequential in X')
     }
 
-    this.data.push(bar)
+    this._items.push(bar)
   }
 
   /**
@@ -350,18 +367,18 @@ export class VolumeSeries extends XYAxisSeries {
    * @param rc The render context.
    */
   public async render(rc: IRenderContext): Promise<void> {
-    if (this.data === null || this.data.length === 0) {
+    if (isNullOrUndef(this._items) || this._items.length === 0) {
       return
     }
 
-    const items = this.data
-    const nitems = this.data.length
+    const items = this._items
+    const nitems = this._items.length
 
     this.verifyAxes()
 
     const clippingRect = this.getClippingRect()
 
-    const datacandlewidth = this.barWidth > 0 ? this.barWidth : this.minDx * 0.8
+    const datacandlewidth = this.barWidth > 0 ? this.barWidth : this._minDx * 0.8
     const halfDataCandleWidth = datacandlewidth * 0.5
 
     // colors
@@ -371,18 +388,18 @@ export class VolumeSeries extends XYAxisSeries {
     const barfillUp = this.positiveHollow ? OxyColors.Transparent : fillUp
     const barfillDown = this.negativeHollow ? OxyColors.Transparent : fillDown
 
-    const positiveColor = OxyColorExtensions.changeIntensity(this.positiveColor, this.strokeIntensity)
-    const negativeColor = OxyColorExtensions.changeIntensity(this.negativeColor, this.strokeIntensity)
+    const positiveColor = OxyColorHelper.changeIntensity(this.positiveColor, this.strokeIntensity)
+    const negativeColor = OxyColorHelper.changeIntensity(this.negativeColor, this.strokeIntensity)
     const lineUp = this.getSelectableColor(positiveColor)
     const lineDown = this.getSelectableColor(negativeColor)
 
     // determine render range
     const xmin = this.xAxis!.clipMinimum
     const xmax = this.xAxis!.clipMaximum
-    this.winIndex = OhlcvItem.findIndex(items, xmin, this.winIndex)
+    this._winIndex = OhlcvItemHelper.findIndex(items, xmin, this._winIndex)
     const transform = PlotElementExtensions.transform
 
-    for (let i = this.winIndex; i < nitems; i++) {
+    for (let i = this._winIndex; i < nitems; i++) {
       const bar = items[i]
 
       // if item beyond visible range, done
@@ -391,7 +408,7 @@ export class VolumeSeries extends XYAxisSeries {
       }
 
       // check to see whether is valid
-      if (!bar.isValid()) {
+      if (!OhlcvItemHelper.isValid(bar)) {
         continue
       }
 
@@ -429,8 +446,8 @@ export class VolumeSeries extends XYAxisSeries {
 
     if (this.interceptStrokeThickness > 0 && this.interceptLineStyle !== LineStyle.None) {
       // draw volume y=0 line
-      const p1 = this.inverseTransform(clippingRect.bottomLeft)
-      const p2 = this.inverseTransform(clippingRect.topRight)
+      const p1 = this.inverseTransform(OxyRectHelper.bottomLeft(clippingRect))
+      const p2 = this.inverseTransform(OxyRectHelper.topRight(clippingRect))
       const lineA = transform(this, p1.x, 0)
       const lineB = transform(this, p2.x, 0)
 
@@ -447,7 +464,7 @@ export class VolumeSeries extends XYAxisSeries {
 
   protected getBuyBarRect(bar: OhlcvItem): OxyRect {
     const transform = PlotElementExtensions.transform
-    const barWidth = this.barWidth > 0 ? this.barWidth : this.minDx * 0.8
+    const barWidth = this.barWidth > 0 ? this.barWidth : this._minDx * 0.8
     const halfDataCandleWidth = barWidth * 0.5
 
     const p1 = transform(this, bar.x - halfDataCandleWidth, 0)
@@ -455,20 +472,20 @@ export class VolumeSeries extends XYAxisSeries {
     switch (this.volumeStyle) {
       case VolumeStyle.Combined: {
         const p2 = transform(this, bar.x + halfDataCandleWidth, Math.abs(bar.buyVolume - bar.sellVolume))
-        return OxyRect.fromScreenPoints(p1, p2)
+        return OxyRectHelper.fromScreenPoints(p1, p2)
       }
       case VolumeStyle.PositiveNegative: {
         const p2 = transform(this, bar.x + halfDataCandleWidth, bar.buyVolume)
-        return OxyRect.fromScreenPoints(p1, p2)
+        return OxyRectHelper.fromScreenPoints(p1, p2)
       }
       case VolumeStyle.Stacked: {
         const p2Buy = transform(this, bar.x + halfDataCandleWidth, bar.buyVolume)
         const p2Sell = transform(this, bar.x + halfDataCandleWidth, bar.sellVolume)
         const pBoth = transform(this, bar.x - halfDataCandleWidth, bar.buyVolume + bar.sellVolume)
         if (bar.buyVolume > bar.sellVolume) {
-          return OxyRect.fromScreenPoints(p2Sell, pBoth)
+          return OxyRectHelper.fromScreenPoints(p2Sell, pBoth)
         } else {
-          return OxyRect.fromScreenPoints(p1, p2Buy)
+          return OxyRectHelper.fromScreenPoints(p1, p2Buy)
         }
       }
     }
@@ -477,7 +494,7 @@ export class VolumeSeries extends XYAxisSeries {
 
   protected getSellBarRect(bar: OhlcvItem): OxyRect {
     const transform = PlotElementExtensions.transform
-    const barWidth = this.barWidth > 0 ? this.barWidth : this.minDx * 0.8
+    const barWidth = this.barWidth > 0 ? this.barWidth : this._minDx * 0.8
     const halfDataCandleWidth = barWidth * 0.5
 
     const p1 = transform(this, bar.x - halfDataCandleWidth, 0)
@@ -485,20 +502,20 @@ export class VolumeSeries extends XYAxisSeries {
     switch (this.volumeStyle) {
       case VolumeStyle.Combined: {
         const p2 = transform(this, bar.x + halfDataCandleWidth, Math.abs(bar.buyVolume - bar.sellVolume))
-        return OxyRect.fromScreenPoints(p1, p2)
+        return OxyRectHelper.fromScreenPoints(p1, p2)
       }
       case VolumeStyle.PositiveNegative: {
         const p2 = transform(this, bar.x + halfDataCandleWidth, -bar.sellVolume)
-        return OxyRect.fromScreenPoints(p1, p2)
+        return OxyRectHelper.fromScreenPoints(p1, p2)
       }
       case VolumeStyle.Stacked: {
         const p2Buy = transform(this, bar.x + halfDataCandleWidth, bar.buyVolume)
         const p2Sell = transform(this, bar.x + halfDataCandleWidth, bar.sellVolume)
         const pBoth = transform(this, bar.x - halfDataCandleWidth, bar.buyVolume + bar.sellVolume)
         if (bar.buyVolume > bar.sellVolume) {
-          return OxyRect.fromScreenPoints(p1, p2Sell)
+          return OxyRectHelper.fromScreenPoints(p1, p2Sell)
         } else {
-          return OxyRect.fromScreenPoints(p2Buy, pBoth)
+          return OxyRectHelper.fromScreenPoints(p2Buy, pBoth)
         }
       }
     }
@@ -511,19 +528,21 @@ export class VolumeSeries extends XYAxisSeries {
    * @param legendBox The bounding rectangle of the legend box.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const yopen = legendBox.top + (legendBox.bottom - legendBox.top) * 0.7
-    const yclose = legendBox.top + (legendBox.bottom - legendBox.top) * 0.3
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const yopen = legendBox.top + (bottom - legendBox.top) * 0.7
+    const yclose = legendBox.top + (bottom - legendBox.top) * 0.3
     const dashArray = LineStyleHelper.getDashArray(LineStyle.Solid)
 
     const fillUp = this.getSelectableFillColor(this.positiveColor)
-    const lineUp = this.getSelectableColor(OxyColorExtensions.changeIntensity(this.positiveColor, this.strokeIntensity))
+    const lineUp = this.getSelectableColor(OxyColorHelper.changeIntensity(this.positiveColor, this.strokeIntensity))
 
     const candlewidth = legendBox.width * 0.75
 
     if (this.strokeThickness > 0) {
       await rc.drawLine(
-        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, bottom)],
         lineUp,
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -532,7 +551,7 @@ export class VolumeSeries extends XYAxisSeries {
       )
 
       await rc.drawRectangle(
-        new OxyRect(xmid - candlewidth * 0.5, yclose, candlewidth, yopen - yclose),
+        newOxyRect(xmid - candlewidth * 0.5, yclose, candlewidth, yopen - yclose),
         fillUp,
         lineUp,
         this.strokeThickness,
@@ -548,38 +567,38 @@ export class VolumeSeries extends XYAxisSeries {
    * @returns A TrackerHitResult for the current hit.
    */
   public getNearestPoint(point: ScreenPoint, interpolate: boolean): TrackerHitResult | undefined {
-    if (!this.xAxis || !this.yAxis || interpolate || !this.data || this.data.length === 0) {
+    if (!this.xAxis || !this.yAxis || interpolate || !this._items || this._items.length === 0) {
       return undefined
     }
 
-    const nbars = this.data.length
+    const nbars = this._items.length
     const xy = this.inverseTransform(point)
     const targetX = xy.x
 
-    if (targetX > this.data[nbars - 1].x + this.minDx) {
+    if (targetX > this._items[nbars - 1].x + this._minDx) {
       return undefined
-    } else if (targetX < this.data[0].x - this.minDx) {
+    } else if (targetX < this._items[0].x - this._minDx) {
       return undefined
     }
 
-    const pidx = OhlcvItem.findIndex(this.data, targetX, this.winIndex)
-    const nidx = pidx + 1 < this.data.length ? pidx + 1 : pidx
+    const pidx = OhlcvItemHelper.findIndex(this._items, targetX, this._winIndex)
+    const nidx = pidx + 1 < this._items.length ? pidx + 1 : pidx
 
     const distance = (bar: OhlcvItem): number => {
       const dx = bar.x - xy.x
       return dx * dx
     }
 
-    const midx = distance(this.data[pidx]) <= distance(this.data[nidx]) ? pidx : nidx
-    const item = this.data[midx]
+    const midx = distance(this._items[pidx]) <= distance(this._items[nidx]) ? pidx : nidx
+    const item = this._items[midx]
     let match = false
     const buyRect = this.getBuyBarRect(item)
-    if (buyRect.containsPoint(point)) {
+    if (OxyRectHelper.containsPoint(buyRect, point)) {
       match = true
     }
     if (!match) {
       const sellRect = this.getSellBarRect(item)
-      if (sellRect.containsPoint(point)) {
+      if (OxyRectHelper.containsPoint(sellRect, point)) {
         match = true
       }
     }
@@ -602,26 +621,26 @@ export class VolumeSeries extends XYAxisSeries {
    */
   updateData(): void {
     super.updateData()
-    this.winIndex = 0
+    this._winIndex = 0
 
-    if (!this.data || this.data.length === 0) {
+    if (!this._items || this._items.length === 0) {
       return
     }
 
     // determine minimum X gap between successive points
-    const items = this.data
+    const items = this._items
     const nitems = items.length
-    this.minDx = Number_MAX_VALUE
+    this._minDx = Number_MAX_VALUE
 
     for (let i = 1; i < nitems; i++) {
-      this.minDx = Math.min(this.minDx, items[i].x - items[i - 1].x)
-      if (this.minDx < 0) {
+      this._minDx = Math.min(this._minDx, items[i].x - items[i - 1].x)
+      if (this._minDx < 0) {
         throw new Error('bars are out of order, must be sequential in x')
       }
     }
 
     if (nitems <= 1) {
-      this.minDx = 1
+      this._minDx = 1
     }
   }
 
@@ -676,7 +695,7 @@ export class VolumeSeries extends XYAxisSeries {
     let cumvol = 0.0
 
     for (const bar of this.items) {
-      if (!bar.isValid()) {
+      if (!OhlcvItemHelper.isValid(bar)) {
         continue
       }
 
@@ -703,5 +722,21 @@ export class VolumeSeries extends XYAxisSeries {
     this.minimumVolume = ymin
     this.maximumVolume = ymax
     this.averageVolume = cumvol / nvol
+  }
+
+  getJsonIgnoreProperties(): string[] {
+    return [...super.getJsonIgnoreProperties(), 'minimumVolume', 'maximumVolume', 'averageVolume']
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultVolumeSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this._items?.length) {
+      json.items = this._items
+    }
+    return json
   }
 }

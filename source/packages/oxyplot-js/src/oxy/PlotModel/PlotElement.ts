@@ -1,6 +1,18 @@
-﻿import type { CreateElementOptions, IPlotElement, PlotModel } from '@/oxyplot'
-import { EdgeRenderingMode, Element, FontWeights, OxyColor, OxyColors, OxyRect } from '@/oxyplot'
-import { isUndef } from '@/patch'
+﻿import {
+  type CreateElementOptions,
+  EdgeRenderingMode,
+  Element,
+  ExtendedDefaultElementOptions,
+  FontWeights,
+  type IPlotElement,
+  type OxyColor,
+  OxyColorHelper,
+  OxyColors,
+  type OxyRect,
+  OxyRect_Everything,
+  type PlotModel,
+} from '@/oxyplot'
+import { isUndef, assignObject, isNaNOrUndef } from '@/patch'
 
 export interface CreatePlotElementOptions extends CreateElementOptions {
   font?: string
@@ -10,6 +22,20 @@ export interface CreatePlotElementOptions extends CreateElementOptions {
   textColor?: OxyColor
   edgeRenderingMode?: EdgeRenderingMode
   toolTip?: string
+}
+
+export const DefaultPlotElementOptions: CreatePlotElementOptions = {
+  fontSize: NaN,
+  fontWeight: FontWeights.Normal,
+  textColor: OxyColors.Automatic,
+  edgeRenderingMode: EdgeRenderingMode.Automatic,
+  font: undefined,
+  toolTip: undefined,
+}
+
+export const ExtendedDefaultPlotElementOptions = {
+  ...ExtendedDefaultElementOptions,
+  ...DefaultPlotElementOptions,
 }
 
 /**
@@ -26,12 +52,12 @@ export abstract class PlotElement extends Element implements IPlotElement {
    * The size of the font. The default is NaN (use PlotModel.DefaultFontSize).
    * If the value is NaN, the DefaultFontSize of the parent PlotModel will be used.
    */
-  public fontSize: number = NaN
+  public fontSize: number = DefaultPlotElementOptions.fontSize!
 
   /**
    * The font weight. The default is normal.
    */
-  public fontWeight: number = FontWeights.Normal
+  public fontWeight: number = DefaultPlotElementOptions.fontWeight!
 
   /**
    * An arbitrary object value that can be used to store custom information about this plot element. The default is null.
@@ -43,13 +69,13 @@ export abstract class PlotElement extends Element implements IPlotElement {
    * The color of the text. The default is OxyColors.Automatic (use PlotModel.TextColor).
    * If the value is OxyColors.Automatic, the TextColor of the parent PlotModel will be used.
    */
-  public textColor: OxyColor
+  public textColor: OxyColor = DefaultPlotElementOptions.textColor!
 
   /**
    * The edge rendering mode that is used for rendering the plot element.
    * The default is EdgeRenderingMode.Automatic.
    */
-  public edgeRenderingMode: EdgeRenderingMode
+  public edgeRenderingMode: EdgeRenderingMode = DefaultPlotElementOptions.edgeRenderingMode!
 
   /**
    * The tool tip. The default is null.
@@ -61,10 +87,7 @@ export abstract class PlotElement extends Element implements IPlotElement {
    */
   protected constructor(opt?: CreatePlotElementOptions) {
     super(opt)
-    this.fontSize = NaN
-    this.fontWeight = FontWeights.Normal
-    this.textColor = OxyColors.Automatic
-    this.edgeRenderingMode = EdgeRenderingMode.Automatic
+    assignObject(this, DefaultPlotElementOptions, opt)
   }
 
   /**
@@ -87,7 +110,7 @@ export abstract class PlotElement extends Element implements IPlotElement {
    * @internal
    */
   get actualFontSize(): number {
-    return !isNaN(this.fontSize) ? this.fontSize : this.plotModel.defaultFontSize
+    return !isNaNOrUndef(this.fontSize) ? this.fontSize : this.plotModel.defaultFontSize
   }
 
   /**
@@ -103,11 +126,11 @@ export abstract class PlotElement extends Element implements IPlotElement {
    * @internal
    */
   get actualTextColor(): OxyColor {
-    return this.textColor.getActualColor(this.plotModel.textColor)
+    return OxyColorHelper.getActualColor(this.textColor, this.plotModel.textColor)
   }
 
   getClippingRect(): OxyRect {
-    return OxyRect.Everything
+    return OxyRect_Everything
   }
 
   private _plotElementId?: number = undefined

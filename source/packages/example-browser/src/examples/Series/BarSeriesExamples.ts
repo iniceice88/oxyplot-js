@@ -1,6 +1,5 @@
 import {
   AxisPosition,
-  BarItem,
   BarSeries,
   CategoryAxis,
   getEnumKeys,
@@ -14,8 +13,9 @@ import {
   LineSeries,
   LineStyle,
   LogarithmicAxis,
+  newBarItem,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
 } from 'oxyplot-js'
@@ -26,7 +26,7 @@ function withLabels(): PlotModel {
   const model = new PlotModel()
   model.title = 'With labels'
 
-  const labelStringFormatter: LabelStringFormatterType = (item, trackerParameters) => {
+  const labelStringFormatter: LabelStringFormatterType = function (item, trackerParameters) {
     return item.value.toString()
   }
 
@@ -59,7 +59,7 @@ function withLabels(): PlotModel {
 
   for (let i = 0; i < 4; i++) {
     for (const s of series) {
-      s.items.push(BarItem.fromValue(rnd.next(-100, 100)))
+      s.items.push(newBarItem(rnd.next(-100, 100)))
     }
   }
 
@@ -131,7 +131,7 @@ const multipleValueAxes = (): PlotModel => {
   const rnd = new Random(1)
   for (const s of series) {
     for (let i = 0; i < 4; i++) {
-      s.items.push(BarItem.fromValue(rnd.next(-100, 100)))
+      s.items.push(newBarItem(rnd.next(-100, 100)))
     }
 
     model.series.push(s)
@@ -188,7 +188,7 @@ const multipleCategoryAxes = (): PlotModel => {
   const rnd = new Random()
   for (const s of series) {
     for (let i = 0; i < 4; i++) {
-      s.items.push(BarItem.fromValue(rnd.next(-100, 100)))
+      s.items.push(newBarItem(rnd.next(-100, 100)))
     }
     model.series.push(s)
   }
@@ -222,11 +222,11 @@ const noCategoryAxisDefined = (): PlotModel => {
 
   const s1 = new BarSeries({
     title: 'Series 1',
-    itemsSource: [BarItem.fromValue(25), BarItem.fromValue(137)],
+    itemsSource: [newBarItem(25), newBarItem(137)],
   })
   const s2 = new BarSeries({
     title: 'Series 2',
-    itemsSource: [BarItem.fromValue(52), BarItem.fromValue(317)],
+    itemsSource: [newBarItem(52), newBarItem(317)],
   })
   const valueAxis = new LinearAxis({ position: AxisPosition.Bottom, minimumPadding: 0 })
   model.series.push(s1, s2)
@@ -270,21 +270,21 @@ const bindingItemsSource = (): PlotModel => {
   })
   plotModel1.axes.push(linearAxis1)
   const series1 = new BarSeries({
-    fillColor: OxyColor.fromArgb(255, 78, 154, 6),
+    fillColor: OxyColorHelper.fromArgb(255, 78, 154, 6),
     valueField: 'value1',
     title: '2009',
     itemsSource: items,
   })
   plotModel1.series.push(series1)
   const series2 = new BarSeries({
-    fillColor: OxyColor.fromArgb(255, 200, 141, 0),
+    fillColor: OxyColorHelper.fromArgb(255, 200, 141, 0),
     valueField: 'value2',
     title: '2010',
     itemsSource: items,
   })
   plotModel1.series.push(series2)
   const series3 = new BarSeries({
-    fillColor: OxyColor.fromArgb(255, 204, 0, 0),
+    fillColor: OxyColorHelper.fromArgb(255, 204, 0, 0),
     valueField: 'value3',
     title: '2011',
     itemsSource: items,
@@ -301,13 +301,13 @@ const bindingToItemsSourceArray = (): PlotModel => {
   model.series.push(
     new BarSeries({
       title: 'Series 1',
-      itemsSource: [new BarItem({ value: 25 }), new BarItem({ value: 137 })],
+      itemsSource: [newBarItem({ value: 25 }), newBarItem({ value: 137 })],
     }),
   )
   model.series.push(
     new BarSeries({
       title: 'Series 2',
-      itemsSource: [new BarItem({ value: 52 }), new BarItem({ value: 317 })],
+      itemsSource: [newBarItem({ value: 52 }), newBarItem({ value: 317 })],
     }),
   )
   model.axes.push(new CategoryAxis({ position: AxisPosition.Left }))
@@ -323,13 +323,13 @@ const bindingToItemsSourceListT = (): PlotModel => {
   model.series.push(
     new BarSeries({
       title: 'Series 1',
-      itemsSource: [new BarItem({ value: 25 }), new BarItem({ value: 137 })],
+      itemsSource: [newBarItem({ value: 25 }), newBarItem({ value: 137 })],
     }),
   )
   model.series.push(
     new BarSeries({
       title: 'Series 2',
-      itemsSource: [new BarItem({ value: 52 }), new BarItem({ value: 317 })],
+      itemsSource: [newBarItem({ value: 52 }), newBarItem({ value: 317 })],
     }),
   )
   model.axes.push(new CategoryAxis({ position: AxisPosition.Left }))
@@ -372,9 +372,9 @@ const definedByItems = (): PlotModel => {
   })
 
   const s1 = new BarSeries({ title: 'Series 1' })
-  s1.items.push(...[new BarItem({ value: 25 }), new BarItem({ value: 137 })])
+  s1.items.push(...[newBarItem({ value: 25 }), newBarItem({ value: 137 })])
   const s2 = new BarSeries({ title: 'Series 2' })
-  s2.items.push(...[new BarItem({ value: 52 }), new BarItem({ value: 317 })])
+  s2.items.push(...[newBarItem({ value: 52 }), newBarItem({ value: 317 })])
   model.series.push(s1, s2)
 
   model.axes.push(new CategoryAxis({ position: AxisPosition.Left }))
@@ -387,16 +387,16 @@ function emptyCategoryAxis(): PlotModel {
   const model = new PlotModel({ title: 'Empty category axis' })
 
   const s1 = new BarSeries({ title: 'Series 1' })
-  s1.items.push(new BarItem({ value: 25 }))
-  s1.items.push(new BarItem({ value: 137 }))
-  s1.items.push(new BarItem({ value: 18 }))
-  s1.items.push(new BarItem({ value: 40 }))
+  s1.items.push(newBarItem({ value: 25 }))
+  s1.items.push(newBarItem({ value: 137 }))
+  s1.items.push(newBarItem({ value: 18 }))
+  s1.items.push(newBarItem({ value: 40 }))
 
   const s2 = new BarSeries({ title: 'Series 2' })
-  s2.items.push(new BarItem({ value: -12 }))
-  s2.items.push(new BarItem({ value: -14 }))
-  s2.items.push(new BarItem({ value: -120 }))
-  s2.items.push(new BarItem({ value: -26 }))
+  s2.items.push(newBarItem({ value: -12 }))
+  s2.items.push(newBarItem({ value: -14 }))
+  s2.items.push(newBarItem({ value: -120 }))
+  s2.items.push(newBarItem({ value: -26 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
 
@@ -474,10 +474,10 @@ function logAxisBaseValue(): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(new BarItem({ value: 25 }))
-  s1.items.push(new BarItem({ value: 37 }))
-  s1.items.push(new BarItem({ value: 18 }))
-  s1.items.push(new BarItem({ value: 40 }))
+  s1.items.push(newBarItem({ value: 25 }))
+  s1.items.push(newBarItem({ value: 37 }))
+  s1.items.push(newBarItem({ value: 18 }))
+  s1.items.push(newBarItem({ value: 40 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('Category A', 'Category B', 'Category C', 'Category D')
@@ -515,10 +515,10 @@ function logAxisBaseLine(): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(new BarItem({ value: 25 }))
-  s1.items.push(new BarItem({ value: 37 }))
-  s1.items.push(new BarItem({ value: 18 }))
-  s1.items.push(new BarItem({ value: 40 }))
+  s1.items.push(newBarItem({ value: 25 }))
+  s1.items.push(newBarItem({ value: 37 }))
+  s1.items.push(newBarItem({ value: 18 }))
+  s1.items.push(newBarItem({ value: 40 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('Category A', 'Category B', 'Category C', 'Category D')
@@ -600,9 +600,9 @@ function histogramStandardNormalDistribution(): PlotModel {
 function differentColors(): PlotModel {
   const model = new PlotModel({ title: 'Different colors within the same series' })
   const series = new BarSeries({ title: 'Series 1' })
-  series.items.push(new BarItem({ value: 1, color: OxyColors.Red }))
-  series.items.push(new BarItem({ value: 2, color: OxyColors.Green }))
-  series.items.push(new BarItem({ value: 1, color: OxyColors.Blue }))
+  series.items.push(newBarItem({ value: 1, color: OxyColors.Red }))
+  series.items.push(newBarItem({ value: 2, color: OxyColors.Green }))
+  series.items.push(newBarItem({ value: 1, color: OxyColors.Blue }))
 
   const categoryAxis = new CategoryAxis({
     title: 'Category',
@@ -619,18 +619,18 @@ function differentColors(): PlotModel {
 function stackingGroups(): PlotModel {
   const model = new PlotModel({ title: 'Stacking groups' })
   const series = new BarSeries({ title: 'Series 1', stackGroup: '1', isStacked: true })
-  series.items.push(new BarItem({ value: 1 }))
-  series.items.push(new BarItem({ value: 2 }))
+  series.items.push(newBarItem({ value: 1 }))
+  series.items.push(newBarItem({ value: 2 }))
   model.series.push(series)
 
   const series2 = new BarSeries({ title: 'Series 2', stackGroup: '2', isStacked: true })
-  series2.items.push(new BarItem({ value: 2 }))
-  series2.items.push(new BarItem({ value: 1 }))
+  series2.items.push(newBarItem({ value: 2 }))
+  series2.items.push(newBarItem({ value: 1 }))
   model.series.push(series2)
 
   const series3 = new BarSeries({ title: 'Series 3', stackGroup: '1', isStacked: true })
-  series3.items.push(new BarItem({ value: 3 }))
-  series3.items.push(new BarItem({ value: 1 }))
+  series3.items.push(newBarItem({ value: 3 }))
+  series3.items.push(newBarItem({ value: 1 }))
   model.series.push(series3)
 
   const categoryAxis = new CategoryAxis({
@@ -649,13 +649,13 @@ function differentWidths(): PlotModel {
     subtitle: 'Series1=0.6 and Series2=0.3',
   })
   const series1 = new BarSeries({ title: 'Series 1', barWidth: 0.6 })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: 2 }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: 2 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({ title: 'Series 2', barWidth: 0.3 })
-  series2.items.push(new BarItem({ value: 3 }))
-  series2.items.push(new BarItem({ value: 1 }))
+  series2.items.push(newBarItem({ value: 3 }))
+  series2.items.push(newBarItem({ value: 1 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -672,13 +672,13 @@ function differentWidths(): PlotModel {
 function differentWidthsStacked(): PlotModel {
   const model = new PlotModel({ title: 'Different widths (stacked)' })
   const series1 = new BarSeries({ title: 'Series 1', isStacked: true, barWidth: 0.6 })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: 2 }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: 2 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({ title: 'Series 2', isStacked: true, barWidth: 0.3 })
-  series2.items.push(new BarItem({ value: 3 }))
-  series2.items.push(new BarItem({ value: 1 }))
+  series2.items.push(newBarItem({ value: 3 }))
+  series2.items.push(newBarItem({ value: 1 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -698,13 +698,13 @@ function invalidValues(): PlotModel {
     subtitle: 'Series 1 contains a NaN value for category B.',
   })
   const series1 = new BarSeries({ title: 'Series 1' })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: NaN }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: NaN }))
   model.series.push(series1)
 
   const series2 = new BarSeries({ title: 'Series 2' })
-  series2.items.push(new BarItem({ value: 3 }))
-  series2.items.push(new BarItem({ value: 1 }))
+  series2.items.push(newBarItem({ value: 3 }))
+  series2.items.push(newBarItem({ value: 1 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -724,12 +724,12 @@ function missingValues(): PlotModel {
     subtitle: 'Series 1 contains only one item with CategoryIndex = 1',
   })
   const series1 = new BarSeries({ title: 'Series 1' })
-  series1.items.push(new BarItem({ value: 1, categoryIndex: 1 }))
+  series1.items.push(newBarItem({ value: 1, categoryIndex: 1 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({ title: 'Series 2' })
-  series2.items.push(new BarItem({ value: 3 }))
-  series2.items.push(new BarItem({ value: 1.2 }))
+  series2.items.push(newBarItem({ value: 3 }))
+  series2.items.push(newBarItem({ value: 1.2 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -749,8 +749,8 @@ function categoryIndex(): PlotModel {
     subtitle: 'Setting CategoryIndex = 0 for both items in the series.',
   })
   const series = new BarSeries({ title: 'Series 1', strokeThickness: 1 })
-  series.items.push(new BarItem({ value: 1, categoryIndex: 0 }))
-  series.items.push(new BarItem({ value: 2, categoryIndex: 0 }))
+  series.items.push(newBarItem({ value: 1, categoryIndex: 0 }))
+  series.items.push(newBarItem({ value: 2, categoryIndex: 0 }))
   model.series.push(series)
 
   const categoryAxis = new CategoryAxis({
@@ -770,8 +770,8 @@ function categoryIndexStacked(): PlotModel {
     subtitle: 'Setting CategoryIndex = 0 for both items in the series.',
   })
   const series = new BarSeries({ title: 'Series 1', isStacked: true, strokeThickness: 1 })
-  series.items.push(new BarItem({ value: 1, categoryIndex: 0 }))
-  series.items.push(new BarItem({ value: 2, categoryIndex: 0 }))
+  series.items.push(newBarItem({ value: 1, categoryIndex: 0 }))
+  series.items.push(newBarItem({ value: 2, categoryIndex: 0 }))
   model.series.push(series)
 
   const categoryAxis = new CategoryAxis({
@@ -797,16 +797,16 @@ function baseValue(): PlotModel {
     title: 'Series 1',
     baseValue: -1,
   })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: 2 }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: 2 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({
     title: 'Series 2',
     baseValue: -1,
   })
-  series2.items.push(new BarItem({ value: 4 }))
-  series2.items.push(new BarItem({ value: 7 }))
+  series2.items.push(newBarItem({ value: 4 }))
+  series2.items.push(newBarItem({ value: 7 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -833,8 +833,8 @@ function baseValueStacked(): PlotModel {
     isStacked: true,
     baseValue: -1,
   })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: 2 }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: 2 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({
@@ -842,8 +842,8 @@ function baseValueStacked(): PlotModel {
     isStacked: true,
     baseValue: -1,
   })
-  series2.items.push(new BarItem({ value: 4 }))
-  series2.items.push(new BarItem({ value: 7 }))
+  series2.items.push(newBarItem({ value: 4 }))
+  series2.items.push(newBarItem({ value: 7 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -871,8 +871,8 @@ function baseValueOverlaping(): PlotModel {
     overlapsStack: true,
     baseValue: -1,
   })
-  series1.items.push(new BarItem({ value: 1 }))
-  series1.items.push(new BarItem({ value: 2 }))
+  series1.items.push(newBarItem({ value: 1 }))
+  series1.items.push(newBarItem({ value: 2 }))
   model.series.push(series1)
 
   const series2 = new BarSeries({
@@ -882,8 +882,8 @@ function baseValueOverlaping(): PlotModel {
     baseValue: -1,
     barWidth: 0.5,
   })
-  series2.items.push(new BarItem({ value: 4 }))
-  series2.items.push(new BarItem({ value: 7 }))
+  series2.items.push(newBarItem({ value: 4 }))
+  series2.items.push(newBarItem({ value: 7 }))
   model.series.push(series2)
 
   const categoryAxis = new CategoryAxis({
@@ -909,11 +909,11 @@ function baseValueLabels(): PlotModel {
       labelPlacement: placement,
       labelStringFormatter: BarSeriesLabelStringFormatter,
     })
-    series.items.push(new BarItem({ value: -40 }))
-    series.items.push(new BarItem({ value: -25 }))
-    series.items.push(new BarItem({ value: -10 }))
-    series.items.push(new BarItem({ value: 0 }))
-    series.items.push(new BarItem({ value: 10 }))
+    series.items.push(newBarItem({ value: -40 }))
+    series.items.push(newBarItem({ value: -25 }))
+    series.items.push(newBarItem({ value: -10 }))
+    series.items.push(newBarItem({ value: 0 }))
+    series.items.push(newBarItem({ value: 10 }))
     model.series.push(series)
   }
 
@@ -954,9 +954,9 @@ function stackedLabels(): PlotModel {
       isStacked: true,
       yAxisKey: categoryAxis.key,
     })
-    bs1.items.push(new BarItem({ value: 5 }))
-    bs1.items.push(new BarItem({ value: 10 }))
-    bs1.items.push(new BarItem({ value: 15 }))
+    bs1.items.push(newBarItem({ value: 5 }))
+    bs1.items.push(newBarItem({ value: 10 }))
+    bs1.items.push(newBarItem({ value: 15 }))
     model.series.push(bs1)
 
     const bs2 = new BarSeries({
@@ -966,9 +966,9 @@ function stackedLabels(): PlotModel {
       isStacked: true,
       yAxisKey: categoryAxis.key,
     })
-    bs2.items.push(new BarItem({ value: 15 }))
-    bs2.items.push(new BarItem({ value: 10 }))
-    bs2.items.push(new BarItem({ value: 5 }))
+    bs2.items.push(newBarItem({ value: 15 }))
+    bs2.items.push(newBarItem({ value: 10 }))
+    bs2.items.push(newBarItem({ value: 5 }))
     model.series.push(bs2)
 
     categoryAxis.labels.push(...['A', 'B', 'C'])
@@ -1049,10 +1049,10 @@ function allInOne(): PlotModel {
     stackGroup: '3',
   })
   series1.items.push(
-    new BarItem({ value: 25 }),
-    new BarItem({ value: 137 }),
-    new BarItem({ value: 18 }),
-    new BarItem({ value: 40 }),
+    newBarItem({ value: 25 }),
+    newBarItem({ value: 137 }),
+    newBarItem({ value: 18 }),
+    newBarItem({ value: 40 }),
   )
   model.series.push(series1)
 
@@ -1064,10 +1064,10 @@ function allInOne(): PlotModel {
     stackGroup: '3',
   })
   series2.items.push(
-    new BarItem({ value: -12 }),
-    new BarItem({ value: -14 }),
-    new BarItem({ value: -120 }),
-    new BarItem({ value: -26 }),
+    newBarItem({ value: -12 }),
+    newBarItem({ value: -14 }),
+    newBarItem({ value: -120 }),
+    newBarItem({ value: -26 }),
   )
   model.series.push(series2)
 
@@ -1081,10 +1081,10 @@ function allInOne(): PlotModel {
     isVisible: false,
   })
   series3.items.push(
-    new BarItem({ value: 21 }),
-    new BarItem({ value: 8 }),
-    new BarItem({ value: 48 }),
-    new BarItem({ value: 3 }),
+    newBarItem({ value: 21 }),
+    newBarItem({ value: 8 }),
+    newBarItem({ value: 48 }),
+    newBarItem({ value: 3 }),
   )
   model.series.push(series3)
 
@@ -1098,16 +1098,16 @@ function allInOne(): PlotModel {
     labelPlacement: LabelPlacement.Middle,
   })
   series4.items.push(
-    new BarItem({ value: -8, categoryIndex: categoryA }),
-    new BarItem({ value: -8, categoryIndex: categoryA }),
-    new BarItem({ value: -8, categoryIndex: categoryA }),
-    new BarItem({ value: -21, categoryIndex: categoryB }),
-    new BarItem({ value: -3, categoryIndex: categoryC }),
-    new BarItem({ value: -48, categoryIndex: categoryD }),
-    new BarItem({ value: 8, categoryIndex: categoryA }),
-    new BarItem({ value: 21, categoryIndex: categoryB }),
-    new BarItem({ value: 3, categoryIndex: categoryC }),
-    new BarItem({ value: 48, categoryIndex: categoryD }),
+    newBarItem({ value: -8, categoryIndex: categoryA }),
+    newBarItem({ value: -8, categoryIndex: categoryA }),
+    newBarItem({ value: -8, categoryIndex: categoryA }),
+    newBarItem({ value: -21, categoryIndex: categoryB }),
+    newBarItem({ value: -3, categoryIndex: categoryC }),
+    newBarItem({ value: -48, categoryIndex: categoryD }),
+    newBarItem({ value: 8, categoryIndex: categoryA }),
+    newBarItem({ value: 21, categoryIndex: categoryB }),
+    newBarItem({ value: 3, categoryIndex: categoryC }),
+    newBarItem({ value: 48, categoryIndex: categoryD }),
   )
   model.series.push(series4)
   // Non-stacked bars
@@ -1118,12 +1118,12 @@ function allInOne(): PlotModel {
     strokeThickness: 1,
   })
   series5.items.push(
-    new BarItem({ value: 17, categoryIndex: categoryA }),
-    new BarItem({ value: 179, categoryIndex: categoryB }),
-    new BarItem({ value: 45, categoryIndex: categoryC }),
-    new BarItem({ value: 65, categoryIndex: categoryD }),
-    new BarItem({ value: 97, categoryIndex: categoryA }),
-    new BarItem({ value: 21, categoryIndex: categoryD }),
+    newBarItem({ value: 17, categoryIndex: categoryA }),
+    newBarItem({ value: 179, categoryIndex: categoryB }),
+    newBarItem({ value: 45, categoryIndex: categoryC }),
+    newBarItem({ value: 65, categoryIndex: categoryD }),
+    newBarItem({ value: 97, categoryIndex: categoryA }),
+    newBarItem({ value: 21, categoryIndex: categoryD }),
   )
   model.series.push(series5)
 
@@ -1137,10 +1137,10 @@ function allInOne(): PlotModel {
     labelPlacement: LabelPlacement.Base,
   })
   series6.items.push(
-    new BarItem({ value: 7 }),
-    new BarItem({ value: 54 }),
-    new BarItem({ value: 68 }),
-    new BarItem({ value: 12 }),
+    newBarItem({ value: 7 }),
+    newBarItem({ value: 54 }),
+    newBarItem({ value: 68 }),
+    newBarItem({ value: 12 }),
   )
   model.series.push(series6)
 
@@ -1157,9 +1157,9 @@ function allInOne(): PlotModel {
     barWidth: 0.5,
   })
   series7.items.push(
-    new BarItem({ value: 10 }),
-    new BarItem({ value: 80 }),
-    new BarItem({ value: 100, categoryIndex: categoryD }),
+    newBarItem({ value: 10 }),
+    newBarItem({ value: 80 }),
+    newBarItem({ value: 100, categoryIndex: categoryD }),
   )
   model.series.push(series7)
 
@@ -1200,10 +1200,10 @@ function createSimpleModel(stacked: boolean, title: string): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(BarItem.fromValue(25))
-  s1.items.push(BarItem.fromValue(137))
-  s1.items.push(BarItem.fromValue(18))
-  s1.items.push(BarItem.fromValue(40))
+  s1.items.push(newBarItem(25))
+  s1.items.push(newBarItem(137))
+  s1.items.push(newBarItem(18))
+  s1.items.push(newBarItem(40))
 
   const s2 = new BarSeries({
     title: 'Series 2',
@@ -1211,10 +1211,10 @@ function createSimpleModel(stacked: boolean, title: string): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s2.items.push(BarItem.fromValue(12))
-  s2.items.push(BarItem.fromValue(14))
-  s2.items.push(BarItem.fromValue(120))
-  s2.items.push(BarItem.fromValue(26))
+  s2.items.push(newBarItem(12))
+  s2.items.push(newBarItem(14))
+  s2.items.push(newBarItem(120))
+  s2.items.push(newBarItem(26))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('Category A', 'Category B', 'Category C', 'Category D')
@@ -1250,10 +1250,10 @@ function createModelWithNegativeValues(stacked: boolean, title: string): PlotMod
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(BarItem.fromValue(25))
-  s1.items.push(BarItem.fromValue(137))
-  s1.items.push(BarItem.fromValue(18))
-  s1.items.push(BarItem.fromValue(40))
+  s1.items.push(newBarItem(25))
+  s1.items.push(newBarItem(137))
+  s1.items.push(newBarItem(18))
+  s1.items.push(newBarItem(40))
 
   const s2 = new BarSeries({
     title: 'Series 2',
@@ -1261,10 +1261,10 @@ function createModelWithNegativeValues(stacked: boolean, title: string): PlotMod
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s2.items.push(BarItem.fromValue(-12))
-  s2.items.push(BarItem.fromValue(-14))
-  s2.items.push(BarItem.fromValue(-120))
-  s2.items.push(BarItem.fromValue(-26))
+  s2.items.push(newBarItem(-12))
+  s2.items.push(newBarItem(-14))
+  s2.items.push(newBarItem(-120))
+  s2.items.push(newBarItem(-26))
 
   const s3 = new BarSeries({
     title: 'Series 3',
@@ -1272,10 +1272,10 @@ function createModelWithNegativeValues(stacked: boolean, title: string): PlotMod
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s3.items.push(BarItem.fromValue(21))
-  s3.items.push(BarItem.fromValue(8))
-  s3.items.push(BarItem.fromValue(48))
-  s3.items.push(BarItem.fromValue(3))
+  s3.items.push(newBarItem(21))
+  s3.items.push(newBarItem(8))
+  s3.items.push(newBarItem(48))
+  s3.items.push(newBarItem(3))
 
   const s4 = new BarSeries({
     title: 'Series 4',
@@ -1283,10 +1283,10 @@ function createModelWithNegativeValues(stacked: boolean, title: string): PlotMod
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s4.items.push(BarItem.fromValue(-8))
-  s4.items.push(BarItem.fromValue(-21))
-  s4.items.push(BarItem.fromValue(-3))
-  s4.items.push(BarItem.fromValue(-48))
+  s4.items.push(newBarItem(-8))
+  s4.items.push(newBarItem(-21))
+  s4.items.push(newBarItem(-3))
+  s4.items.push(newBarItem(-48))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('Category A', 'Category B', 'Category C', 'Category D')

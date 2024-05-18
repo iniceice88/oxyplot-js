@@ -1,5 +1,14 @@
-import type { IPlotView, OxyMouseEventArgs, ScreenPoint } from '@/oxyplot'
-import { HitTestArguments, MouseManipulator, Series, TrackerHelper, TrackerHitResult } from '@/oxyplot'
+import {
+  HitTestArguments,
+  type IPlotView,
+  MouseManipulator,
+  type OxyMouseEventArgs,
+  OxyRectHelper,
+  type ScreenPoint,
+  Series,
+  TrackerHelper,
+  TrackerHitResult,
+} from '@/oxyplot'
 import { removeUndef } from '@/patch'
 
 export interface TrackerManipulatorOptions {
@@ -127,7 +136,7 @@ export class TrackerManipulator extends MouseManipulator {
     if (!actualModel) {
       return
     }
-    if (!actualModel.plotArea.contains(e.position.x, e.position.y)) {
+    if (!OxyRectHelper.contains(actualModel.plotArea, e.position.x, e.position.y)) {
       return
     }
     const result = TrackerHelper.getNearestHit(

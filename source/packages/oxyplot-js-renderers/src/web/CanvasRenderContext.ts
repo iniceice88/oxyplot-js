@@ -6,10 +6,12 @@ import {
   isNullOrUndef,
   type ITextMeasurer,
   LineJoin,
-  OxyColor,
-  OxyImage,
-  OxyRect,
-  OxySize,
+  type OxyColor,
+  OxyColorHelper,
+  type OxyImage,
+  OxyImageEx,
+  type OxyRect,
+  type OxySize,
   round,
   type ScreenPoint,
   StringHelper,
@@ -65,7 +67,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     const ctx = this.ctx
 
     const img = await this.getOrCreateImage(source, () => {
-      const blob = new Blob([source.data], { type: 'image/png' })
+      const blob = new Blob([Uint8Array.from(source.data)], { type: 'image/png' })
       return createImageBitmap(blob)
     })
 
@@ -100,7 +102,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
+    if (points.length < 2 || OxyColorHelper.isInvisible(stroke) || thickness == 0) return
 
     this.resetStyles()
 
@@ -126,7 +128,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
+    if (points.length < 2 || OxyColorHelper.isInvisible(stroke) || thickness == 0) return
 
     this.resetStyles()
 
@@ -158,7 +160,11 @@ export class CanvasRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || points.length < 2) return
+    if (
+      (OxyColorHelper.isInvisible(fill) && !(OxyColorHelper.isVisible(stroke) || thickness <= 0)) ||
+      points.length < 2
+    )
+      return
 
     this.resetStyles()
 
@@ -170,11 +176,11 @@ export class CanvasRenderContext extends ClippingRenderContext {
 
     ctx.closePath()
 
-    if (fill.isVisible()) {
+    if (OxyColorHelper.isVisible(fill)) {
       ctx.fill()
     }
 
-    if (stroke.isVisible() && thickness > 0) {
+    if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
       ctx.stroke()
     }
   }
@@ -198,7 +204,11 @@ export class CanvasRenderContext extends ClippingRenderContext {
     dashArray: number[] | undefined,
     lineJoin: LineJoin,
   ): Promise<void> {
-    if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || polygons.length === 0) return
+    if (
+      (OxyColorHelper.isInvisible(fill) && !(OxyColorHelper.isVisible(stroke) || thickness <= 0)) ||
+      polygons.length === 0
+    )
+      return
 
     this.resetStyles()
     const ctx = this.ctx
@@ -213,11 +223,11 @@ export class CanvasRenderContext extends ClippingRenderContext {
 
       ctx.closePath()
 
-      if (fill.isVisible()) {
+      if (OxyColorHelper.isVisible(fill)) {
         ctx.fill()
       }
 
-      if (stroke.isVisible() && thickness > 0) {
+      if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
         ctx.stroke()
       }
     }
@@ -248,7 +258,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     verticalAlignment?: VerticalAlignment,
     maxSize?: OxySize,
   ): Promise<void> {
-    if (!text || fill.isInvisible()) return
+    if (!text || OxyColorHelper.isInvisible(fill)) return
 
     if (isNullOrUndef(horizontalAlignment)) horizontalAlignment = HorizontalAlignment.Left
     if (isNullOrUndef(verticalAlignment)) verticalAlignment = VerticalAlignment.Top
@@ -353,10 +363,10 @@ export class CanvasRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ) {
-    if (stroke.isVisible() && thickness > 0) {
+    if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
       this.applyLineStyle(stroke, thickness, edgeRenderingMode, dashArray, lineJoin)
     }
-    if (fill.isVisible()) {
+    if (OxyColorHelper.isVisible(fill)) {
       this.ctx.fillStyle = this.styleConverter.convertStrokeOrFillStyle(fill)
     }
   }
@@ -379,7 +389,7 @@ export class CanvasRenderContext extends ClippingRenderContext {
     source: OxyImage,
     creator: () => Promise<ImageBitmap | HTMLImageElement>,
   ): Promise<ImageBitmap | HTMLImageElement> {
-    const hashCode = source.getHashCode().toString()
+    const hashCode = OxyImageEx.from(source).getHashCode().toString()
     const existsImage = this._renderContextImageCacheService.get(hashCode)
     if (existsImage) {
       return Promise.resolve(existsImage)

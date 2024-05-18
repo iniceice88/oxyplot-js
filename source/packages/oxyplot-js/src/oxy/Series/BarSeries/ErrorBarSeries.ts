@@ -1,43 +1,28 @@
+import { maxValueOfArray, minValueOfArray, Number_MAX_VALUE, Number_MIN_VALUE, assignObject, round } from '@/patch'
 import {
-  maxValueOfArray,
-  minValueOfArray,
-  Number_MAX_VALUE,
-  Number_MIN_VALUE,
-  removeUndef,
-  round,
-} from '@/patch'
-import type {
-  BarSeriesTrackerStringFormatterType,
-  CreateBarItemOptions,
-  CreateBarSeriesOptions,
-  IRenderContext,
-} from '@/oxyplot'
-import {
-  BarItem,
+  type BarItem,
   BarSeries,
+  type BarSeriesTrackerStringFormatterType,
+  type CreateBarSeriesOptions,
   EdgeRenderingMode,
+  ExtendedDefaultBarSeriesOptions,
+  getBarItemCategoryIndex,
+  type IRenderContext,
   LineJoin,
-  OxyColors,
-  OxyRect,
+  newBarItem,
+  type OxyRect,
   PlotElementExtensions,
   RenderingExtensions,
 } from '@/oxyplot'
 
-export interface CreateErrorBarItemOptions extends CreateBarItemOptions {
-  error?: number
+export interface ErrorBarItem extends BarItem {
+  error: number
 }
 
-export class ErrorBarItem extends BarItem {
-  public error: number = 0
-
-  constructor(opt?: CreateErrorBarItemOptions) {
-    super(opt)
-    this.color = OxyColors.Automatic
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
-  }
+export function newErrorBarItem(item: Partial<ErrorBarItem>): ErrorBarItem {
+  const bi = newBarItem(item) as ErrorBarItem
+  bi.error = item.error ?? 0
+  return bi
 }
 
 export interface CreateErrorBarSeriesOptions extends CreateBarSeriesOptions {
@@ -45,21 +30,32 @@ export interface CreateErrorBarSeriesOptions extends CreateBarSeriesOptions {
   errorWidth?: number
 }
 
-export class ErrorBarSeries extends BarSeries {
-  public static readonly DefaultTrackerStringFormatter: BarSeriesTrackerStringFormatterType = (args) =>
-    `${args.title || ''}\n${args.category}: ${args.value}, Error: ${round((args.item as ErrorBarItem).error, 3)}`
+export const DefaultErrorBarSeriesOptions: CreateErrorBarSeriesOptions = {
+  errorStrokeThickness: 1,
+  errorWidth: 0.4,
+}
 
-  public errorStrokeThickness: number
-  public errorWidth: number
+export const ExtendedDefaultErrorBarSeriesOptions = {
+  ...ExtendedDefaultBarSeriesOptions,
+  ...DefaultErrorBarSeriesOptions,
+}
+
+export class ErrorBarSeries extends BarSeries {
+  public static readonly DefaultTrackerStringFormatter: BarSeriesTrackerStringFormatterType = function (args) {
+    return `${args.title || ''}\n${args.category}: ${args.value}, Error: ${round((args.item as ErrorBarItem).error, 3)}`
+  }
+
+  public errorStrokeThickness: number = DefaultErrorBarSeriesOptions.errorStrokeThickness!
+  public errorWidth: number = DefaultErrorBarSeriesOptions.errorWidth!
 
   constructor(opt?: CreateErrorBarSeriesOptions) {
     super(opt)
-    this.errorWidth = 0.4
-    this.errorStrokeThickness = 1
     this.trackerStringFormatter = ErrorBarSeries.DefaultTrackerStringFormatter
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultErrorBarSeriesOptions, opt)
+  }
+
+  getElementName() {
+    return 'ErrorBarSeries'
   }
 
   /**
@@ -76,7 +72,34 @@ export class ErrorBarSeries extends BarSeries {
     let minValue = Number_MAX_VALUE,
       maxValue = Number_MIN_VALUE
     if (this.isStacked) {
-      // TODO: Implement stacked logic
+      const labels = this.getCategoryAxis().actualLabels
+      const manager = this.manager!
+      for (let i = 0; i < labels.length; i++) {
+        let j = 0
+        const items = this.validItems.filter((item) => getBarItemCategoryIndex(item, j++) === i)
+        const values = items.map((item) => item.value).concat([0])
+        let minTemp = values.filter((v) => v <= 0).reduce((a, b) => a + b, 0)
+        let maxTemp =
+          values.filter((v) => v >= 0).reduce((a, b) => a + b, 0) + (items[items.length - 1] as ErrorBarItem).error
+
+        const stackIndex = manager.getStackIndex(this.stackGroup)
+        const stackedMinValue = manager.getCurrentMinValue(stackIndex, i)
+        if (!isNaN(stackedMinValue)) {
+          minTemp += stackedMinValue
+        }
+
+        manager.setCurrentMinValue(stackIndex, i, minTemp)
+
+        const stackedMaxValue = manager.getCurrentMaxValue(stackIndex, i)
+        if (!this.overlapsStack && !isNaN(stackedMaxValue)) {
+          maxTemp += stackedMaxValue
+        }
+
+        manager.setCurrentMaxValue(stackIndex, i, maxTemp)
+
+        minValue = Math.min(minValue, minTemp + this.baseValue)
+        maxValue = Math.max(maxValue, maxTemp + this.baseValue)
+      }
     } else {
       const valuesMin = this.validItems.map((item) => item.value - (item as ErrorBarItem).error).concat([0])
       const valuesMax = this.validItems.map((item) => item.value + (item as ErrorBarItem).error).concat([0])
@@ -154,5 +177,9 @@ export class ErrorBarSeries extends BarSeries {
         LineJoin.Miter,
       )
     }
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultErrorBarSeriesOptions
   }
 }

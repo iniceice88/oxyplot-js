@@ -28,7 +28,9 @@ function threeColorLineSeries(): PlotModel {
   const s1 = new ThreeColorLineSeries({
     title: 'Temperature at Eidesmoen, December 1986.',
     // trackerFormatString: 'December {2:0}: {4:0.0} °C',
-    trackerStringFormatter: (args) => `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`,
+    trackerStringFormatter: function (args) {
+      return `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`
+    },
     markerSize: 4,
     markerStroke: OxyColors.Black,
     markerStrokeThickness: 1.5,

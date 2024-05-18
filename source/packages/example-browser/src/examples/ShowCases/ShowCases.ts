@@ -6,7 +6,7 @@ import {
   LineSeries,
   LineStyle,
   newDataPoint,
-  OxyThickness,
+  newOxyThickness,
   PlotModel,
   TickStyle,
   type TrackerStringFormatterType,
@@ -77,13 +77,13 @@ function lineLegendPositionAtEnd() {
   // Define plot model
   const model = new PlotModel({
     title: 'Average (Mean) monthly temperatures in 2003',
-    plotMargins: new OxyThickness(60, 4, 60, 40),
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotMargins: newOxyThickness(60, 4, 60, 40),
+    plotAreaBorderThickness: newOxyThickness(0),
     isLegendVisible: false,
   })
 
   // Define tracker formatter
-  const trackerStringFormatter: TrackerStringFormatterType = (args) => {
+  const trackerStringFormatter: TrackerStringFormatterType = function (args) {
     return `${args.title}: ${Number(args.yValue).toFixed(1)}ºF`
   }
 

@@ -14,19 +14,19 @@ import {
   LineStyle,
   MarkerType,
   newDataPoint,
-  OxyColor,
+  newPlotLength,
+  OxyColorHelper,
   OxyColors,
   OxyImage,
   OxyMouseButton,
   type OxyMouseDownEventArgs,
-  PlotLength,
   PlotLengthUnit,
   PlotModel,
   PolygonAnnotation,
   RectangleAnnotation,
   round,
   ScatterSeries,
-  screenPointMinus,
+  screenPointMinusEx,
   TextAnnotation,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -130,7 +130,7 @@ function mouseDownEvent(): PlotModel {
       const nearestPoint = s1.transform(s1.points[indexOfNearestPoint])
 
       // Check if we are near a point
-      if (screenPointMinus(nearestPoint, e.position).length < 10) {
+      if (screenPointMinusEx(nearestPoint, e.position).length < 10) {
         // Start editing this point
         indexOfPointToMove = indexOfNearestPoint
       } else {
@@ -363,7 +363,7 @@ function textAnnotation(): PlotModel {
       return
     }
 
-    ta.background = ta.background.isUndefined() ? OxyColors.LightGreen : OxyColors.Undefined
+    ta.background = OxyColorHelper.isUndefined(ta.background) ? OxyColors.LightGreen : OxyColors.Undefined
     model.invalidatePlot(false)
     e.handled = true
   }
@@ -388,8 +388,8 @@ async function imageAnnotation(): Promise<PlotModel> {
 
   const ia = new ImageAnnotation({
     imageSource: image,
-    x: new PlotLength(4, PlotLengthUnit.Data),
-    y: new PlotLength(2, PlotLengthUnit.Data),
+    x: newPlotLength(4, PlotLengthUnit.Data),
+    y: newPlotLength(2, PlotLengthUnit.Data),
     horizontalAlignment: HorizontalAlignment.Right,
   })
 
@@ -436,7 +436,7 @@ function selectRange(): PlotModel {
   model.series.push(new FunctionSeries({ f: Math.cos, x0: 0, x1: 40, dx: 0.1 }))
 
   const range = new RectangleAnnotation({
-    fill: OxyColor.fromAColor(120, OxyColors.SkyBlue),
+    fill: OxyColorHelper.fromAColor(120, OxyColors.SkyBlue),
     minimumX: 0,
     maximumX: 0,
   })

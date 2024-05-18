@@ -1,124 +1,110 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IColorAxis,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
 import {
   Axis,
   ColorAxisExtensions,
-  DataPoint_isDefined,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
   DataPoint_Undefined,
-  dataPointEquals,
   EdgeRenderingMode,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IColorAxis,
+  type IRenderContext,
+  type LabelStringFormatterType,
   newDataPoint,
   OxyColors,
-  OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   toColorAxis,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
+  type TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { maxValueOfArray, minValueOfArray, pushMany, removeUndef } from '@/patch'
+import { assignMethod, assignObject, maxValueOfArray, minValueOfArray, pushMany } from '@/patch'
 
 /**
  * Represents an item in a RectangleSeries.
  * RectangleItems are transformed to OxyRects.
  */
-export class RectangleItem {
-  /**
-   * The undefined rectangle item.
-   */
-  static readonly Undefined = new RectangleItem(DataPoint_Undefined, DataPoint_Undefined, Number.NaN)
-
-  /**
-   * Initializes a new instance of the RectangleItem class.
-   * @param x1 The x coordinate of the first corner.
-   * @param x2 The x coordinate of the diagonally-opposite corner.
-   * @param y1 The y coordinate of the first corner.
-   * @param y2 The y coordinate of the diagonally-opposite corner.
-   * @param value The value of the data rect.
-   */
-  constructor(x1: number, x2: number, y1: number, y2: number, value: number)
-  /**
-   * Initializes a new instance of the RectangleItem class.
-   * @param a The first corner.
-   * @param b The diagonally-opposite corner.
-   * @param value The value of the data rect.
-   */
-  constructor(a: DataPoint, b: DataPoint, value: number)
-  constructor(a: number | DataPoint, b: number | DataPoint, c: number | DataPoint, d?: number, value?: number) {
-    if (typeof a === 'number') {
-      this.a = newDataPoint(a, c as number)
-      this.b = newDataPoint(b as number, d as number)
-      this.value = value as number
-    } else {
-      this.a = a
-      this.b = b as DataPoint
-      this.value = c as number
-    }
-  }
-
+export interface RectangleItem {
   /**
    * Gets the first data point.
    */
-  readonly a: DataPoint
+  a: DataPoint
 
   /**
    * Gets the diagonally-opposite data point.
    */
-  readonly b: DataPoint
+  b: DataPoint
 
   /**
    * Gets the value of the item.
    */
-  readonly value: number
-
-  /**
-   * Determines whether the specified point lies within the boundary of the rectangle.
-   * @returns true if the value of the p parameter is inside the bounds of this instance.
-   */
-  contains(p: DataPoint): boolean {
-    return (
-      (p.x <= this.b.x && p.x >= this.a.x && p.y <= this.b.y && p.y >= this.a.y) ||
-      (p.x <= this.a.x && p.x >= this.b.x && p.y <= this.a.y && p.y >= this.b.y)
-    )
-  }
-
-  /**
-   * Determines whether this instance and another specified RectangleItem object have the same value.
-   * @param other The point to compare to this instance.
-   * @returns true if the value of the other parameter is the same as the value of this instance; otherwise, false.
-   */
-  equals(other: RectangleItem): boolean {
-    return dataPointEquals(this.a, other.a) && dataPointEquals(this.b, other.b) && this.value === other.value
-  }
-
-  /**
-   * Returns a string that represents this instance.
-   * @returns A string that represents this instance.
-   */
-  toString(): string {
-    return `${this.a} ${this.b} ${this.value}`
-  }
-
-  /**
-   * Determines whether this rectangle item is defined.
-   * @returns true if this point is defined; otherwise, false.
-   */
-  isDefined(): boolean {
-    return DataPoint_isDefined(this.a) && DataPoint_isDefined(this.b) && !isNaN(this.value)
-  }
+  value: number
 }
 
-export interface CreateRectangleItemOptions extends CreateXYAxisSeriesOptions {
+/**
+ * Initializes a new instance of the RectangleItem class.
+ * @param x1 The x coordinate of the first corner.
+ * @param x2 The x coordinate of the diagonally-opposite corner.
+ * @param y1 The y coordinate of the first corner.
+ * @param y2 The y coordinate of the diagonally-opposite corner.
+ * @param value The value of the data rect.
+ */
+export function newRectangleItem(x1: number, x2: number, y1: number, y2: number, value: number): RectangleItem
+/**
+ * Initializes a new instance of the RectangleItem class.
+ * @param a The first corner.
+ * @param b The diagonally-opposite corner.
+ * @param value The value of the data rect.
+ */
+export function newRectangleItem(a: DataPoint, b: DataPoint, value: number): RectangleItem
+export function newRectangleItem(
+  a: number | DataPoint,
+  b: number | DataPoint,
+  c: number | DataPoint,
+  d?: number,
+  value?: number,
+): RectangleItem {
+  if (typeof a === 'number') {
+    return {
+      a: newDataPoint(a, c as number),
+      b: newDataPoint(b as number, d as number),
+      value: value as number,
+    }
+  }
+
+  return {
+    a,
+    b,
+    value: c,
+  } as RectangleItem
+}
+
+/**
+ * The undefined rectangle item.
+ */
+export const RectangleItem_Undefined = newRectangleItem(DataPoint_Undefined, DataPoint_Undefined, Number.NaN)
+
+/**
+ * Determines whether the specified point lies within the boundary of the rectangle.
+ * @returns true if the value of the p parameter is inside the bounds of this instance.
+ */
+export function rectangleItemContains(item: RectangleItem, p: DataPoint) {
+  const { a, b } = item
+  return (
+    (p.x <= b.x && p.x >= a.x && p.y <= b.y && p.y >= a.y) || (p.x <= a.x && p.x >= b.x && p.y <= a.y && p.y >= b.y)
+  )
+}
+
+export function isRectangleItem(obj: any) {
+  return 'a' in obj && 'b' in obj && 'value' in obj
+}
+
+export interface CreateRectangleSeriesOptions extends CreateXYAxisSeriesOptions {
   /**
    * The items originating from the items source.
    */
@@ -160,6 +146,22 @@ export interface CreateRectangleItemOptions extends CreateXYAxisSeriesOptions {
   colorAxis?: IColorAxis
 }
 
+export const DefaultRectangleSeriesOptions: CreateRectangleSeriesOptions = {
+  labelFontSize: 0,
+
+  items: undefined,
+  mapping: undefined,
+  colorAxisKey: undefined,
+  labelStringFormatter: undefined,
+  colorAxisTitle: undefined,
+  colorAxis: undefined,
+}
+
+export const ExtendedDefaultRectangleSeriesOptions: CreateRectangleSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultRectangleSeriesOptions,
+}
+
 /**
  * Represents a series that can be bound to a collection of RectangleItem.
  */
@@ -172,9 +174,10 @@ export class RectangleSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  static readonly DefaultTrackerFormatString: TrackerStringFormatterType = (args: TrackerStringFormatterArgs) =>
-    `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
-  //'{0}\n{1}: {2}\n{3}: {4}\n{5}: {6}'
+  static readonly DefaultTrackerFormatString: TrackerStringFormatterType = function (args: TrackerStringFormatterArgs) {
+    //'{0}\n{1}: {2}\n{3}: {4}\n{5}: {6}'
+    return `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.value}`
+  }
 
   /**
    * The default color-axis title
@@ -184,13 +187,15 @@ export class RectangleSeries extends XYAxisSeries {
   /**
    * Initializes a new instance of the HeatMapSeries class.
    */
-  constructor(opt?: CreateRectangleItemOptions) {
+  constructor(opt?: CreateRectangleSeriesOptions) {
     super(opt)
     this.trackerStringFormatter = RectangleSeries.DefaultTrackerFormatString
-    this.labelFontSize = 0
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignObject(this, DefaultRectangleSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
+  }
+
+  getElementName() {
+    return 'RectangleSeries'
   }
 
   private _minValue: number = 0
@@ -211,7 +216,7 @@ export class RectangleSeries extends XYAxisSeries {
 
   private _colorAxis?: IColorAxis
   /**
-   * Gets or sets the color axis.
+   * Gets the color axis.
    */
   get colorAxis(): IColorAxis | undefined {
     return this._colorAxis
@@ -234,7 +239,7 @@ export class RectangleSeries extends XYAxisSeries {
   /**
    * Gets or sets the font size of the labels. The default value is 0 (labels not visible).
    */
-  labelFontSize: number
+  labelFontSize: number = DefaultRectangleSeriesOptions.labelFontSize!
 
   /**
    * Gets or sets the delegate used to map from ItemsSeries.itemsSource to RectangleItem. The default is null.
@@ -305,7 +310,7 @@ export class RectangleSeries extends XYAxisSeries {
 
     for (const item of this.itemsSource) {
       if (!item) continue
-      if (item instanceof RectangleItem) {
+      if (isRectangleItem(item)) {
         this._actualItems.push(item)
         continue
       }
@@ -329,7 +334,6 @@ export class RectangleSeries extends XYAxisSeries {
       this.edgeRenderingMode,
       EdgeRenderingMode.PreferSharpness,
     )
-
     const transform = PlotElementExtensions.transform
     for (const item of items) {
       const rectColor = ColorAxisExtensions.getColor(this.colorAxis!, item.value)
@@ -338,13 +342,13 @@ export class RectangleSeries extends XYAxisSeries {
       const p1 = transform(this, item.a.x, item.a.y)
       const p2 = transform(this, item.b.x, item.b.y)
 
-      const rect = OxyRect.fromScreenPoints(p1, p2)
+      const rect = OxyRectHelper.fromScreenPoints(p1, p2)
 
       await rc.drawRectangle(rect, rectColor, OxyColors.Undefined, 0, actualEdgeRenderingMode)
 
       if (this.labelFontSize > 0) {
         await rc.drawText(
-          rect.center,
+          OxyRectHelper.center(rect),
           this.labelStringFormatter(item.value, []),
           this.actualTextColor,
           this.actualFont,
@@ -378,7 +382,7 @@ export class RectangleSeries extends XYAxisSeries {
 
     // iterate through the DataRects and return the first one that contains the point
     for (const item of this.actualItems) {
-      if (item.contains(p)) {
+      if (rectangleItemContains(item, p)) {
         const text = this.formatDefaultTrackerString(item, p, (args) => {
           args.colorAxisTitle = colorAxisTitle
           args.value = item.value
@@ -456,7 +460,7 @@ export class RectangleSeries extends XYAxisSeries {
     if (this.actualItems && this.actualItems.length > 0) {
       const actualItemsValues = this.actualItems.map((r) => r.value)
       this._minValue = minValueOfArray(actualItemsValues)
-      this._maxValue = minValueOfArray(actualItemsValues)
+      this._maxValue = maxValueOfArray(actualItemsValues)
     }
   }
 
@@ -482,5 +486,9 @@ export class RectangleSeries extends XYAxisSeries {
     this.updateMaxMinXY()
 
     return p.x >= this.minX && p.x <= this.maxX && p.y >= this.minY && p.y <= this.maxY
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultRectangleSeriesOptions
   }
 }

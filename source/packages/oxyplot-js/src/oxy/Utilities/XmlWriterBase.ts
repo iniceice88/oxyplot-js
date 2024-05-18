@@ -69,7 +69,11 @@ export abstract class XmlWriterBase implements IDisposable {
     this._no++
     log(`${this._no},writeAttributeString,${prefix},${name},${ns},${value}`)
     name = prefix ? `${prefix}:${name}` : name
-    this.w.att(ns, name, value)
+    if (ns) {
+      this.w.att(ns, name, value)
+    } else {
+      this.writeAttributeString(name, value)
+    }
   }
 
   /**
@@ -87,7 +91,7 @@ export abstract class XmlWriterBase implements IDisposable {
       pubID: pubid,
       sysID: sysid,
     })
-    // TODO subset
+    // subset
   }
 
   /**

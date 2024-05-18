@@ -3,7 +3,7 @@ import {
   type IPlotModel,
   type IRenderContext,
   type ITextMeasurer,
-  OxyRect,
+  newOxyRect,
   PdfRenderContext,
   SvgRenderContext,
 } from '@/oxyplot'
@@ -76,7 +76,7 @@ export class SvgExporter implements IExporter {
       useVerticalTextAlignmentWorkaround,
     )
     model.update(true)
-    await model.render(rc, new OxyRect(0, 0, width, height))
+    await model.render(rc, newOxyRect(0, 0, width, height))
     rc.complete()
     rc.flush()
 

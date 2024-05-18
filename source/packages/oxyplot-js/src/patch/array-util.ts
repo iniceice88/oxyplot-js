@@ -132,7 +132,7 @@ export function minValueOfArray(numbers: number[], ...otherNumbers: number[]) {
 }
 
 export function arrayBufferToBase64(uint8Array: Uint8Array): string {
-  // TODO fromCharCode has maximum-call-stack-size-exceeded problem
+  // FIXME: fromCharCode has maximum-call-stack-size-exceeded problem
   const charArray = Array.from(uint8Array, (num) => String.fromCharCode(num))
   return btoa(charArray.join(''))
 }

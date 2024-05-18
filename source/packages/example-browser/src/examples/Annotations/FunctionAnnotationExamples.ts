@@ -3,7 +3,7 @@ import {
   FunctionAnnotation,
   FunctionAnnotationType,
   LinearAxis,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
 } from 'oxyplot-js'
@@ -18,7 +18,7 @@ function annotation(): PlotModel {
     new FunctionAnnotation({
       equation: Math.sin,
       strokeThickness: 2,
-      color: OxyColor.fromAColor(120, OxyColors.Blue),
+      color: OxyColorHelper.fromAColor(120, OxyColors.Blue),
       text: 'f(x)=sin(x)',
     }),
   )
@@ -26,7 +26,7 @@ function annotation(): PlotModel {
     new FunctionAnnotation({
       equation: (y) => y * y,
       strokeThickness: 2,
-      color: OxyColor.fromAColor(120, OxyColors.Red),
+      color: OxyColorHelper.fromAColor(120, OxyColors.Red),
       type: FunctionAnnotationType.EquationY,
       text: 'f(y)=y^2',
     }),

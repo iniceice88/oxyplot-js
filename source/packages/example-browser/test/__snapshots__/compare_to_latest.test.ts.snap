@@ -1,0 +1,1175 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`compare_to_latest > 1 ShowCases -> Average (Mean) monthly temperatures in 2003 1`] = `"c9b93a81"`;
+
+exports[`compare_to_latest > 1 ShowCases -> Normal distribution 1`] = `"615200b4"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Clipping 1`] = `"a2375990"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawMathText - Alignment 1`] = `"b4ac4736"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawMathText - Rotation 1`] = `"9a17b2c2"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Alignment 1`] = `"142074fb"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Alignment/Rotation 1`] = `"16cc9432"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Colors 1`] = `"be0181d0"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Font sizes 1`] = `"de5f2985"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Fonts 1`] = `"dcb01f6d"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - MaxSize 1`] = `"2d18b50f"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Multi-line Alignment 1`] = `"c3e7a3e4"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Multi-line Alignment/Rotation 1`] = `"1ca0dd89"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> DrawText - Rotation 1`] = `"c11956ef"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Ellipse Drawing 1`] = `"0e852413"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Ellipses - EdgeRenderingMode 1`] = `"e3d5d5a1"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> LineJoin 1`] = `"7fdfa751"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Lines - EdgeRenderingMode 1`] = `"be61558e"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> MeasureText 1`] = `"c28d6561"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Polygons - EdgeRenderingMode 1`] = `"cfa5e2a2"`;
+
+exports[`compare_to_latest > 9 Rendering capabilities -> Rectangles - EdgeRenderingMode 1`] = `"4a13a4dc"`;
+
+exports[`compare_to_latest > Annotations -> Tool tips 1`] = `"c5e96f99"`;
+
+exports[`compare_to_latest > AreaSeries -> Constant baseline (ItemsSource and DataField2 not set) 1`] = `"fcffedd2"`;
+
+exports[`compare_to_latest > AreaSeries -> Constant baseline (empty Points2) 1`] = `"1dd84354"`;
+
+exports[`compare_to_latest > AreaSeries -> Constant baseline (empty Points2, ConstantY2=NaN) 1`] = `"9d9959e0"`;
+
+exports[`compare_to_latest > AreaSeries -> Crossing lines 1`] = `"eeaaed3f"`;
+
+exports[`compare_to_latest > AreaSeries -> Custom TrackerFormatString 1`] = `"0a829613"`;
+
+exports[`compare_to_latest > AreaSeries -> Default style 1`] = `"d72bc973"`;
+
+exports[`compare_to_latest > AreaSeries -> Different stroke colors 1`] = `"906c1b77"`;
+
+exports[`compare_to_latest > AreaSeries -> LineSeries and AreaSeries 1`] = `"e10e2b8b"`;
+
+exports[`compare_to_latest > ArrowAnnotation -> ArrowAnnotation 1`] = `"cd35bc4b"`;
+
+exports[`compare_to_latest > Axis examples -> AbsoluteMinimum and AbsoluteMaximum 1`] = `"e12cb00a"`;
+
+exports[`compare_to_latest > Axis examples -> Angled axis numbers 1`] = `"82cae415"`;
+
+exports[`compare_to_latest > Axis examples -> Auto Margins - Wide Labels 1`] = `"16a6dae9"`;
+
+exports[`compare_to_latest > Axis examples -> Auto Margins - Wide Labels, fixed Range 1`] = `"1e3bdf83"`;
+
+exports[`compare_to_latest > Axis examples -> Auto Margins - Wide Labels, fixed Range 2 1`] = `"d416ea5e"`;
+
+exports[`compare_to_latest > Axis examples -> Auto Margins - Wide Labels, rotated 1`] = `"c6dd9944"`;
+
+exports[`compare_to_latest > Axis examples -> Auto Margins 1`] = `"343196ba"`;
+
+exports[`compare_to_latest > Axis examples -> Axis Margins 1`] = `"c475a7ce"`;
+
+exports[`compare_to_latest > Axis examples -> Axis Margins Clipping 1`] = `"fdd6ae43"`;
+
+exports[`compare_to_latest > Axis examples -> Axis Margins on Polar Plot 1`] = `"b853a35f"`;
+
+exports[`compare_to_latest > Axis examples -> Axis Margins, Data Margins, and Padding 1`] = `"e3d7f0e4"`;
+
+exports[`compare_to_latest > Axis examples -> Axis Margins, Data Margins, and Padding, Asymmetrical 1`] = `"38628792"`;
+
+exports[`compare_to_latest > Axis examples -> Axis distance 1`] = `"a94bb321"`;
+
+exports[`compare_to_latest > Axis examples -> Axis label angle 45deg 1`] = `"d38228e1"`;
+
+exports[`compare_to_latest > Axis examples -> Axis position left/bottom 1`] = `"3d333700"`;
+
+exports[`compare_to_latest > Axis examples -> Axis position top/right 1`] = `"70973766"`;
+
+exports[`compare_to_latest > Axis examples -> Background and PlotAreaBackground 1`] = `"61e5b080"`;
+
+exports[`compare_to_latest > Axis examples -> Big numbers 1`] = `"23e342c1"`;
+
+exports[`compare_to_latest > Axis examples -> Big numbers with super exponential format 1`] = `"6f8e395b"`;
+
+exports[`compare_to_latest > Axis examples -> Black background 1`] = `"cdffd26e"`;
+
+exports[`compare_to_latest > Axis examples -> Current culture 1`] = `"941fb914"`;
+
+exports[`compare_to_latest > Axis examples -> Custom AxisTitleDistance 1`] = `"a7c1cfed"`;
+
+exports[`compare_to_latest > Axis examples -> Custom axis label color 1`] = `"d9cc1062"`;
+
+exports[`compare_to_latest > Axis examples -> Custom axis title color 1`] = `"3d12f856"`;
+
+exports[`compare_to_latest > Axis examples -> Data Margins 1`] = `"0483a715"`;
+
+exports[`compare_to_latest > Axis examples -> Data Margins on Log Axis 1`] = `"751f8fbc"`;
+
+exports[`compare_to_latest > Axis examples -> Data Margins on Polar Plot 1`] = `"6bb4adcf"`;
+
+exports[`compare_to_latest > Axis examples -> Data Margins with Zero-Crossing 1`] = `"3574c58b"`;
+
+exports[`compare_to_latest > Axis examples -> Default AxisTitleDistance 1`] = `"cdcfa668"`;
+
+exports[`compare_to_latest > Axis examples -> Default padding 1`] = `"7395cecf"`;
+
+exports[`compare_to_latest > Axis examples -> Dense intervals 1`] = `"4217129f"`;
+
+exports[`compare_to_latest > Axis examples -> Five axes 1`] = `"b7aa0124"`;
+
+exports[`compare_to_latest > Axis examples -> Four axes 1`] = `"5ef4cf14"`;
+
+exports[`compare_to_latest > Axis examples -> Graph Paper 1`] = `"347944c2"`;
+
+exports[`compare_to_latest > Axis examples -> GridLinestyle: Horizontal 1`] = `"00d4f0ec"`;
+
+exports[`compare_to_latest > Axis examples -> GridLinestyle: Horizontal and vertical 1`] = `"413399dc"`;
+
+exports[`compare_to_latest > Axis examples -> GridLinestyle: None (default) 1`] = `"f017f333"`;
+
+exports[`compare_to_latest > Axis examples -> GridLinestyle: Vertical 1`] = `"e3a8212e"`;
+
+exports[`compare_to_latest > Axis examples -> Gridlines Cropping: Horizontal and vertical 1`] = `"715bec45"`;
+
+exports[`compare_to_latest > Axis examples -> Horizontal zero crossing axis 1`] = `"fca4a26f"`;
+
+exports[`compare_to_latest > Axis examples -> Invisible horizontal axis 1`] = `"0fa20186"`;
+
+exports[`compare_to_latest > Axis examples -> Invisible vertical axis 1`] = `"065973d4"`;
+
+exports[`compare_to_latest > Axis examples -> LabelFormatter 1`] = `"65da40ca"`;
+
+exports[`compare_to_latest > Axis examples -> Log-Log Paper 1`] = `"0a8fc499"`;
+
+exports[`compare_to_latest > Axis examples -> Logarithmic axes 1`] = `"9645436b"`;
+
+exports[`compare_to_latest > Axis examples -> Logarithmic axes Cartesian Plot 1`] = `"c4a1f328"`;
+
+exports[`compare_to_latest > Axis examples -> Long axis titles (clipped at 90%) 1`] = `"8edb28e2"`;
+
+exports[`compare_to_latest > Axis examples -> Long axis titles (clipped at 100%) 1`] = `"f45e0b63"`;
+
+exports[`compare_to_latest > Axis examples -> Long axis titles (not clipped) 1`] = `"36e98098"`;
+
+exports[`compare_to_latest > Axis examples -> MajorGridlineStyle 1`] = `"f368440a"`;
+
+exports[`compare_to_latest > Axis examples -> Manual Left Margin 1`] = `"168cacab"`;
+
+exports[`compare_to_latest > Axis examples -> Manual Margins 1`] = `"d33fd4a5"`;
+
+exports[`compare_to_latest > Axis examples -> Maximum Major Interval Count 1`] = `"c7ce40ec"`;
+
+exports[`compare_to_latest > Axis examples -> MaximumRange 1`] = `"141010a7"`;
+
+exports[`compare_to_latest > Axis examples -> Minimum Major Interval Count 1`] = `"ba0ed3c2"`;
+
+exports[`compare_to_latest > Axis examples -> Minimum and Maximum Major Interval Count 1`] = `"bbe20b35"`;
+
+exports[`compare_to_latest > Axis examples -> MinimumMajorStep 1`] = `"ebd1ef4e"`;
+
+exports[`compare_to_latest > Axis examples -> MinimumMinorStep 1`] = `"969bae72"`;
+
+exports[`compare_to_latest > Axis examples -> MinimumRange 1`] = `"5137bc68"`;
+
+exports[`compare_to_latest > Axis examples -> Multi vertical axes with lineSeries 1`] = `"136e4163"`;
+
+exports[`compare_to_latest > Axis examples -> No axes defined 1`] = `"5c0adf76"`;
+
+exports[`compare_to_latest > Axis examples -> No padding 1`] = `"8b2c70c6"`;
+
+exports[`compare_to_latest > Axis examples -> Padding 10% 1`] = `"e17581d4"`;
+
+exports[`compare_to_latest > Axis examples -> Panning disabled 1`] = `"2e3083ab"`;
+
+exports[`compare_to_latest > Axis examples -> PositionTier 1`] = `"25b83cdf"`;
+
+exports[`compare_to_latest > Axis examples -> Reversed 1`] = `"78bb6e52"`;
+
+exports[`compare_to_latest > Axis examples -> Sharing Y axis 1`] = `"f80ed600"`;
+
+exports[`compare_to_latest > Axis examples -> Small numbers 1`] = `"69b5855c"`;
+
+exports[`compare_to_latest > Axis examples -> Sub- and superscript in axis titles 1`] = `"2e97dd53"`;
+
+exports[`compare_to_latest > Axis examples -> TickStyle: Color major and minor ticks differently 1`] = `"49995aa5"`;
+
+exports[`compare_to_latest > Axis examples -> TickStyle: Crossing 1`] = `"cb907e30"`;
+
+exports[`compare_to_latest > Axis examples -> TickStyle: Inside 1`] = `"92250542"`;
+
+exports[`compare_to_latest > Axis examples -> TickStyle: None 1`] = `"8999fc6a"`;
+
+exports[`compare_to_latest > Axis examples -> TickStyle: Outside 1`] = `"049fd778"`;
+
+exports[`compare_to_latest > Axis examples -> Title with unit 1`] = `"4c0ee19d"`;
+
+exports[`compare_to_latest > Axis examples -> Tool tips 1`] = `"44e9265b"`;
+
+exports[`compare_to_latest > Axis examples -> Vertical zero crossing axis 1`] = `"ce23edac"`;
+
+exports[`compare_to_latest > Axis examples -> X-axis MaximumPadding=0.1 1`] = `"de3c98a6"`;
+
+exports[`compare_to_latest > Axis examples -> X-axis MinimumPadding=0.1 1`] = `"3be30cf9"`;
+
+exports[`compare_to_latest > Axis examples -> Zero crossing axis 1`] = `"b69f5e5a"`;
+
+exports[`compare_to_latest > Axis examples -> Zooming disabled 1`] = `"4d362b46"`;
+
+exports[`compare_to_latest > BarSeries -> All in one 1`] = `"a89f4cb6"`;
+
+exports[`compare_to_latest > BarSeries -> BaseValue (labels) 1`] = `"31ee6938"`;
+
+exports[`compare_to_latest > BarSeries -> BaseValue (overlaping) 1`] = `"f98823e0"`;
+
+exports[`compare_to_latest > BarSeries -> BaseValue (stacked) 1`] = `"e3ee4a78"`;
+
+exports[`compare_to_latest > BarSeries -> BaseValue 1`] = `"cfeb9971"`;
+
+exports[`compare_to_latest > BarSeries -> Binding to ItemsSource (array) 1`] = `"e57546f1"`;
+
+exports[`compare_to_latest > BarSeries -> Binding to ItemsSource (list) 1`] = `"2dc8918c"`;
+
+exports[`compare_to_latest > BarSeries -> Binding to ItemsSource (reflection) 1`] = `"44b34f5a"`;
+
+exports[`compare_to_latest > BarSeries -> Binding to ItemsSource 1`] = `"2f30ed2b"`;
+
+exports[`compare_to_latest > BarSeries -> CategoryIndex (stacked) 1`] = `"08aa5f89"`;
+
+exports[`compare_to_latest > BarSeries -> CategoryIndex 1`] = `"70806370"`;
+
+exports[`compare_to_latest > BarSeries -> Defined by Items 1`] = `"0093ed20"`;
+
+exports[`compare_to_latest > BarSeries -> Different colors within the same series 1`] = `"74deeb45"`;
+
+exports[`compare_to_latest > BarSeries -> Different stacking groups 1`] = `"c7c3a208"`;
+
+exports[`compare_to_latest > BarSeries -> Different widths (stacked) 1`] = `"46b3b0ee"`;
+
+exports[`compare_to_latest > BarSeries -> Different widths 1`] = `"6f2ce074"`;
+
+exports[`compare_to_latest > BarSeries -> Empty category axis 1`] = `"ce895e99"`;
+
+exports[`compare_to_latest > BarSeries -> Empty series 1`] = `"155bb1a3"`;
+
+exports[`compare_to_latest > BarSeries -> GapWidth 0% 1`] = `"38bbb018"`;
+
+exports[`compare_to_latest > BarSeries -> GapWidth 100% (default) 1`] = `"525b273d"`;
+
+exports[`compare_to_latest > BarSeries -> GapWidth 200% 1`] = `"2745c08b"`;
+
+exports[`compare_to_latest > BarSeries -> Histogram (bins=5) 1`] = `"4fb14e3a"`;
+
+exports[`compare_to_latest > BarSeries -> Histogram (bins=20) 1`] = `"d2397c5c"`;
+
+exports[`compare_to_latest > BarSeries -> Histogram (bins=200) 1`] = `"3f4f14d7"`;
+
+exports[`compare_to_latest > BarSeries -> Histogram (standard normal distribution) 1`] = `"b99b2a7f"`;
+
+exports[`compare_to_latest > BarSeries -> Invalid values 1`] = `"e038c792"`;
+
+exports[`compare_to_latest > BarSeries -> Logarithmic axis (Base Line) 1`] = `"b2545c70"`;
+
+exports[`compare_to_latest > BarSeries -> Logarithmic axis (Base Value) 1`] = `"b2545c70"`;
+
+exports[`compare_to_latest > BarSeries -> Logarithmic axis (not stacked) 1`] = `"fd0c7fd1"`;
+
+exports[`compare_to_latest > BarSeries -> Logarithmic axis (stacked series) 1`] = `"a617e7cd"`;
+
+exports[`compare_to_latest > BarSeries -> Missing values 1`] = `"ff231440"`;
+
+exports[`compare_to_latest > BarSeries -> Mixed with LineSeries 1`] = `"16fdb6f7"`;
+
+exports[`compare_to_latest > BarSeries -> Multiple Category Axes 1`] = `"1afb83dd"`;
+
+exports[`compare_to_latest > BarSeries -> Multiple Value Axes 1`] = `"391ca47f"`;
+
+exports[`compare_to_latest > BarSeries -> No axes defined 1`] = `"c85c8788"`;
+
+exports[`compare_to_latest > BarSeries -> No category axis defined 1`] = `"2b053ca9"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked (labels) 1`] = `"2a4291d0"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked 1`] = `"0f19d9b5"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked and no axes defined 1`] = `"188dec93"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked with negative values 1`] = `"9d83802f"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked, Multiple Category Axes 1`] = `"5b069128"`;
+
+exports[`compare_to_latest > BarSeries -> Stacked, Multiple Value Axes 1`] = `"e1925729"`;
+
+exports[`compare_to_latest > BarSeries -> With labels (at an angle) 1`] = `"687e3f01"`;
+
+exports[`compare_to_latest > BarSeries -> With labels 1`] = `"0b3cd98e"`;
+
+exports[`compare_to_latest > BarSeries -> With negative values 1`] = `"8e0d06ce"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> BoxPlot (DateTime axis) 1`] = `"70092bb4"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> BoxPlot (dashed line) 1`] = `"1e5b7abe"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> BoxPlot (minimal data/ink ratio) 1`] = `"50f9c3ec"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> BoxPlot 1`] = `"332fb7c8"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> Michelson-Morley experiment 1`] = `"57b4813a"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> Outlier type = Cross 1`] = `"f3283b89"`;
+
+exports[`compare_to_latest > BoxPlotSeries -> Outlier type = Custom 1`] = `"f22b22e3"`;
+
+exports[`compare_to_latest > CandleStickSeries -> Large Data Set (narrow window) 1`] = `"72cecb52"`;
+
+exports[`compare_to_latest > CandleStickSeries -> Large Data Set (wide window) 1`] = `"746e02fa"`;
+
+exports[`compare_to_latest > CandleStickSeries -> Simple CandleStickSeries example 1`] = `"7ecb3e9e"`;
+
+exports[`compare_to_latest > CandleStickSeries -> Small Set 1`] = `"935c23ba"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum X/Y 1`] = `"ebc8f31f"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum Y 1`] = `"8d9ab76a"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum Y, AbsoluteMinimum/Maximum X 1`] = `"23befda6"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum Y, manual plotmargins 1`] = `"c5b7c40b"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum/Maximum X/Y 1`] = `"43442edd"`;
+
+exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum/Maximum Y 1`] = `"708e13a5"`;
+
+exports[`compare_to_latest > Cartesian axes -> Clover 1`] = `"f5b3553a"`;
+
+exports[`compare_to_latest > Cartesian axes -> Trigonometric functions 1`] = `"4d6f3437"`;
+
+exports[`compare_to_latest > CategoryAxis -> ItemsSource - int[] 1`] = `"992cfe92"`;
+
+exports[`compare_to_latest > CategoryAxis -> ItemsSource - string[] 1`] = `"8e31f887"`;
+
+exports[`compare_to_latest > CategoryAxis -> MajorStep 1`] = `"8534c8c3"`;
+
+exports[`compare_to_latest > CategoryAxis -> MajorStep, TickCentered 1`] = `"b6248ec9"`;
+
+exports[`compare_to_latest > CategoryAxis -> Standard 1`] = `"1fcfa38f"`;
+
+exports[`compare_to_latest > CategoryColorAxis -> CategoryColorAxis 1`] = `"3e175922"`;
+
+exports[`compare_to_latest > CategoryColorAxis -> Centered ticks, MajorStep = 4 1`] = `"f57f2ced"`;
+
+exports[`compare_to_latest > ContourSeries -> Logarithmic Peaks 1`] = `"e03c93c0"`;
+
+exports[`compare_to_latest > ContourSeries -> Open Contours 1`] = `"4221f66e"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks (different contour colors) 1`] = `"330d4bea"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks (wide array) 1`] = `"811341e5"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks 1`] = `"d246e173"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks LabelSpacing = 400 1`] = `"876e48b5"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks LabelStep = 1, ContourLevelStep = PI/2 1`] = `"7f2efb7d"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks LabelStep = 2, ContourLevelStep = 0.5 1`] = `"1ccfbe7f"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks LabelStep = 2, ContourLevelStep = 0.33 1`] = `"5b0c474f"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks LabelStep = 3, ContourLevelStep = 1 1`] = `"1551cdf6"`;
+
+exports[`compare_to_latest > ContourSeries -> Peaks MultiLabel 1`] = `"fbbadda7"`;
+
+exports[`compare_to_latest > Custom axes -> ArrowAxis 1`] = `"3d89b973"`;
+
+exports[`compare_to_latest > Custom series -> Design structure matrix (DSM) 1`] = `"f839acba"`;
+
+exports[`compare_to_latest > Custom series -> ErrorSeries 1`] = `"4bec3547"`;
+
+exports[`compare_to_latest > Custom series -> FlagSeries 1`] = `"f7593d59"`;
+
+exports[`compare_to_latest > Custom series -> LineSegmentSeries 1`] = `"305ba149"`;
+
+exports[`compare_to_latest > Custom series -> MatrixSeries - diagonal matrix 1`] = `"721106e4"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap (interpolated) 1`] = `"7d0bd82e"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap 1`] = `"d58b59f5"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap Reversed Angle Axis 1`] = `"e2d150ad"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap Rotated CounterClockwise 90 1`] = `"41ee707b"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap Rotated CounterClockwise on PI degrees 1`] = `"ec933455"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap fixed size image 1`] = `"dac722c9"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap linear axes, fixed size image (256x256) 1`] = `"7ed5c6cf"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap linear axes, fixed size image (1000x1000) 1`] = `"3b209e2a"`;
+
+exports[`compare_to_latest > Custom series -> PolarHeatMap on linear axes 1`] = `"c1a04fce"`;
+
+exports[`compare_to_latest > DateTimeAxis -> DateTime axis 1`] = `"1c47be85"`;
+
+exports[`compare_to_latest > DateTimeAxis -> Default StringFormat 1`] = `"7134470b"`;
+
+exports[`compare_to_latest > DateTimeAxis -> LabelFormatter 1`] = `"5630883b"`;
+
+exports[`compare_to_latest > DateTimeAxis -> StringFormat 'MMM DD\\nYYYY' 1`] = `"a20fe4c4"`;
+
+exports[`compare_to_latest > DateTimeAxis -> Sunrise and sunset in Oslo 1`] = `"70ea1aeb"`;
+
+exports[`compare_to_latest > DateTimeAxis -> TimeZone adjustments 1`] = `"8e6031d5"`;
+
+exports[`compare_to_latest > EllipseAnnotation -> EllipseAnnotation 1`] = `"a8bc9135"`;
+
+exports[`compare_to_latest > ErrorBarSeries -> ErrorBarSeries (thick error lines) 1`] = `"2ecfc6fd"`;
+
+exports[`compare_to_latest > ErrorBarSeries -> ErrorBarSeries 1`] = `"26b7f87f"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> 2003 Sales 1`] = `"686c7ae3"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Actual to Plan Variance 1`] = `"0f074915"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Correlation of Employee Heights and Salaries 1`] = `"300a9b27"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Headcount 1`] = `"f72592d1"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Order Count by Order Size 1`] = `"6e0f0c7c"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Q1 2003 Calls by Region 1`] = `"7531b8f0"`;
+
+exports[`compare_to_latest > Examples from the book 'Show Me the Numbers' -> Regional % of Total Expenses 1`] = `"e380eead"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Custom Dashes 1`] = `"6081ec21"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Interpolation (Y Axis reversed) 1`] = `"2d961bf5"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Interpolation 1`] = `"83b2c4b8"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Intersecting Intervals 1`] = `"552f3dfc"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Line Fit (Ignore Extrapolation For Scaling) 1`] = `"c8661ece"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Many Intervals 1`] = `"58078b39"`;
+
+exports[`compare_to_latest > ExtrapolationLineSeries -> Moore's Law 1`] = `"4ab42669"`;
+
+exports[`compare_to_latest > Filtering data points -> Filtering NaN points 1`] = `"94fbb11e"`;
+
+exports[`compare_to_latest > Filtering data points -> Filtering NaN points with AreaSeries 1`] = `"7aafbed7"`;
+
+exports[`compare_to_latest > Filtering data points -> Filtering invalid points (log axis) 1`] = `"185f28b6"`;
+
+exports[`compare_to_latest > Filtering data points -> Filtering points outside (-1,1) 1`] = `"7ca7bb74"`;
+
+exports[`compare_to_latest > Filtering data points -> Filtering undefined points 1`] = `"f87277a6"`;
+
+exports[`compare_to_latest > FunctionAnnotation -> FunctionAnnotation 1`] = `"855324a6"`;
+
+exports[`compare_to_latest > FunctionSeries -> Fermat's spiral 1`] = `"12a58d3c"`;
+
+exports[`compare_to_latest > FunctionSeries -> Fish curve 1`] = `"3033f21a"`;
+
+exports[`compare_to_latest > FunctionSeries -> Folium of Descartes 1`] = `"6f39aa3c"`;
+
+exports[`compare_to_latest > FunctionSeries -> FunctionSeries 1`] = `"e9212951"`;
+
+exports[`compare_to_latest > FunctionSeries -> Heaviside step function 1`] = `"49eec67d"`;
+
+exports[`compare_to_latest > FunctionSeries -> Lamé curves 1`] = `"be2637cc"`;
+
+exports[`compare_to_latest > FunctionSeries -> Lemniscate of Bernoulli 1`] = `"1f287e55"`;
+
+exports[`compare_to_latest > FunctionSeries -> Lemniscate of Gerono 1`] = `"73f71031"`;
+
+exports[`compare_to_latest > FunctionSeries -> Limaçon of Pascal 1`] = `"5d9fb4e5"`;
+
+exports[`compare_to_latest > FunctionSeries -> Lissajous figure 1`] = `"2dca7b20"`;
+
+exports[`compare_to_latest > FunctionSeries -> Parametric function 1 1`] = `"f8512c98"`;
+
+exports[`compare_to_latest > FunctionSeries -> Parametric function 2 1`] = `"c38017eb"`;
+
+exports[`compare_to_latest > FunctionSeries -> Parametric function 3 1`] = `"329a9e4f"`;
+
+exports[`compare_to_latest > FunctionSeries -> Rose curve 1`] = `"e68c9855"`;
+
+exports[`compare_to_latest > FunctionSeries -> Square wave 1`] = `"6c0ccf92"`;
+
+exports[`compare_to_latest > FunctionSeries -> Squirqle 1`] = `"f5f7c3eb"`;
+
+exports[`compare_to_latest > FunctionSeries -> Superellipse n=20 1`] = `"74e46253"`;
+
+exports[`compare_to_latest > FunctionSeries -> Trisectrix of Maclaurin 1`] = `"ff1b974e"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2x3, reversed x- and y-axis 1`] = `"84736c8c"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, X0>X1 1`] = `"4d25222a"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, Y0>Y1 1`] = `"b76b4542"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, interpolated 1`] = `"b5adb622"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, interpolated with two NaN values 1`] = `"7b8ab90c"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, interpolated with two NaN values, flat data 1`] = `"acb7bb0d"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, interpolated, cartesian axes 1`] = `"c189d8a0"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, not interpolated 1`] = `"c7db67eb"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, not interpolated with two NaN values 1`] = `"346e3db5"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, not interpolated with two NaN values, flat data 1`] = `"a4332368"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, reversed x-axis 1`] = `"ed70087a"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, reversed x-axis, X0>X1 1`] = `"2eb43c06"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, reversed y-axis 1`] = `"9260709c"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 2×3, reversed y-axis, Y0>Y1 1`] = `"22e915ac"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 3×3, diagonal (center defined) 1`] = `"cf63cde9"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 3×3, diagonal (edge defined) 1`] = `"8ea0a1a5"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 6×4, not transposed 1`] = `"94b66fe4"`;
+
+exports[`compare_to_latest > HeatMapSeries -> 6×6, diagonal 1`] = `"ef47e656"`;
+
+exports[`compare_to_latest > HeatMapSeries -> Confusion matrix 1`] = `"0e798d90"`;
+
+exports[`compare_to_latest > HeatMapSeries -> Logarithmic X, discrete rectangles 1`] = `"4191891e"`;
+
+exports[`compare_to_latest > HeatMapSeries -> Logarithmic X, interpolated 1`] = `"e6c2a516"`;
+
+exports[`compare_to_latest > HeatMapSeries -> Peaks 1`] = `"455c67a8"`;
+
+exports[`compare_to_latest > HighLowSeries -> HighLowSeries (DateTime axis) 1`] = `"e7440362"`;
+
+exports[`compare_to_latest > HighLowSeries -> HighLowSeries 1`] = `"c2e18e2d"`;
+
+exports[`compare_to_latest > HistogramSeries -> Custom Bins 1`] = `"0f7618ea"`;
+
+exports[`compare_to_latest > HistogramSeries -> Custom Item Mapping 1`] = `"d138d2da"`;
+
+exports[`compare_to_latest > HistogramSeries -> Disconnected Bins 1`] = `"3acce9a7"`;
+
+exports[`compare_to_latest > HistogramSeries -> Exponential Distribution (logarithmic) 1`] = `"8a255a6a"`;
+
+exports[`compare_to_latest > HistogramSeries -> Exponential Distribution (logarithmic,with BaseValue) 1`] = `"a447f1d4"`;
+
+exports[`compare_to_latest > HistogramSeries -> Exponential Distribution 1`] = `"045e72e2"`;
+
+exports[`compare_to_latest > HistogramSeries -> Individual Bin Colors 1`] = `"70b31be8"`;
+
+exports[`compare_to_latest > HistogramSeries -> Label Placement (reversed Y Axis) 1`] = `"a21ba9f5"`;
+
+exports[`compare_to_latest > HistogramSeries -> Label Placement 1`] = `"633ccf38"`;
+
+exports[`compare_to_latest > HistogramSeries -> Label formatter 1`] = `"d5d8825b"`;
+
+exports[`compare_to_latest > HistogramSeries -> Normal Distribution Three Colors 1`] = `"94f43b79"`;
+
+exports[`compare_to_latest > ImageAnnotation -> ImageAnnotation - gradient backgrounds 1`] = `"9b350e1b"`;
+
+exports[`compare_to_latest > ImageAnnotation -> ImageAnnotation - normal axes 1`] = `"a15f3c7d"`;
+
+exports[`compare_to_latest > ImageAnnotation -> ImageAnnotation - reverse horizontal axis 1`] = `"3b7266aa"`;
+
+exports[`compare_to_latest > ImageAnnotation -> ImageAnnotation - reverse vertical axis 1`] = `"72e134f3"`;
+
+exports[`compare_to_latest > ImageAnnotation -> ImageAnnotation 1`] = `"103baec0"`;
+
+exports[`compare_to_latest > IntervalBarSeries -> IntervalBarSeries 1`] = `"f756abd9"`;
+
+exports[`compare_to_latest > IntervalBarSeries -> IntervalBarSeries with various label types 1`] = `"77b54327"`;
+
+exports[`compare_to_latest > ItemsSource -> Items implementing IDataPointProvider 1`] = `"7381d1b8"`;
+
+exports[`compare_to_latest > ItemsSource -> List<DataPoint> 1`] = `"fe7db408"`;
+
+exports[`compare_to_latest > ItemsSource -> Mapping property 1`] = `"a5ea637c"`;
+
+exports[`compare_to_latest > ItemsSource -> Using reflection (slow) 1`] = `"95220718"`;
+
+exports[`compare_to_latest > Legends -> Clipped legends 1`] = `"4a87bb25"`;
+
+exports[`compare_to_latest > Legends -> Clipped legends RightTop outside with MaxWidth 1`] = `"d43b38ad"`;
+
+exports[`compare_to_latest > Legends -> Clipped legends TopRight outside 1`] = `"e0d85929"`;
+
+exports[`compare_to_latest > Legends -> Full height legend 1`] = `"3daed93f"`;
+
+exports[`compare_to_latest > Legends -> Full width legend 1`] = `"c447df9f"`;
+
+exports[`compare_to_latest > Legends -> Grayscale colors 1`] = `"046a3959"`;
+
+exports[`compare_to_latest > Legends -> Hidden Legend 1`] = `"057b4d4d"`;
+
+exports[`compare_to_latest > Legends -> Legend at BottomLeft outside horizontal 1`] = `"50f51e2a"`;
+
+exports[`compare_to_latest > Legends -> Legend at TopLeft outside vertical 1`] = `"9a21f32e"`;
+
+exports[`compare_to_latest > Legends -> Legend at default position 1`] = `"5fe6f7c7"`;
+
+exports[`compare_to_latest > Legends -> Legend at right top inside 1`] = `"8df9a847"`;
+
+exports[`compare_to_latest > Legends -> Legend at right top outside 1`] = `"ede374ff"`;
+
+exports[`compare_to_latest > Legends -> Legend not showing invisible series 1`] = `"17ecb97e"`;
+
+exports[`compare_to_latest > Legends -> Legend showing invisible series 1`] = `"8af8f833"`;
+
+exports[`compare_to_latest > Legends -> Legend with DefaultFontSize 1`] = `"35fb729f"`;
+
+exports[`compare_to_latest > Legends -> Legend with grouped Series 1`] = `"d1b4b024"`;
+
+exports[`compare_to_latest > Legends -> Legend with grouped Series Horizontal 1`] = `"ca73bbf7"`;
+
+exports[`compare_to_latest > Legends -> Legend with grouped Series and MaxHeight 1`] = `"d1b4b024"`;
+
+exports[`compare_to_latest > Legends -> LegendColumnSpacing (only for vertical orientation) 1`] = `"8f402b84"`;
+
+exports[`compare_to_latest > Legends -> LegendItemSpacing (only for horizontal orientation) 1`] = `"44f269d3"`;
+
+exports[`compare_to_latest > Legends -> LegendLineSpacing (horizontal legend orientation) 1`] = `"51d50fc7"`;
+
+exports[`compare_to_latest > Legends -> LegendLineSpacing (vertical legend orientation) 1`] = `"1fb4c31c"`;
+
+exports[`compare_to_latest > Legends -> LegendMaxHeight (vertical legend orientation) 1`] = `"cbe8b34c"`;
+
+exports[`compare_to_latest > Legends -> Multiple Legends with grouped Series 1`] = `"1e19e10d"`;
+
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation - ClipByAxis property 1`] = `"be183ed8"`;
+
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation on linear axes 1`] = `"3c2cfadd"`;
+
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation on logarithmic axes 1`] = `"a9adb996"`;
+
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation on reversed axes 1`] = `"dcf6c228"`;
+
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation with text orientation specified 1`] = `"b7258ea9"`;
+
+exports[`compare_to_latest > LineSeries -> Broken lines 1`] = `"27aeaa22"`;
+
+exports[`compare_to_latest > LineSeries -> Canonical spline interpolation 1`] = `"b34b9608"`;
+
+exports[`compare_to_latest > LineSeries -> Catmull-Rom interpolation 1`] = `"def09984"`;
+
+exports[`compare_to_latest > LineSeries -> Custom TrackerFormatString 1`] = `"2c4c971a"`;
+
+exports[`compare_to_latest > LineSeries -> Custom markers 1`] = `"a8caa67c"`;
+
+exports[`compare_to_latest > LineSeries -> Custom style 1`] = `"14310332"`;
+
+exports[`compare_to_latest > LineSeries -> Default style 1`] = `"67ba7454"`;
+
+exports[`compare_to_latest > LineSeries -> Interpolation 1`] = `"cb093535"`;
+
+exports[`compare_to_latest > LineSeries -> Labels 1`] = `"edf20661"`;
+
+exports[`compare_to_latest > LineSeries -> LineLegendPosition (reversed X Axis) 1`] = `"3c59c006"`;
+
+exports[`compare_to_latest > LineSeries -> LineLegendPosition 1`] = `"5e842203"`;
+
+exports[`compare_to_latest > LineSeries -> LineStyle 1`] = `"0aa896fb"`;
+
+exports[`compare_to_latest > LineSeries -> Marker color options 1`] = `"6a5ed48d"`;
+
+exports[`compare_to_latest > LineSeries -> Marker types 1`] = `"cdc893a5"`;
+
+exports[`compare_to_latest > LineSeries -> Two LineSeries 1`] = `"ae645724"`;
+
+exports[`compare_to_latest > LineSeries -> Visibility 1`] = `"43e92878"`;
+
+exports[`compare_to_latest > LineSeries -> With X Decimator 1`] = `"cc89bb25"`;
+
+exports[`compare_to_latest > LineSeries -> Without Decimator 1`] = `"52e8bfe0"`;
+
+exports[`compare_to_latest > LinearAxis -> Default StringFormat ('g6') 1`] = `"59b2293a"`;
+
+exports[`compare_to_latest > LinearAxis -> Gridlines: Both 1`] = `"47dd15b8"`;
+
+exports[`compare_to_latest > LinearAxis -> Gridlines: Horizontal 1`] = `"cada6367"`;
+
+exports[`compare_to_latest > LinearAxis -> Gridlines: None 1`] = `"6eecc77d"`;
+
+exports[`compare_to_latest > LinearAxis -> Gridlines: Vertical 1`] = `"4b680eee"`;
+
+exports[`compare_to_latest > LinearAxis -> StringFormat = 'f2' 1`] = `"364f7f6b"`;
+
+exports[`compare_to_latest > LinearAxis -> TickStyle: Crossing 1`] = `"f3531eab"`;
+
+exports[`compare_to_latest > LinearAxis -> TickStyle: Inside 1`] = `"1b6c2d55"`;
+
+exports[`compare_to_latest > LinearAxis -> TickStyle: None 1`] = `"075812f6"`;
+
+exports[`compare_to_latest > LinearAxis -> TickStyle: Outside 1`] = `"cb9deee3"`;
+
+exports[`compare_to_latest > LinearBarSeries -> Default style 1`] = `"0835aea1"`;
+
+exports[`compare_to_latest > LinearBarSeries -> With BaseValue (Logarithmic) 1`] = `"f988b31b"`;
+
+exports[`compare_to_latest > LinearBarSeries -> With BaseValue 1`] = `"e1803133"`;
+
+exports[`compare_to_latest > LinearBarSeries -> With negative colors (logaritmic) 1`] = `"4b58410c"`;
+
+exports[`compare_to_latest > LinearBarSeries -> With negative colors 1`] = `"374d1cff"`;
+
+exports[`compare_to_latest > LinearBarSeries -> With stroke 1`] = `"44925262"`;
+
+exports[`compare_to_latest > LinearColorAxis -> 6 Colors - RenderAsImage 1`] = `"66d5469b"`;
+
+exports[`compare_to_latest > LinearColorAxis -> 6 Colors 1`] = `"23b5b2b4"`;
+
+exports[`compare_to_latest > LinearColorAxis -> Peaks - RenderAsImage 1`] = `"e87b971c"`;
+
+exports[`compare_to_latest > LinearColorAxis -> Peaks 1`] = `"4a4df75d"`;
+
+exports[`compare_to_latest > LinearColorAxis -> Position None 1`] = `"78f25929"`;
+
+exports[`compare_to_latest > LinearColorAxis -> Short - RenderAsImage 1`] = `"ee869119"`;
+
+exports[`compare_to_latest > LinearColorAxis -> Short 1`] = `"78ea72a7"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> Amdahl's Law 1`] = `"e7802acb"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> LogarithmicAxis with AbsoluteMaximum 1`] = `"f3a69da2"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> LogarithmicAxis with AxisChanged event handler 1`] = `"b40a1cf1"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> LogarithmicAxis with default values 1`] = `"d12f4359"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> Negative values 1`] = `"4d4cc9ad"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> Richter magnitudes 1`] = `"dbf54ff4"`;
+
+exports[`compare_to_latest > LogarithmicAxis -> Tick calculation 1`] = `"15126eb4"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> 6 Colors - RenderAsImage 1`] = `"5cdca491"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> 6 Colors 1`] = `"ef6e4f80"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> Peaks - RenderAsImage 1`] = `"141eb2f2"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> Peaks 1`] = `"f77246fd"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> Position None 1`] = `"e386c53a"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> Short - RenderAsImage 1`] = `"8bcd58c9"`;
+
+exports[`compare_to_latest > LogarithmicColorAxis -> Short 1`] = `"decec9e5"`;
+
+exports[`compare_to_latest > Misc -> Conway's Game of Life 1`] = `"61d62a9f"`;
+
+exports[`compare_to_latest > Misc -> Elephant curve 1`] = `"52e9f574"`;
+
+exports[`compare_to_latest > Misc -> La Linea (AreaSeries) 1`] = `"3bb72d5d"`;
+
+exports[`compare_to_latest > Misc -> La Linea (LineSeries) 1`] = `"b7027e80"`;
+
+exports[`compare_to_latest > Misc -> Numeric ODE solvers (y'=cos(x)) 1`] = `"62131d77"`;
+
+exports[`compare_to_latest > Misc -> Numeric ODE solvers (y'=x) 1`] = `"72c85917"`;
+
+exports[`compare_to_latest > Misc -> Numeric ODE solvers (y'=y) 1`] = `"ba7bb8b8"`;
+
+exports[`compare_to_latest > Misc -> PI curve 1`] = `"3b7ee7b1"`;
+
+exports[`compare_to_latest > Misc -> Train schedule 1`] = `"9db4c0bf"`;
+
+exports[`compare_to_latest > Mouse Events -> Add Series 1`] = `"105e543d"`;
+
+exports[`compare_to_latest > Mouse Events -> Add arrow annotations 1`] = `"22c93fe7"`;
+
+exports[`compare_to_latest > Mouse Events -> ArrowAnnotation 1`] = `"0c8493fb"`;
+
+exports[`compare_to_latest > Mouse Events -> Clicking on an annotation 1`] = `"c37e4348"`;
+
+exports[`compare_to_latest > Mouse Events -> Hover 1`] = `"344e8f8b"`;
+
+exports[`compare_to_latest > Mouse Events -> ImageAnnotation 1`] = `"3f4687a6"`;
+
+exports[`compare_to_latest > Mouse Events -> LineAnnotation 1`] = `"90e9bb69"`;
+
+exports[`compare_to_latest > Mouse Events -> LineSeries and PlotModel MouseDown event 1`] = `"4d7dba7f"`;
+
+exports[`compare_to_latest > Mouse Events -> MouseDown event and HitTestResult 1`] = `"b450b0b1"`;
+
+exports[`compare_to_latest > Mouse Events -> PlotModel mouse events 1`] = `"15a1d03e"`;
+
+exports[`compare_to_latest > Mouse Events -> PolygonAnnotation 1`] = `"68e42388"`;
+
+exports[`compare_to_latest > Mouse Events -> RectangleAnnotation click 1`] = `"3208f761"`;
+
+exports[`compare_to_latest > Mouse Events -> Select range 1`] = `"301d1052"`;
+
+exports[`compare_to_latest > Mouse Events -> TextAnnotation 1`] = `"290fbc9c"`;
+
+exports[`compare_to_latest > Mouse Events -> Touch 1`] = `"59a61d0b"`;
+
+exports[`compare_to_latest > Mouse Events -> Touch on a LineSeries 1`] = `"7ed5a28b"`;
+
+exports[`compare_to_latest > Palettes -> Black-white-red (3 colors) palette 1`] = `"a70624f2"`;
+
+exports[`compare_to_latest > Palettes -> Black-white-red (500 colors) palette 1`] = `"b431e3bb"`;
+
+exports[`compare_to_latest > Palettes -> Blue-white-red (40 colors) palette 1`] = `"8581137f"`;
+
+exports[`compare_to_latest > Palettes -> Blue-white-red (200 colors) palette 1`] = `"ce379f78"`;
+
+exports[`compare_to_latest > Palettes -> Cividis palette 1`] = `"1b8b1f57"`;
+
+exports[`compare_to_latest > Palettes -> Cool (200 colors) palette 1`] = `"6c7af23e"`;
+
+exports[`compare_to_latest > Palettes -> Default palette 1`] = `"4a4df75d"`;
+
+exports[`compare_to_latest > Palettes -> Hot (30 colors) palette 1`] = `"23a92579"`;
+
+exports[`compare_to_latest > Palettes -> Hot (64 colors) palette 1`] = `"638723ca"`;
+
+exports[`compare_to_latest > Palettes -> Hot (200 colors) palette 1`] = `"6fb1b629"`;
+
+exports[`compare_to_latest > Palettes -> Hue (400 colors) palette 1`] = `"4acb6b77"`;
+
+exports[`compare_to_latest > Palettes -> Hue distinct (200 colors) palette 1`] = `"be78ac3b"`;
+
+exports[`compare_to_latest > Palettes -> Hue distinct reversed (200 colors) palette 1`] = `"f75db7a7"`;
+
+exports[`compare_to_latest > Palettes -> Inferno palette 1`] = `"9719f190"`;
+
+exports[`compare_to_latest > Palettes -> Jet (6 colors) palette 1`] = `"23b5b2b4"`;
+
+exports[`compare_to_latest > Palettes -> Jet (20 colors) palette 1`] = `"ace9eb5a"`;
+
+exports[`compare_to_latest > Palettes -> Jet (200 colors) palette 1`] = `"1a211841"`;
+
+exports[`compare_to_latest > Palettes -> Magma palette 1`] = `"8e210f65"`;
+
+exports[`compare_to_latest > Palettes -> Plasma palette 1`] = `"91dd591e"`;
+
+exports[`compare_to_latest > Palettes -> Rainbow (7 colors) palette 1`] = `"7e123284"`;
+
+exports[`compare_to_latest > Palettes -> Rainbow (200 colors) palette 1`] = `"60850a10"`;
+
+exports[`compare_to_latest > Palettes -> Viridis (10 colors) palette 1`] = `"6ac4596a"`;
+
+exports[`compare_to_latest > Palettes -> Viridis palette 1`] = `"4a4df75d"`;
+
+exports[`compare_to_latest > PieSeries -> Doughnut Chart 1`] = `"78e52ad5"`;
+
+exports[`compare_to_latest > PieSeries -> PieSeries 1`] = `"4701322d"`;
+
+exports[`compare_to_latest > PieSeries -> PieSeries with inside label color 1`] = `"78e52ad5"`;
+
+exports[`compare_to_latest > PlotController examples -> Basic controller example 1`] = `"5c929806"`;
+
+exports[`compare_to_latest > PlotController examples -> Clicking on an annotation 1`] = `"c37e4348"`;
+
+exports[`compare_to_latest > PlotController examples -> Mouse handling example 1`] = `"25fc02b6"`;
+
+exports[`compare_to_latest > PlotController examples -> Preferring an axis for manipulation 1`] = `"f80cefe3"`;
+
+exports[`compare_to_latest > PlotController examples -> Show tracker without clicking 1`] = `"0ab02b4c"`;
+
+exports[`compare_to_latest > PlotController examples -> Show/Hide Legend 1`] = `"15326a5e"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = 50% White 1`] = `"eb573122"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = Black 1`] = `"3824ca82"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = LightSkyBlue 1`] = `"e6b7a090"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = Transparent 1`] = `"960ed64f"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = Undefined (default) 1`] = `"d0e0a76e"`;
+
+exports[`compare_to_latest > PlotModel examples -> Background = White 1`] = `"d0726da0"`;
+
+exports[`compare_to_latest > PlotModel examples -> PlotAreaBorderThickness / AxisLine 1`] = `"85b1e7fe"`;
+
+exports[`compare_to_latest > PlotModel examples -> PlotAreaBorderThickness = (1,0,0,1) 1`] = `"4eb4a6e2"`;
+
+exports[`compare_to_latest > PlotModel examples -> PlotAreaBorderThickness = (4,1,1,4) 1`] = `"d6751673"`;
+
+exports[`compare_to_latest > PlotModel examples -> PlotAreaBorderThickness = 0 1`] = `"e56805d0"`;
+
+exports[`compare_to_latest > PlotModel examples -> PlotAreaBorderThickness = 2 1`] = `"74d0030e"`;
+
+exports[`compare_to_latest > PlotModel examples -> Sub- and superscript in titles 1`] = `"2484df6e"`;
+
+exports[`compare_to_latest > PlotModel examples -> Title 1`] = `"861ff715"`;
+
+exports[`compare_to_latest > PlotModel examples -> Title and Subtitle 1`] = `"259e081d"`;
+
+exports[`compare_to_latest > PlotModel examples -> TitleClipping60 1`] = `"01b42c90"`;
+
+exports[`compare_to_latest > PlotModel examples -> TitleClippingOff 1`] = `"dbc5cc44"`;
+
+exports[`compare_to_latest > PlotModel examples -> TitleHorizontalAlignment = CenteredWithinView 1`] = `"d0d1bf63"`;
+
+exports[`compare_to_latest > PlotModel examples -> TitlePadding = 0 1`] = `"99cf91b8"`;
+
+exports[`compare_to_latest > PlotModel examples -> TitlePadding = 100 1`] = `"34eb33db"`;
+
+exports[`compare_to_latest > PointAnnotation -> PointAnnotation - shapes 1`] = `"225ede94"`;
+
+exports[`compare_to_latest > PointAnnotation -> PointAnnotation - text alignments 1`] = `"eed6a82e"`;
+
+exports[`compare_to_latest > PointAnnotation -> PointAnnotation 1`] = `"22d4e7c7"`;
+
+exports[`compare_to_latest > Polar Plots -> Angle axis with offset angle 1`] = `"2b102188"`;
+
+exports[`compare_to_latest > Polar Plots -> East/west directions 1`] = `"32212538"`;
+
+exports[`compare_to_latest > Polar Plots -> Semi-circle 1`] = `"0e7817fd"`;
+
+exports[`compare_to_latest > Polar Plots -> Semi-circle full plot area 1`] = `"f7764cd4"`;
+
+exports[`compare_to_latest > Polar Plots -> Semi-circle offset angle axis range 1`] = `"0f7b0487"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral 1`] = `"a12da72f"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral full plot area 1`] = `"27428425"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral full plot area with negative minimum 1`] = `"638e214d"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral full plot area with positive minimum 1`] = `"ea90c0a2"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral with magnitude axis min and max 1`] = `"e9cd7c66"`;
+
+exports[`compare_to_latest > Polar Plots -> Spiral2 1`] = `"1d20254b"`;
+
+exports[`compare_to_latest > PolygonAnnotation -> AnnotationLayer property 1`] = `"1ce78577"`;
+
+exports[`compare_to_latest > PolygonAnnotation -> Koch Snowflakes 1`] = `"c19ba229"`;
+
+exports[`compare_to_latest > PolygonAnnotation -> PolygonAnnotation 1`] = `"fbd050a7"`;
+
+exports[`compare_to_latest > PolygonAnnotation -> PolygonAnnotation with custom text position and alignment 1`] = `"b41770dd"`;
+
+exports[`compare_to_latest > PolygonSeries -> Hexagonal Grid 1`] = `"1b9fc128"`;
+
+exports[`compare_to_latest > PolygonSeries -> PolygonSeries 1`] = `"9213781d"`;
+
+exports[`compare_to_latest > PolylineAnnotation -> Koch Surfaces 1`] = `"490d3260"`;
+
+exports[`compare_to_latest > PolylineAnnotation -> PolylineAnnotation 1`] = `"6d4cd998"`;
+
+exports[`compare_to_latest > RangeColorAxis -> ScatterSeries with RangeColorAxis (Horizontal) 1`] = `"0ac5ecfc"`;
+
+exports[`compare_to_latest > RangeColorAxis -> ScatterSeries with RangeColorAxis (Vertical) 1`] = `"1d7d2c57"`;
+
+exports[`compare_to_latest > RangeColorAxis -> ScatterSeries with Reversed  RangeColorAxis (Vertical) 1`] = `"056fa837"`;
+
+exports[`compare_to_latest > RangeColorAxis -> ScatterSeries with Reversed RangeColorAxis (Horizontal) 1`] = `"80badc19"`;
+
+exports[`compare_to_latest > RectangleAnnotation -> RectangleAnnotation - horizontal bands 1`] = `"f83ffe98"`;
+
+exports[`compare_to_latest > RectangleAnnotation -> RectangleAnnotation - vertical bands 1`] = `"5871338a"`;
+
+exports[`compare_to_latest > RectangleAnnotation -> RectangleAnnotation 1`] = `"58a7828f"`;
+
+exports[`compare_to_latest > RectangleAnnotation -> RectangleAnnotations - vertical limit 1`] = `"931a0c7f"`;
+
+exports[`compare_to_latest > RectangleBarSeries -> RectangleBarSeries 1`] = `"6ce061f3"`;
+
+exports[`compare_to_latest > RectangleSeries -> RectangleSeries 1`] = `"786ba2be"`;
+
+exports[`compare_to_latest > RectangleSeries -> RectangleSeries from ItemsSource and Mapping 1`] = `"21f032a2"`;
+
+exports[`compare_to_latest > ScatterSeries -> Correlated points 1`] = `"a6c1bb21"`;
+
+exports[`compare_to_latest > ScatterSeries -> LabelFormatString 1`] = `"c91928bc"`;
+
+exports[`compare_to_latest > ScatterSeries -> Marker types 1`] = `"b6df6a94"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points (BinSize=2) 1`] = `"f38b4e54"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points (BinSize=4) 1`] = `"23fd66b2"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points (BinSize=6) 1`] = `"5f70e938"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points (BinSize=8) 1`] = `"aeb913d6"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points (BinSize=10) 1`] = `"68a7c03d"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points 1`] = `"25dce115"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points with least squares fit 1`] = `"b9b5dda9"`;
+
+exports[`compare_to_latest > ScatterSeries -> Random points with random size 1`] = `"b4cafb18"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis BlackWhiteRed (9) 1`] = `"5d5e539f"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis BlackWhiteRed (9) top legend 1`] = `"b556faaf"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis BlueWhiteRed (3) 1`] = `"5493566a"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis BlueWhiteRed (9) 1`] = `"782cab2e"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis BlueWhiteRed (256) 1`] = `"5a7fa13a"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Cividis 1`] = `"9bcf4fc1"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Cool(32) 1`] = `"9ac0b3bf"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Gray(32) 1`] = `"271ef468"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Hot (top legend) 1`] = `"2957c013"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Hot with extreme colors 1`] = `"c8d8f0f3"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Hot(16) N=31000 1`] = `"5c65d007"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Hot(64) 1`] = `"ad619ffe"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Hue(30) Star 1`] = `"cf0bb7af"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Inferno 1`] = `"8dcaa777"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Jet(32) 1`] = `"8a04394d"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Magma 1`] = `"0b6ce439"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Plasma 1`] = `"c931a544"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Rainbow(16) 1`] = `"e30726eb"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with ColorAxis Viridis 1`] = `"5ff096af"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with SelectionMode.All (no tracker) 1`] = `"f868a031"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with SelectionMode.All (with tracker) 1`] = `"f868a031"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with multi-selected items 1`] = `"e2bf3d67"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries with single-selected items 1`] = `"7f1ca38d"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries.ItemsSource + Mapping 1`] = `"bdcced9a"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries.ItemsSource + reflection 1`] = `"c6b38503"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries.ItemsSource 1`] = `"5fcc1eeb"`;
+
+exports[`compare_to_latest > ScatterSeries -> ScatterSeries.Points 1`] = `"a2b21835"`;
+
+exports[`compare_to_latest > ScatterSeries -> TrackerFormatString 1`] = `"05946111"`;
+
+exports[`compare_to_latest > ScatterSeries -> Two ScatterSeries 1`] = `"aa98a9be"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries 1`] = `"8dea6735"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with dashed vertical lines 1`] = `"c0d7319e"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with invalid Y 1`] = `"0bc56e27"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with invalid points 1`] = `"18218a0b"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with labels 1`] = `"b1ad89c1"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with markers 1`] = `"9b72d8e1"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with non-monotonic X 1`] = `"38b45aa2"`;
+
+exports[`compare_to_latest > StairStepSeries -> StairStepSeries with thin vertical lines 1`] = `"1ba5c25b"`;
+
+exports[`compare_to_latest > StemSeries -> StemSeries 1`] = `"2ef4c216"`;
+
+exports[`compare_to_latest > TextAnnotation -> Rotations 1`] = `"06d5ab20"`;
+
+exports[`compare_to_latest > TextAnnotation -> TextAnnotation 1`] = `"91774cd2"`;
+
+exports[`compare_to_latest > ThreeColorLineSeries -> Temperatures (Y Axis reversed) 1`] = `"67009dbf"`;
+
+exports[`compare_to_latest > ThreeColorLineSeries -> Temperatures 1`] = `"8b3a4719"`;
+
+exports[`compare_to_latest > TimeSpanAxis -> Default StringFormat 1`] = `"8593ad8b"`;
+
+exports[`compare_to_latest > TimeSpanAxis -> StringFormat = 'h:mm' 1`] = `"29d99a56"`;
+
+exports[`compare_to_latest > TornadoBarSeries -> Tornado diagram 1 1`] = `"dbb57847"`;
+
+exports[`compare_to_latest > TornadoBarSeries -> Tornado diagram 2 1`] = `"eafdc132"`;
+
+exports[`compare_to_latest > TornadoBarSeries -> Tornado diagram with various label types 1`] = `"1fab45ee"`;
+
+exports[`compare_to_latest > Tracker -> No interpolation 1`] = `"dbb97e19"`;
+
+exports[`compare_to_latest > Tracker -> Specified distance of the tracker fires 1`] = `"61a19554"`;
+
+exports[`compare_to_latest > Tracker -> TrackerChangedEvent 1`] = `"78d17496"`;
+
+exports[`compare_to_latest > TwoColorAreaSeries -> Temperatures 1`] = `"3113c32f"`;
+
+exports[`compare_to_latest > TwoColorAreaSeries -> Temperatures ver2 1`] = `"4418f183"`;
+
+exports[`compare_to_latest > TwoColorAreaSeries -> Temperatures ver3 1`] = `"34a78f55"`;
+
+exports[`compare_to_latest > TwoColorAreaSeries -> Two polygons 1`] = `"fe6481af"`;
+
+exports[`compare_to_latest > TwoColorLineSeries -> Temperatures (Y Axis reversed) 1`] = `"75aa7c98"`;
+
+exports[`compare_to_latest > TwoColorLineSeries -> Temperatures 1`] = `"b714f140"`;
+
+exports[`compare_to_latest > VectorSeries -> Vector Field 1`] = `"afac3328"`;
+
+exports[`compare_to_latest > VectorSeries -> VectorSeries (Vector Origin and Label position) 1`] = `"f2fd2afc"`;
+
+exports[`compare_to_latest > VectorSeries -> VectorSeries (Veeness = 2) 1`] = `"90f20e32"`;
+
+exports[`compare_to_latest > VectorSeries -> VectorSeries (without ColorAxis) 1`] = `"5306eecc"`;
+
+exports[`compare_to_latest > VectorSeries -> VectorSeries 1`] = `"5af13d05"`;
+
+exports[`compare_to_latest > VectorSeries -> VectorSeries on Log Axis 1`] = `"e0d34342"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (+/-), fixed axis 1`] = `"8946be73"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (+/-), natural axis 1`] = `"d78bf824"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (combined), fixed axis 1`] = `"45447f89"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (combined), natural axis 1`] = `"625a010f"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (stacked), fixed axis 1`] = `"c8cd5e95"`;
+
+exports[`compare_to_latest > VolumeSeries -> Just Volume (stacked), natural axis 1`] = `"836739d5"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #445576: Invisible contour series 1`] = `"549df73a"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #461507: StairStepSeries NullReferenceException 1`] = `"f9161419"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #474875: Updating HeatMapSeries 1 1`] = `"2d0f46eb"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #474875: Updating HeatMapSeries 2 1`] = `"97ec8d09"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #501409: Heatmap interpolation color 1`] = `"c14bc82d"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #522598: Peaks 400x400 1`] = `"163e9b20"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #539104: Brewer colors (4) 1`] = `"490d43fe"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #539104: Brewer colors (6) 1`] = `"98b81169"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #539104: Medium intensity colors 1`] = `"04423655"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #539104: Reduced color saturation 1`] = `"76efca26"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #542701: Same color of LineSeries and axis title & labels 1`] = `"210894ac"`;
+
+exports[`compare_to_latest > Z0 Discussions -> #549839: Polar plot with custom arrow series 1`] = `"095f1be9"`;
+
+exports[`compare_to_latest > Z0 Discussions -> MarkerType = Circle problem 1`] = `"ec5ba338"`;

@@ -1,5 +1,5 @@
-﻿import type { DataPoint, ITransposablePlotElement, IXyAxisPlotElement, ScreenPoint } from '@/oxyplot'
-import { HorizontalAlignment, newDataPoint, newScreenPoint, ScreenVector, VerticalAlignment } from '@/oxyplot'
+﻿import type { DataPoint, ITransposablePlotElement, IXyAxisPlotElement, ScreenPoint, ScreenVector } from '@/oxyplot'
+import { HorizontalAlignment, newDataPoint, newScreenPoint, newScreenVector, VerticalAlignment } from '@/oxyplot'
 
 /**
  * The transposable plot element extensions.
@@ -42,11 +42,11 @@ export class PlotElementExtensions {
    * @returns The oriented vector.
    */
   public static orientateVector(element: ITransposablePlotElement, vector: ScreenVector): ScreenVector {
-    vector = new ScreenVector(
+    vector = newScreenVector(
       element.xAxis!.isReversed ? -vector.x : vector.x,
       element.yAxis!.isReversed ? -vector.y : vector.y,
     )
-    return PlotElementExtensions.isTransposed(element) ? new ScreenVector(-vector.y, -vector.x) : vector
+    return PlotElementExtensions.isTransposed(element) ? newScreenVector(-vector.y, -vector.x) : vector
   }
 
   /**

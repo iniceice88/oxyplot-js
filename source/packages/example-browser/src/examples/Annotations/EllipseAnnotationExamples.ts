@@ -1,5 +1,5 @@
 import type { ExampleCategory } from '../types'
-import { AxisPosition, EllipseAnnotation, LinearAxis, OxyColor, OxyColors, PlotModel } from 'oxyplot-js'
+import { AxisPosition, EllipseAnnotation, LinearAxis, OxyColor, OxyColorHelper, OxyColors, PlotModel } from 'oxyplot-js'
 
 function ellipseAnnotation(): PlotModel {
   const model = new PlotModel({ title: 'EllipseAnnotation' })
@@ -15,7 +15,7 @@ function ellipseAnnotation(): PlotModel {
       height: 15,
       text: 'EllipseAnnotation',
       textRotation: 10,
-      fill: OxyColor.fromAColor(99, OxyColors.Green),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Green),
       stroke: OxyColors.Black,
       strokeThickness: 2,
     }),
@@ -27,7 +27,7 @@ function ellipseAnnotation(): PlotModel {
       y: 20,
       width: 20,
       height: 20,
-      fill: OxyColor.fromAColor(99, OxyColors.Green),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Green),
       stroke: OxyColors.Black,
       strokeThickness: 2,
     }),
@@ -39,7 +39,7 @@ function ellipseAnnotation(): PlotModel {
       y: 20,
       width: 20,
       height: 20,
-      fill: OxyColor.fromAColor(99, OxyColors.Red),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Red),
       stroke: OxyColors.Black,
       strokeThickness: 2,
     }),
@@ -51,7 +51,7 @@ function ellipseAnnotation(): PlotModel {
       y: 30,
       width: 20,
       height: 20,
-      fill: OxyColor.fromAColor(99, OxyColors.Blue),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Blue),
       stroke: OxyColors.Black,
       strokeThickness: 2,
     }),

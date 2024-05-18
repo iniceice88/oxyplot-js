@@ -1,6 +1,5 @@
 import {
   AxisPosition,
-  BarItem,
   BarSeries,
   CategoryAxis,
   FunctionSeries,
@@ -10,6 +9,7 @@ import {
   LegendPosition,
   LinearAxis,
   LineSeries,
+  newBarItem,
   newDataPoint,
   OxyColors,
   PlotModel,
@@ -100,10 +100,10 @@ function test3(): PlotModel {
     yAxisKey: 'y',
   })
 
-  s1.items.push(new BarItem({ value: 25 }))
-  s1.items.push(new BarItem({ value: 137 }))
-  s1.items.push(new BarItem({ value: 18 }))
-  s1.items.push(new BarItem({ value: 40 }))
+  s1.items.push(newBarItem({ value: 25 }))
+  s1.items.push(newBarItem({ value: 137 }))
+  s1.items.push(newBarItem({ value: 18 }))
+  s1.items.push(newBarItem({ value: 40 }))
 
   const s2 = new BarSeries({
     title: 'Series 2',
@@ -114,10 +114,10 @@ function test3(): PlotModel {
     yAxisKey: 'y',
   })
 
-  s2.items.push(new BarItem({ value: 12 }))
-  s2.items.push(new BarItem({ value: 14 }))
-  s2.items.push(new BarItem({ value: 120 }))
-  s2.items.push(new BarItem({ value: 26 }))
+  s2.items.push(newBarItem({ value: 12 }))
+  s2.items.push(newBarItem({ value: 14 }))
+  s2.items.push(newBarItem({ value: 120 }))
+  s2.items.push(newBarItem({ value: 26 }))
 
   const categoryAxis = new CategoryAxis({
     position: AxisPosition.Bottom,

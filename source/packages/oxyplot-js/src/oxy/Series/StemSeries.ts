@@ -1,6 +1,8 @@
-import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLineSeriesOptions,
   EdgeRenderingMode,
+  ExtendedDefaultLineSeriesOptions,
+  type IRenderContext,
   LineSeries,
   LineStyle,
   MarkerType,
@@ -8,15 +10,25 @@ import {
   newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
-  screenPointMinus,
+  screenPointMinusEx,
   screenPointPlus,
   TrackerHitResult,
 } from '@/oxyplot'
-import { Number_MAX_VALUE } from '@/patch'
+import { Number_MAX_VALUE, assignObject } from '@/patch'
 
 export interface CreateStemSeriesOptions extends CreateLineSeriesOptions {
   base?: number
+}
+
+export const DefaultStemSeriesOptions: CreateStemSeriesOptions = {
+  base: 0,
+}
+
+export const ExtendedDefaultStemSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
+  ...DefaultStemSeriesOptions,
 }
 
 /**
@@ -28,16 +40,17 @@ export class StemSeries extends LineSeries {
    */
   constructor(opt?: CreateStemSeriesOptions) {
     super(opt)
-    this.base = 0
-    if (opt) {
-      this.base = opt.base ?? 0
-    }
+    assignObject(this, DefaultStemSeriesOptions, opt)
+  }
+
+  getElementName() {
+    return 'StemSeries'
   }
 
   /**
    * Gets or sets Base.
    */
-  public base: number
+  public base: number = DefaultStemSeriesOptions.base!
 
   /**
    * Gets the point on the series that is nearest the specified point.
@@ -74,8 +87,8 @@ export class StemSeries extends LineSeries {
         u = 1 // we are outside the line, snap to the end
       }
 
-      const sp = screenPointPlus(sp1, screenPointMinus(sp2, sp1).times(u))
-      const distance = screenPointMinus(point, sp).lengthSquared
+      const sp = screenPointPlus(sp1, screenPointMinusEx(sp2, sp1).times(u))
+      const distance = screenPointMinusEx(point, sp).lengthSquared
 
       if (distance < minimumDistance) {
         const item = this.getItem(i)
@@ -154,5 +167,9 @@ export class StemSeries extends LineSeries {
         this.edgeRenderingMode,
       )
     }
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultStemSeriesOptions
   }
 }

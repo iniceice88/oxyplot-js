@@ -4,8 +4,9 @@ import {
   type IRenderContext,
   LineJoin,
   OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
+  OxyImage, OxyImageEx,
   PlotElementExtensions,
   removeUndef,
   RenderingExtensions,
@@ -91,12 +92,18 @@ export class MatrixSeries extends XYAxisSeries {
     this.borderColor = OxyColors.Gray
     this.notZeroColor = OxyColors.Black
     this.zeroTolerance = 0
-    this.trackerStringFormatter = (args) => `${args.title || ''}
+    this.trackerStringFormatter = function (args) {
+      return `${args.title || ''}
 [${args.xValue},${args.yValue}] = ${args.item}`
+    }
 
     if (opt) {
       Object.assign(this, removeUndef(opt))
     }
+  }
+
+  getElementName() {
+    return 'MatrixSeries'
   }
 
   /**
@@ -172,7 +179,7 @@ export class MatrixSeries extends XYAxisSeries {
         }
       }
 
-      this.image = await OxyImage.create(pixels, ImageFormat.Png)
+      this.image = await OxyImageEx.create(pixels, ImageFormat.Png)
     }
 
     const x0 = Math.min(p0.x, p1.x)
@@ -206,7 +213,7 @@ export class MatrixSeries extends XYAxisSeries {
 
     await rc.drawLineSegments(points, this.gridColor, 1, this.edgeRenderingMode, undefined, LineJoin.Miter)
 
-    if (this.borderColor.isVisible()) {
+    if (OxyColorHelper.isVisible(this.borderColor)) {
       const borderPoints: ScreenPoint[] = [
         transform(this, 0, 0),
         transform(this, m, 0),

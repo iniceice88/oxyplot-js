@@ -1,5 +1,4 @@
-﻿import type { OxyRect } from '@/oxyplot'
-import { RenderContextBase } from '@/oxyplot'
+﻿import { type OxyRect, OxyRectHelper, RenderContextBase } from '@/oxyplot'
 
 /**
  * Provides an abstract base class for rendering contexts that implements a clipping stack.
@@ -18,7 +17,7 @@ export abstract class ClippingRenderContext extends RenderContextBase {
     const currentClippingRectangle = this.clipStack.pop()!
     if (this.clipStack.length > 0) {
       const newClippingRectangle = this.clipStack[this.clipStack.length - 1]
-      if (!currentClippingRectangle.equals(newClippingRectangle)) {
+      if (!OxyRectHelper.equals(currentClippingRectangle, newClippingRectangle)) {
         this.resetClip()
         this.setClip(newClippingRectangle)
       }
@@ -34,8 +33,8 @@ export abstract class ClippingRenderContext extends RenderContextBase {
   public pushClip(clippingRectangle: OxyRect): void {
     if (this.clipStack.length > 0) {
       const currentClippingRectangle = this.clipStack[this.clipStack.length - 1]
-      const newClippingRectangle = clippingRectangle.intersect(currentClippingRectangle)
-      if (!currentClippingRectangle.equals(newClippingRectangle)) {
+      const newClippingRectangle = OxyRectHelper.intersect(clippingRectangle, currentClippingRectangle)
+      if (!OxyRectHelper.equals(currentClippingRectangle, newClippingRectangle)) {
         this.resetClip()
         this.setClip(newClippingRectangle)
       }

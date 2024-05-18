@@ -1,5 +1,4 @@
-import type { IRenderContext } from '@/oxyplot'
-import { ColorAxisRenderer, PlotModel, RangeColorAxis } from '@/oxyplot'
+import { ColorAxisRenderer, type IRenderContext, OxyColorHelper, PlotModel, RangeColorAxis } from '@/oxyplot'
 
 /**
  * Provides functionality to render range color axes.
@@ -49,12 +48,12 @@ export class RangeColorAxisRenderer extends ColorAxisRenderer<RangeColorAxis> {
       highLowLength *= -1
     }
 
-    if (!axis.lowColor.isUndefined()) {
+    if (!OxyColorHelper.isUndefined(axis.lowColor)) {
       const yLow = axis.transform(axis.actualMinimum)
       await this.drawColorRect(axis, yLow, yLow + highLowLength, axis.lowColor)
     }
 
-    if (!axis.highColor.isUndefined()) {
+    if (!OxyColorHelper.isUndefined(axis.highColor)) {
       const yHigh = axis.transform(axis.actualMaximum)
       await this.drawColorRect(axis, yHigh, yHigh - highLowLength, axis.highColor)
     }

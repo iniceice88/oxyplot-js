@@ -6,10 +6,12 @@ import {
   BinningOutlierMode,
   HistogramHelpers,
   HistogramItem,
+  HistogramItemEx,
   HistogramSeries,
   LabelPlacement,
   LinearAxis,
   LogarithmicAxis,
+  newHistogramItem,
   OxyColors,
   PlotModel,
   PlotModelUtilities,
@@ -38,37 +40,37 @@ function histogramLabelPlacement(): PlotModel {
 
   const s1 = new HistogramSeries({
     labelPlacement: LabelPlacement.Base,
-    labelStringFormatter: (item) => 'Base',
+    labelStringFormatter: (_item) => 'Base',
     strokeThickness: 1,
     labelMargin: 5,
   })
   const s2 = new HistogramSeries({
     labelPlacement: LabelPlacement.Inside,
-    labelStringFormatter: (item) => 'Inside',
+    labelStringFormatter: (_item) => 'Inside',
     strokeThickness: 1,
     labelMargin: 5,
   })
   const s3 = new HistogramSeries({
     labelPlacement: LabelPlacement.Middle,
-    labelStringFormatter: (item) => 'Middle',
+    labelStringFormatter: (_item) => 'Middle',
     strokeThickness: 1,
     labelMargin: 5,
   })
   const s4 = new HistogramSeries({
     labelPlacement: LabelPlacement.Outside,
-    labelStringFormatter: (item) => 'Outside',
+    labelStringFormatter: (_item) => 'Outside',
     strokeThickness: 1,
     labelMargin: 5,
   })
 
-  s1.items.push(new HistogramItem(1, 2, 4, 4))
-  s1.items.push(new HistogramItem(2, 3, -4, 4))
-  s2.items.push(new HistogramItem(3, 4, 2, 2))
-  s2.items.push(new HistogramItem(4, 5, -2, 2))
-  s3.items.push(new HistogramItem(5, 6, 3, 3))
-  s3.items.push(new HistogramItem(6, 7, -3, 3))
-  s4.items.push(new HistogramItem(7, 8, 1, 1))
-  s4.items.push(new HistogramItem(8, 9, -1, -1))
+  s1.items.push(newHistogramItem(1, 2, 4, 4))
+  s1.items.push(newHistogramItem(2, 3, -4, 4))
+  s2.items.push(newHistogramItem(3, 4, 2, 2))
+  s2.items.push(newHistogramItem(4, 5, -2, 2))
+  s3.items.push(newHistogramItem(5, 6, 3, 3))
+  s3.items.push(newHistogramItem(6, 7, -3, 3))
+  s4.items.push(newHistogramItem(7, 8, 1, 1))
+  s4.items.push(newHistogramItem(8, 9, -1, -1))
 
   model.series.push(s1)
   model.series.push(s2)
@@ -90,10 +92,12 @@ function labelFormatString(): PlotModel {
   const model = createDisconnectedBins()
   const hs = model.series[0] as HistogramSeries
   //hs.labelFormatString = 'Start: {1:0.00}\nEnd: {2:0.00}\nValue: {0:0.00}\nArea: {3:0.00}\nCount: {4}'
-  hs.labelStringFormatter = (item) =>
-    `Start: ${item.rangeStart.toFixed(2)}\nEnd: ${item.rangeEnd.toFixed(2)}\nValue: ${item.value.toFixed(
+  hs.labelStringFormatter = function (item) {
+    console.log('item', item)
+    return `Start: ${item.rangeStart.toFixed(2)}\nEnd: ${item.rangeEnd.toFixed(2)}\nValue: ${item.value.toFixed(
       2,
     )}\nArea: ${item.area.toFixed(2)}\nCount: ${item.count}`
+  }
   hs.labelPlacement = LabelPlacement.Inside
   return model
 }
@@ -124,23 +128,34 @@ function customItemMapping(): PlotModel {
 
   const s = new HistogramSeries({
     mapping: (obj) => obj as HistogramItem,
-    trackerStringFormatter: (args) => (args.item! as CustomHistogramItem).description,
+    trackerStringFormatter: function (args) {
+      return (args.item! as CustomHistogramItem).description
+    },
   })
-  s.items.push(new CustomHistogramItem(1, 2, 4, 4, 'Item 1'))
-  s.items.push(new CustomHistogramItem(2, 3, -4, 4, 'Item 2'))
-  s.items.push(new CustomHistogramItem(3, 4, 2, 2, 'Item 3'))
-  s.items.push(new CustomHistogramItem(4, 5, -2, 2, 'Item 4'))
+  s.items.push(newCustomHistogramItem(1, 2, 4, 4, 'Item 1'))
+  s.items.push(newCustomHistogramItem(2, 3, -4, 4, 'Item 2'))
+  s.items.push(newCustomHistogramItem(3, 4, 2, 2, 'Item 3'))
+  s.items.push(newCustomHistogramItem(4, 5, -2, 2, 'Item 4'))
   model.series.push(s)
 
   return model
 }
 
 // ==================
+interface CustomHistogramItem extends HistogramItem {
+  description: string
+}
 
-class CustomHistogramItem extends HistogramItem {
-  constructor(rangeStart: number, rangeEnd: number, area: number, count: number, public readonly description: string) {
-    super(rangeStart, rangeEnd, area, count)
-  }
+function newCustomHistogramItem(
+  rangeStart: number,
+  rangeEnd: number,
+  area: number,
+  count: number,
+  description: string,
+) {
+  const item = newHistogramItem(rangeStart, rangeEnd, area, count) as CustomHistogramItem
+  item.description = description
+  return item
 }
 
 /** Creates an Exponential Distribution */
@@ -237,9 +252,10 @@ function createNormalDistribution(mean: number = 0, std: number = 1, n: number =
   const colorLo = OxyColors.DarkRed
 
   chs.colorMapping = (item) => {
-    if (item.rangeCenter > limitHi) {
+    const rangeCenter = HistogramItemEx.from(item).center
+    if (rangeCenter > limitHi) {
       return colorHi
-    } else if (item.rangeCenter < limitLo) {
+    } else if (rangeCenter < limitLo) {
       return colorLo
     }
     return chs.actualFillColor
@@ -256,9 +272,9 @@ function createDisconnectedBins(): PlotModel {
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom, title: 'x' }))
 
   const chs = new HistogramSeries()
-  chs.items.push(new HistogramItem(0, 0.5, 10, 7), new HistogramItem(0.75, 1.0, 10, 7))
+  chs.items.push(newHistogramItem(0, 0.5, 10, 7), newHistogramItem(0.75, 1.0, 10, 7))
   //chs.labelFormatString = '{0:0.00}'
-  chs.labelStringFormatter = (x: HistogramItem) => x.value.toFixed(2)
+  chs.labelStringFormatter = (x: HistogramItem) => HistogramItemEx.from(x).value.toFixed(2)
   chs.labelPlacement = LabelPlacement.Middle
   model.series.push(chs)
 

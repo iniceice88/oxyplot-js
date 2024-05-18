@@ -1,22 +1,42 @@
-﻿import type { CreateLinearAxisOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
   AngleAxis,
   Axis,
   AxisPosition,
+  type CreateLinearAxisOptions,
+  type DataPoint,
+  ExtendedDefaultLinearAxisOptions,
+  type IRenderContext,
   LinearAxis,
   LineStyle,
   MagnitudeAxisRenderer,
   newDataPoint,
   newScreenPoint,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateMagnitudeAxisOptions extends CreateLinearAxisOptions {
   /**
    * The midpoint (screen coordinates) of the plot area. This is used by polar coordinate systems.
    */
   midPoint?: ScreenPoint
+}
+
+export const DefaultMagnitudeAxisOptions: CreateMagnitudeAxisOptions = {
+  midPoint: ScreenPoint_LeftTop,
+  position: AxisPosition.None,
+  isPanEnabled: false,
+  isZoomEnabled: false,
+  majorGridlineStyle: LineStyle.Solid,
+  minorGridlineStyle: LineStyle.Solid,
+} as const
+
+export const ExtendedDefaultMagnitudeAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultMagnitudeAxisOptions,
 }
 
 /**
@@ -27,23 +47,18 @@ export class MagnitudeAxis extends LinearAxis {
    * The midpoint (screen coordinates) of the plot area. This is used by polar coordinate systems.
    * @internal
    */
-  midPoint: ScreenPoint = ScreenPoint_LeftTop
+  midPoint: ScreenPoint = DefaultMagnitudeAxisOptions.midPoint!
 
   /**
    * Initializes a new instance of the MagnitudeAxis class.
    */
   constructor(opt?: CreateMagnitudeAxisOptions) {
     super(opt)
-    this.position = AxisPosition.None
-    this.isPanEnabled = false
-    this.isZoomEnabled = false
+    assignObject(this, DefaultMagnitudeAxisOptions, opt)
+  }
 
-    this.majorGridlineStyle = LineStyle.Solid
-    this.minorGridlineStyle = LineStyle.Solid
-
-    if (opt) {
-      Object.assign(this, opt)
-    }
+  getElementName() {
+    return 'MagnitudeAxis'
   }
 
   /**
@@ -92,7 +107,7 @@ export class MagnitudeAxis extends LinearAxis {
    * Transforms the specified point to screen coordinates.
    * @param x The x value (for the current axis).
    * @param y The y value.
-   * @param yaxis The y axis.
+   * @param yaxis The y-axis.
    * @returns The transformed point.
    * @throws Error if polar angle axis not defined.
    */
@@ -117,8 +132,8 @@ export class MagnitudeAxis extends LinearAxis {
    */
   updateTransform(bounds: OxyRect): void {
     const x0 = bounds.left
-    const x1 = bounds.right
-    const y0 = bounds.bottom
+    const x1 = OxyRectHelper.right(bounds)
+    const y0 = OxyRectHelper.bottom(bounds)
     const y1 = bounds.top
 
     this.screenMin = newScreenPoint(x0, y1)
@@ -190,5 +205,9 @@ export class MagnitudeAxis extends LinearAxis {
     }
 
     this.actualMaximumAndMinimumChangedOverride()
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultMagnitudeAxisOptions
   }
 }

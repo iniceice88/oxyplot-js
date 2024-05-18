@@ -11,6 +11,7 @@ import {
   LogarithmicAxis,
   OxyColors,
   OxyPalette,
+  OxyPaletteHelper,
   OxyPalettes,
   PlotModel,
   PlotType,
@@ -250,7 +251,7 @@ function confusionMatrix(): PlotModel {
 
   const model = new PlotModel({ title: 'Confusion Matrix' })
 
-  const palette = OxyPalette.interpolate(50, OxyColors.White, OxyColors.Black)
+  const palette = OxyPaletteHelper.interpolate(50, OxyColors.White, OxyColors.Black)
 
   const lca = new LinearColorAxis({
     position: AxisPosition.Right,

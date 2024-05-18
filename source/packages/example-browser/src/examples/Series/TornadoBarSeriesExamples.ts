@@ -1,16 +1,16 @@
 import {
   AxisPosition,
-  BarItem,
   BarSeries,
   CategoryAxis,
   LabelPlacement,
   Legend,
   LegendPlacement,
   LinearAxis,
-  OxyColor,
+  newBarItem,
+  newTornadoBarItem,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
-  TornadoBarItem,
   TornadoBarSeries,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -27,28 +27,28 @@ function tornadoDiagram1(): PlotModel {
   const s1 = new BarSeries({
     title: 'High',
     isStacked: true,
-    fillColor: OxyColor.fromRgb(216, 82, 85),
+    fillColor: OxyColorHelper.fromRgb(216, 82, 85),
     baseValue: 7,
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(new BarItem({ value: 1 }))
-  s1.items.push(new BarItem({ value: 1 }))
-  s1.items.push(new BarItem({ value: 4 }))
-  s1.items.push(new BarItem({ value: 5 }))
+  s1.items.push(newBarItem({ value: 1 }))
+  s1.items.push(newBarItem({ value: 1 }))
+  s1.items.push(newBarItem({ value: 4 }))
+  s1.items.push(newBarItem({ value: 5 }))
 
   const s2 = new BarSeries({
     title: 'Low',
     isStacked: true,
-    fillColor: OxyColor.fromRgb(84, 138, 209),
+    fillColor: OxyColorHelper.fromRgb(84, 138, 209),
     baseValue: 7,
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s2.items.push(new BarItem({ value: -1 }))
-  s2.items.push(new BarItem({ value: -3 }))
-  s2.items.push(new BarItem({ value: -2 }))
-  s2.items.push(new BarItem({ value: -3 }))
+  s2.items.push(newBarItem({ value: -1 }))
+  s2.items.push(newBarItem({ value: -3 }))
+  s2.items.push(newBarItem({ value: -2 }))
+  s2.items.push(newBarItem({ value: -3 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('F/X rate')
@@ -71,10 +71,10 @@ function tornadoDiagram2(): PlotModel {
 
   model.legends.push(l)
   const s1 = new TornadoBarSeries({ title: 'TornadoBarSeries', baseValue: 7 })
-  s1.items.push(new TornadoBarItem({ minimum: 6, maximum: 8 }))
-  s1.items.push(new TornadoBarItem({ minimum: 4, maximum: 8 }))
-  s1.items.push(new TornadoBarItem({ minimum: 5, maximum: 11 }))
-  s1.items.push(new TornadoBarItem({ minimum: 4, maximum: 12 }))
+  s1.items.push(newTornadoBarItem({ minimum: 6, maximum: 8 }))
+  s1.items.push(newTornadoBarItem({ minimum: 4, maximum: 8 }))
+  s1.items.push(newTornadoBarItem({ minimum: 5, maximum: 11 }))
+  s1.items.push(newTornadoBarItem({ minimum: 4, maximum: 12 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('F/X rate')
@@ -100,28 +100,28 @@ function tornadoDiagramWithLabels(): PlotModel {
   model.legends.push(l)
 
   const s1 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Outside })
-  s1.items.push(new TornadoBarItem({ minimum: 6, maximum: 8, categoryIndex: 0 }))
+  s1.items.push(newTornadoBarItem({ minimum: 6, maximum: 8, categoryIndex: 0 }))
 
   const s2 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Inside })
-  s2.items.push(new TornadoBarItem({ minimum: 4, maximum: 8, categoryIndex: 1 }))
+  s2.items.push(newTornadoBarItem({ minimum: 4, maximum: 8, categoryIndex: 1 }))
 
   const s3 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Middle })
-  s3.items.push(new TornadoBarItem({ minimum: 5, maximum: 11, categoryIndex: 2 }))
+  s3.items.push(newTornadoBarItem({ minimum: 5, maximum: 11, categoryIndex: 2 }))
 
   const s4 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Base })
-  s4.items.push(new TornadoBarItem({ minimum: 4, maximum: 12, categoryIndex: 3 }))
+  s4.items.push(newTornadoBarItem({ minimum: 4, maximum: 12, categoryIndex: 3 }))
 
   const s5 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Outside, labelAngle: -45 })
-  s5.items.push(new TornadoBarItem({ minimum: 6, maximum: 8, categoryIndex: 4 }))
+  s5.items.push(newTornadoBarItem({ minimum: 6, maximum: 8, categoryIndex: 4 }))
 
   const s6 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Inside, labelAngle: -45 })
-  s6.items.push(new TornadoBarItem({ minimum: 4, maximum: 8, categoryIndex: 5 }))
+  s6.items.push(newTornadoBarItem({ minimum: 4, maximum: 8, categoryIndex: 5 }))
 
   const s7 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Middle, labelAngle: -45 })
-  s7.items.push(new TornadoBarItem({ minimum: 5, maximum: 11, categoryIndex: 6 }))
+  s7.items.push(newTornadoBarItem({ minimum: 5, maximum: 11, categoryIndex: 6 }))
 
   const s8 = new TornadoBarSeries({ baseValue: 7, labelPlacement: LabelPlacement.Base, labelAngle: -45 })
-  s8.items.push(new TornadoBarItem({ minimum: 4, maximum: 12, categoryIndex: 7 }))
+  s8.items.push(newTornadoBarItem({ minimum: 4, maximum: 12, categoryIndex: 7 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left, startPosition: 1, endPosition: 0 })
   categoryAxis.labels.push('Labels Outside')

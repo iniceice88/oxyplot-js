@@ -1,68 +1,62 @@
-import type {
-  CreateBarItemBaseOptions,
-  CreateBarSeriesBaseOptions,
-  IRenderContext,
-  IStackableSeries,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
 import {
-  BarItemBase,
+  type BarItemBase,
   BarSeriesBase,
+  type CreateBarSeriesBaseOptions,
   EdgeRenderingMode,
+  ExtendedDefaultBarSeriesBaseOptions,
+  getBarItemCategoryIndex,
+  type IRenderContext,
+  type IStackableSeries,
   LabelPlacement,
+  type LabelStringFormatterType,
   newDataPoint,
-  OxyColor,
+  newOxyRect,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
 } from '@/oxyplot'
-import { getOrDefault, Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
-
-export interface CreateIntervalBarItemOptions extends CreateBarItemBaseOptions {
-  color?: OxyColor
-  end?: number
-  start?: number
-  title?: string
-}
+import { assignMethod, assignObject, getOrDefault, Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
 
 /**
  * Represents an item in an IntervalBarSeries.
  */
-export class IntervalBarItem extends BarItemBase {
+export interface IntervalBarItem extends BarItemBase {
   /**
    * The color.
    */
-  public color: OxyColor
-
+  color: OxyColor
   /**
    * The end value.
    */
-  public end: number = 0
+  end: number
 
   /**
    * The start value.
    */
-  public start: number = 0
+  start: number
 
   /**
    * The title.
    */
-  public title?: string
+  title?: string
+}
 
-  /**
-   * Initializes a new instance of the IntervalBarItem class.
-   */
-  constructor(opt?: CreateIntervalBarItemOptions) {
-    super(opt)
-    this.color = OxyColors.Automatic
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
-  }
+export const DefaultIntervalBarItemOptions: IntervalBarItem = {
+  categoryIndex: -1,
+  color: OxyColors.Automatic,
+  end: 0,
+  start: 0,
+}
+
+export function newIntervalBarItem(item: Partial<IntervalBarItem>) {
+  return Object.assign({}, DefaultIntervalBarItemOptions, removeUndef(item))
 }
 
 export interface IntervalBarSeriesTrackerStringFormatterArgs extends TrackerStringFormatterArgs {
@@ -84,6 +78,22 @@ export interface CreateIntervalBarSeriesOptions extends CreateBarSeriesBaseOptio
   trackerStringFormatter?: IntervalBarSeriesTrackerStringFormatterType
 }
 
+export const DefaultIntervalBarSeriesOptions: CreateIntervalBarSeriesOptions = {
+  fillColor: OxyColors.Automatic,
+  strokeThickness: 1,
+  labelMargin: 4,
+  labelPlacement: LabelPlacement.Middle,
+
+  colorField: undefined,
+  endField: undefined,
+  startField: undefined,
+}
+
+export const ExtendedDefaultIntervalBarSeriesOptions = {
+  ...ExtendedDefaultBarSeriesBaseOptions,
+  ...DefaultIntervalBarSeriesOptions,
+}
+
 /**
  * Represents a series for bar charts defined by to/from values.
  */
@@ -91,29 +101,27 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   /**
    * The default tracker formatter
    */
-  static readonly DefaultTrackerStringFormatter: IntervalBarSeriesTrackerStringFormatterType = (args) =>
-    `${args.title}\n${args.categoryTitle}: ${args.categoryValue}\n${args.valueTitle}: ${args.item?.start} - ${args.item?.end}`
+  static readonly DefaultTrackerStringFormatter: IntervalBarSeriesTrackerStringFormatterType = function (args) {
+    return `${args.title}\n${args.categoryTitle}: ${args.categoryValue}\n${args.valueTitle}: ${args.item?.start} - ${args.item?.end}`
+  }
 
   /**
    * The default fill color.
    */
-  private defaultFillColor: OxyColor = OxyColors.Undefined
+  private _defaultFillColor: OxyColor = OxyColors.Undefined
 
   /**
    * Initializes a new instance of the IntervalBarSeries class.
    */
   constructor(opt?: CreateIntervalBarSeriesOptions) {
     super(opt)
-    this.fillColor = OxyColors.Automatic
-    this.strokeThickness = 1
-
     this.trackerStringFormatter = IntervalBarSeries.DefaultTrackerStringFormatter
-    this.labelMargin = 4
-    this.labelPlacement = LabelPlacement.Middle
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignObject(this, DefaultIntervalBarSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'IntervalBarSeries'
   }
 
   /**
@@ -126,7 +134,7 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
    * Gets the actual fill color.
    */
   get actualFillColor(): OxyColor {
-    return this.fillColor.getActualColor(this.defaultFillColor)
+    return OxyColorHelper.getActualColor(this.fillColor, this._defaultFillColor)
   }
 
   /**
@@ -142,7 +150,7 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   /**
    * Gets or sets the default color of the interior of the Maximum bars.
    */
-  fillColor: OxyColor
+  fillColor: OxyColor = DefaultIntervalBarSeriesOptions.fillColor!
 
   readonly isStacked = true
 
@@ -151,7 +159,9 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   /**
    * Gets or sets the label formatter.
    */
-  labelStringFormatter: LabelStringFormatterType = (item: any, args: any[]) => `${args[0]} - ${args[1]}`
+  labelStringFormatter: LabelStringFormatterType = function (item: any, args: any[]) {
+    return `${args[0]} - ${args[1]}`
+  }
 
   /**
    * Gets the stack group.
@@ -171,12 +181,12 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
   public getNearestPoint(point: ScreenPoint, interpolate: boolean): TrackerHitResult | undefined {
     for (let i = 0; i < this.actualBarRectangles.length; i++) {
       const r = this.actualBarRectangles[i]
-      if (!r.containsPoint(point)) {
+      if (!OxyRectHelper.containsPoint(r, point)) {
         continue
       }
 
       const item = this.getItem(this.validItemsIndexInversion.get(i)!) as IntervalBarItem
-      const categoryIndex = item.getCategoryIndex(i)
+      const categoryIndex = getBarItemCategoryIndex(item, i)
       const value = (this.validItems[i].start + this.validItems[i].end) / 2
       const dp = newDataPoint(categoryIndex, value)
       const categoryAxis = this.getCategoryAxis()
@@ -208,12 +218,14 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
    * @param legendBox The bounding box of the legend.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
-    const height = (legendBox.bottom - legendBox.top) * 0.8
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
+    const height = (bottom - legendBox.top) * 0.8
     const width = height
     await rc.drawRectangle(
-      new OxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
+      newOxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
       this.getSelectableFillColor(this.actualFillColor),
       this.strokeColor,
       this.strokeThickness,
@@ -226,8 +238,8 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
    * @internal
    */
   setDefaultValues(): void {
-    if (this.fillColor.isAutomatic()) {
-      this.defaultFillColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.fillColor)) {
+      this._defaultFillColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -288,19 +300,19 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
     for (let i = 0; i < this.validItems.length; i++) {
       const item = this.validItems[i]
 
-      const categoryIndex = item.getCategoryIndex(i)
+      const categoryIndex = getBarItemCategoryIndex(item, i)
       const categoryValue = this.manager!.getCategoryValue(categoryIndex, stackIndex, actualBarWidth)
 
       const p0 = transform(this, item.start, categoryValue)
       const p1 = transform(this, item.end, categoryValue + actualBarWidth)
 
-      const rectangle = OxyRect.fromScreenPoints(p0, p1)
+      const rectangle = OxyRectHelper.fromScreenPoints(p0, p1)
 
       this.actualBarRectangles.push(rectangle)
 
       await rc.drawRectangle(
         rectangle,
-        this.getSelectableFillColor(item.color.getActualColor(this.actualFillColor)),
+        this.getSelectableFillColor(OxyColorHelper.getActualColor(item.color, this.actualFillColor)),
         this.strokeColor,
         this.strokeThickness,
         actualEdgeRenderingMode,
@@ -333,9 +345,13 @@ export class IntervalBarSeries extends BarSeriesBase<IntervalBarItem> implements
       const start = getOrDefault(item, this.startField, NaN)
       const end = getOrDefault(item, this.endField, NaN)
       const color = getOrDefault(item, this.colorField, OxyColors.Automatic)
-      this.itemsSourceItems?.push(new IntervalBarItem({ start, end, color }))
+      this.itemsSourceItems?.push(newIntervalBarItem({ start, end, color }))
     }
 
     return true
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultIntervalBarSeriesOptions
   }
 }

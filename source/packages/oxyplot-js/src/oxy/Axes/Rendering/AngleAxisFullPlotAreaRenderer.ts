@@ -6,7 +6,8 @@ import {
   type IRenderContext,
   MathRenderingExtensions,
   newScreenPoint,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotModel,
   RenderingExtensions,
   type ScreenPoint,
@@ -134,7 +135,7 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase<AngleAxisFul
         y += axis.axisTickToLabelDistance
       }
       //bottom
-      else if (y >= plotrect.bottom) {
+      else if (y >= OxyRectHelper.bottom(plotrect)) {
         ha = HorizontalAlignment.Center
         va = VerticalAlignment.Bottom
         y -= axis.axisTickToLabelDistance
@@ -146,7 +147,7 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase<AngleAxisFul
         x += axis.axisTickToLabelDistance
       }
       //right
-      else if (x >= plotrect.right) {
+      else if (x >= OxyRectHelper.right(plotrect)) {
         ha = HorizontalAlignment.Right
         va = VerticalAlignment.Middle
         x -= axis.axisTickToLabelDistance
@@ -188,15 +189,15 @@ export class AngleAxisFullPlotAreaRenderer extends AxisRendererBase<AngleAxisFul
 
     if (_x !== 0) {
       let delta_x = 0
-      if (_x > 0) delta_x = plotArea.right - midPoint.x
+      if (_x > 0) delta_x = OxyRectHelper.right(plotArea) - midPoint.x
       else if (_x < 0) delta_x = plotArea.left - midPoint.x
 
       const x_portion = delta_x / _x
       let lineend_x = x_portion * _x
       let lineend_y = x_portion * _y
-      if (lineend_y + midPoint.y > plotArea.bottom || lineend_y + midPoint.y < plotArea.top) {
+      if (lineend_y + midPoint.y > OxyRectHelper.bottom(plotArea) || lineend_y + midPoint.y < plotArea.top) {
         let delta_y = 0
-        if (_y > 0) delta_y = plotArea.bottom - midPoint.y
+        if (_y > 0) delta_y = OxyRectHelper.bottom(plotArea) - midPoint.y
         else delta_y = plotArea.top - midPoint.y
 
         const y_portion = delta_y / _y

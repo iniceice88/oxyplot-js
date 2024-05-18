@@ -6,9 +6,9 @@ import {
   LineSeries,
   LineStyle,
   newDataPoint,
-  OxyColor,
+  newOxyThickness,
+  OxyColorHelper,
   OxyColors,
-  OxyThickness,
   PlotModel,
   PlotType,
 } from 'oxyplot-js'
@@ -55,8 +55,8 @@ function absoluteYmin(): PlotModel {
       title: 'X-axis',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -67,8 +67,8 @@ function absoluteYmin(): PlotModel {
       minimum: 0,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())
@@ -80,7 +80,7 @@ function absoluteYmin2(): PlotModel {
     title: 'Y: AbsoluteMinimum = 0',
     subtitle: 'AutoAdjustPlotMargins = false',
     plotType: PlotType.Cartesian,
-    plotMargins: new OxyThickness(60, 4, 4, 40),
+    plotMargins: newOxyThickness(60, 4, 4, 40),
   })
   const c = OxyColors.DarkBlue
   plot.axes.push(
@@ -89,8 +89,8 @@ function absoluteYmin2(): PlotModel {
       title: 'X-axis',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -101,8 +101,8 @@ function absoluteYmin2(): PlotModel {
       minimum: 0,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())
@@ -123,8 +123,8 @@ function absoluteYminXmin(): PlotModel {
       absoluteMinimum: -10,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -135,8 +135,8 @@ function absoluteYminXmin(): PlotModel {
       minimum: 0,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())
@@ -152,8 +152,8 @@ function absoluteYminYmax(): PlotModel {
       title: 'X-axis',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -165,8 +165,8 @@ function absoluteYminYmax(): PlotModel {
       absoluteMaximum: 2,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())
@@ -188,8 +188,8 @@ function absoluteYminXminXmax(): PlotModel {
       absoluteMaximum: 10,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -200,8 +200,8 @@ function absoluteYminXminXmax(): PlotModel {
       minimum: 0,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())
@@ -224,8 +224,8 @@ function absoluteYminYmaxXminXmax(): PlotModel {
       absoluteMaximum: 10,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.axes.push(
@@ -237,8 +237,8 @@ function absoluteYminYmaxXminXmax(): PlotModel {
       absoluteMaximum: 2,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   plot.series.push(createTestSeries())

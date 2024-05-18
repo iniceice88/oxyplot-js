@@ -1,23 +1,37 @@
 import {
   type CreateShapeAnnotationOptions,
   EdgeRenderingMode,
+  ExtendedDefaultShapeAnnotationOptions,
   HitTestArguments,
   type HitTestResult,
-  HorizontalAlignment,
   type IRenderContext,
-  OxyRect,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectEx,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
   ShapeAnnotation,
-  VerticalAlignment,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface RectangleAnnotationOptions extends CreateShapeAnnotationOptions {
   minimumX?: number
   maximumX?: number
   minimumY?: number
   maximumY?: number
+}
+
+export const DefaultRectangleAnnotationOptions: RectangleAnnotationOptions = {
+  minimumX: -Infinity,
+  maximumX: Infinity,
+  minimumY: -Infinity,
+  maximumY: Infinity,
+}
+
+export const ExtendedDefaultRectangleAnnotationOptions = {
+  ...ExtendedDefaultShapeAnnotationOptions,
+  ...DefaultRectangleAnnotationOptions,
 }
 
 /**
@@ -27,51 +41,45 @@ export class RectangleAnnotation extends ShapeAnnotation {
   /**
    * The rectangle transformed to screen coordinates.
    */
-  private screenRectangle: OxyRect = OxyRect.Empty
+  private _screenRectangle: OxyRect = OxyRect_Empty
 
   /**
    * Initializes a new instance of the RectangleAnnotation class.
    */
   constructor(opt?: RectangleAnnotationOptions) {
     super(opt)
-    this.minimumX = -Infinity
-    this.maximumX = Infinity
-    this.minimumY = -Infinity
-    this.maximumY = Infinity
-    this.textRotation = 0
-    this.textHorizontalAlignment = HorizontalAlignment.Center
-    this.textVerticalAlignment = VerticalAlignment.Middle
+    assignObject(this, DefaultRectangleAnnotationOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'RectangleAnnotation'
   }
 
   /**
    * The minimum X.
    */
-  public minimumX: number
+  public minimumX: number = DefaultRectangleAnnotationOptions.minimumX!
 
   /**
    * The maximum X.
    */
-  public maximumX: number
+  public maximumX: number = DefaultRectangleAnnotationOptions.maximumX!
 
   /**
    * The minimum Y.
    */
-  public minimumY: number
+  public minimumY: number = DefaultRectangleAnnotationOptions.minimumY!
 
   /**
    * The maximum Y.
    */
-  public maximumY: number
+  public maximumY: number = DefaultRectangleAnnotationOptions.maximumY!
 
   /**
    * Renders the rectangle annotation.
    */
   public async render(rc: IRenderContext): Promise<void> {
-    const clippingRectangle = this.getClippingRect()
+    const clippingRectangle = OxyRectEx.fromRect(this.getClippingRect())
 
     const p1 = this.inverseTransform(clippingRectangle.topLeft)
     const p2 = this.inverseTransform(clippingRectangle.bottomRight)
@@ -82,7 +90,7 @@ export class RectangleAnnotation extends ShapeAnnotation {
     const y2 = this.maximumY === Infinity || isNaN(this.maximumY) ? Math.max(p1.y, p2.y) : this.maximumY
 
     const transform = PlotElementExtensions.transform
-    this.screenRectangle = OxyRect.fromScreenPoints(transform(this, x1, y1), transform(this, x2, y2))
+    this._screenRectangle = OxyRectHelper.fromScreenPoints(transform(this, x1, y1), transform(this, x2, y2))
 
     const actualEdgeRenderingMode = RenderingExtensions.getActualEdgeRenderingMode(
       this.edgeRenderingMode,
@@ -90,7 +98,7 @@ export class RectangleAnnotation extends ShapeAnnotation {
     )
 
     await rc.drawRectangle(
-      this.screenRectangle,
+      this._screenRectangle,
       this.getSelectableFillColor(this.fill),
       this.getSelectableColor(this.stroke),
       this.strokeThickness,
@@ -99,7 +107,7 @@ export class RectangleAnnotation extends ShapeAnnotation {
 
     if (this.text) {
       const [ha, va] = this.getActualTextAlignment()
-      const textPosition = this.getActualTextPosition(() => this.screenRectangle.center)
+      const textPosition = this.getActualTextPosition(() => OxyRectHelper.center(this._screenRectangle))
       await rc.drawText(
         textPosition,
         this.text,
@@ -118,7 +126,7 @@ export class RectangleAnnotation extends ShapeAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (this.screenRectangle.containsPoint(args.point)) {
+    if (OxyRectHelper.containsPoint(this._screenRectangle, args.point)) {
       return {
         element: this,
         nearestHitPoint: args.point,
@@ -126,5 +134,9 @@ export class RectangleAnnotation extends ShapeAnnotation {
     }
 
     return undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultRectangleAnnotationOptions
   }
 }

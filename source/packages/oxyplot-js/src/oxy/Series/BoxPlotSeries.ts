@@ -1,26 +1,32 @@
-import type { CreateXYAxisSeriesOptions, IRenderContext, ScreenPoint, TrackerStringFormatterArgs } from '@/oxyplot'
 import {
   Axis,
+  type CreateXYAxisSeriesOptions,
   DataPoint_isDefined,
   DataPoint_Undefined,
   EdgeRenderingMode,
+  ExtendedDefaultXYAxisSeriesOptions,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   MarkerType,
   newDataPoint,
+  newOxyRect,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
-  screenPointMinus,
+  screenPointMinusEx,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
   XYAxisSeries,
 } from '@/oxyplot'
-import { isInfinity, Number_MAX_VALUE, removeUndef } from '@/patch'
+import { assignMethod, assignObject, isInfinity, isNaNOrUndef, Number_MAX_VALUE } from '@/patch'
 
 export interface CreateBoxPlotSeriesOptions extends CreateXYAxisSeriesOptions {
   boxWidth?: number
@@ -40,6 +46,7 @@ export interface CreateBoxPlotSeriesOptions extends CreateXYAxisSeriesOptions {
   strokeThickness?: number
   whiskerWidth?: number
   trackerStringFormatter?: BoxPlotSeriesTrackerStringFormatterType
+  outlierOutline?: ScreenPoint[]
 }
 
 export interface BoxPlotSeriesTrackerStringFormatterArgs extends TrackerStringFormatterArgs {
@@ -65,6 +72,31 @@ export type BoxPlotSeriesOutlierTrackerStringFormatterType = (
   args: BoxPlotSeriesOutlierTrackerStringFormatterArgs,
 ) => string | undefined
 
+export const DefaultBoxPlotSeriesOptions: CreateBoxPlotSeriesOptions = {
+  fill: OxyColors.Automatic,
+  stroke: OxyColors.Black,
+  boxWidth: 0.3,
+  strokeThickness: 1,
+  medianThickness: 2,
+  meanThickness: 2,
+  outlierSize: 2,
+  outlierType: MarkerType.Circle,
+  medianPointSize: 2,
+  meanPointSize: 2,
+  whiskerWidth: 0.5,
+  lineStyle: LineStyle.Solid,
+  showMedianAsDot: false,
+  showMeanAsDot: false,
+  showBox: true,
+  outlierOutline: undefined,
+  items: undefined,
+} as const
+
+export const ExtendedDefaultBoxPlotSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultBoxPlotSeriesOptions,
+}
+
 /**
  * Represents a series for box plots.
  */
@@ -72,8 +104,8 @@ export class BoxPlotSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  public static readonly DefaultTrackerFormatString: BoxPlotSeriesTrackerStringFormatterType = (args) =>
-    `${args.title || ''}
+  public static readonly DefaultTrackerFormatString: BoxPlotSeriesTrackerStringFormatterType = function (args) {
+    return `${args.title || ''}
 ${args.xTitle}: ${args.xValue}
 Upper Whisker: ${args.upperWhisker!.toFixed(2)}
 Third Quartil: ${args.boxTop!.toFixed(2)}
@@ -81,43 +113,36 @@ Median: ${args.median!.toFixed(2)}
 First Quartil: ${args.boxBottom!.toFixed(2)}
 Lower Whisker: ${args.lowerWhisker!.toFixed(2)}
 Mean: ${args.mean!.toFixed(2)}`
+  }
+
+  public static readonly DefaultOutlierTrackerFormatString: BoxPlotSeriesOutlierTrackerStringFormatterType = function (
+    args,
+  ) {
+    return `${args.title || ''}\n${args.xTitle}: ${args.xValue}\nY: ${args.outlier!.toFixed(2)}`
+  }
 
   /**
    * The items from the items source.
    */
-  private itemsSourceItems: BoxPlotItem[] = []
+  private _itemsSourceItems: BoxPlotItem[] = []
 
   /**
    * Initializes a new instance of the BoxPlotSeries class.
    */
   constructor(opt?: CreateBoxPlotSeriesOptions) {
     super(opt)
-    this.items = []
     this.trackerStringFormatter = BoxPlotSeries.DefaultTrackerFormatString
+    this.outlierTrackerStringFormatter = BoxPlotSeries.DefaultOutlierTrackerFormatString
 
-    this.outlierTrackerStringFormatter = (args) =>
-      `${args.title || ''}\n${args.xTitle}: ${args.xValue}\nY: ${args.outlier!.toFixed(2)}`
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignMethod(this, 'outlierTrackerStringFormatter', opt)
+    assignObject(this, DefaultBoxPlotSeriesOptions, opt, {
+      exclude: ['trackerStringFormatter', 'outlierTrackerStringFormatter'],
+    })
+  }
 
-    this.title = undefined
-    this.fill = OxyColors.Automatic
-    this.stroke = OxyColors.Black
-    this.boxWidth = 0.3
-    this.strokeThickness = 1
-    this.medianThickness = 2
-    this.meanThickness = 2
-    this.outlierSize = 2
-    this.outlierType = MarkerType.Circle
-    this.medianPointSize = 2
-    this.meanPointSize = 2
-    this.whiskerWidth = 0.5
-    this.lineStyle = LineStyle.Solid
-    this.showMedianAsDot = false
-    this.showMeanAsDot = false
-    this.showBox = true
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'BoxPlotSeries'
   }
 
   public trackerStringFormatter?: BoxPlotSeriesTrackerStringFormatterType = undefined
@@ -125,49 +150,49 @@ Mean: ${args.mean!.toFixed(2)}`
   /**
    * Gets or sets the width of the boxes (specified in x-axis units).
    */
-  public boxWidth: number
+  public boxWidth: number = DefaultBoxPlotSeriesOptions.boxWidth!
 
   /**
    * Gets or sets the fill color. If undefined, this color will be automatically set.
    */
-  public fill: OxyColor
+  public fill: OxyColor = DefaultBoxPlotSeriesOptions.fill!
 
   /**
    * Gets or sets the box plot items.
    */
-  public items: BoxPlotItem[]
+  public items: BoxPlotItem[] = []
 
   /**
    * Gets or sets the line style.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultBoxPlotSeriesOptions.lineStyle!
 
   /**
    * Gets or sets the size of the median point.
    * This property is only used when showMedianAsDot = true.
    */
-  public medianPointSize: number
+  public medianPointSize: number = DefaultBoxPlotSeriesOptions.medianPointSize!
 
   /**
    * Gets or sets the median thickness, relative to the strokeThickness.
    */
-  public medianThickness: number
+  public medianThickness: number = DefaultBoxPlotSeriesOptions.medianThickness!
 
   /**
    * Gets or sets the size of the mean point.
    * This property is only used when showMeanAsDot = true.
    */
-  public meanPointSize: number
+  public meanPointSize: number = DefaultBoxPlotSeriesOptions.meanPointSize!
 
   /**
    * Gets or sets the mean thickness, relative to the strokeThickness.
    */
-  public meanThickness: number
+  public meanThickness: number = DefaultBoxPlotSeriesOptions.meanThickness!
 
   /**
    * Gets or sets the diameter of the outlier circles (specified in points).
    */
-  public outlierSize: number
+  public outlierSize: number = DefaultBoxPlotSeriesOptions.outlierSize!
 
   /**
    * Gets or sets the tracker formatter for the outliers.
@@ -179,7 +204,7 @@ Mean: ${args.mean!.toFixed(2)}`
    * Gets or sets the type of the outliers.
    * MarkerType.Custom is currently not supported.
    */
-  public outlierType: MarkerType
+  public outlierType: MarkerType = DefaultBoxPlotSeriesOptions.outlierType!
 
   /**
    * Gets or sets a custom polygon outline for the outlier markers. Set outlierType to MarkerType.Custom to use this property.
@@ -189,38 +214,38 @@ Mean: ${args.mean!.toFixed(2)}`
   /**
    * Gets or sets a value indicating whether to show the boxes.
    */
-  public showBox: boolean
+  public showBox: boolean = DefaultBoxPlotSeriesOptions.showBox!
 
   /**
    * Gets or sets a value indicating whether to show the median as a dot.
    */
-  public showMedianAsDot: boolean
+  public showMedianAsDot: boolean = DefaultBoxPlotSeriesOptions.showMedianAsDot!
 
   /**
    * Gets or sets a value indicating whether to show the mean as a dot.
    */
-  public showMeanAsDot: boolean
+  public showMeanAsDot: boolean = DefaultBoxPlotSeriesOptions.showMeanAsDot!
 
   /**
    * Gets or sets the stroke color.
    */
-  public stroke: OxyColor
+  public stroke: OxyColor = DefaultBoxPlotSeriesOptions.stroke!
 
   /**
    * Gets or sets the stroke thickness.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultBoxPlotSeriesOptions.strokeThickness!
 
   /**
    * Gets or sets the width of the whiskers (relative to the boxWidth).
    */
-  public whiskerWidth: number
+  public whiskerWidth: number = DefaultBoxPlotSeriesOptions.whiskerWidth!
 
   /**
    * Gets the list of items that should be rendered.
    */
   protected get actualItems(): BoxPlotItem[] {
-    return this.itemsSource ? this.itemsSourceItems : this.items
+    return this.itemsSource ? this._itemsSourceItems : this.items
   }
 
   /**
@@ -236,7 +261,7 @@ Mean: ${args.mean!.toFixed(2)}`
     for (const item of this.actualItems) {
       for (const outlier of item.outliers) {
         const sp = PlotElementExtensions.transform(this, item.x, outlier)
-        const d = screenPointMinus(sp, point).lengthSquared
+        const d = screenPointMinusEx(sp, point).lengthSquared
         if (d < minimumDistance) {
           const text = this.outlierTrackerStringFormatter({
             item,
@@ -261,7 +286,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
       // check if we are inside the box rectangle
       const rect = this.getBoxRect(item)
-      if (rect.containsPoint(point)) {
+      if (OxyRectHelper.containsPoint(rect, point)) {
         const dp = this.inverseTransform(point)
         hitPoint = newDataPoint(item.x, dp.y)
         minimumDistance = 0
@@ -272,7 +297,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
       // check if we are near the line
       const p = ScreenPointHelper.findPointOnLine(point, topWhisker, bottomWhisker)
-      const d2 = screenPointMinus(p, point).lengthSquared
+      const d2 = screenPointMinusEx(p, point).lengthSquared
       if (d2 < minimumDistance) {
         hitPoint = this.inverseTransform(p)
         minimumDistance = d2
@@ -421,8 +446,8 @@ Mean: ${args.mean!.toFixed(2)}`
         )
       } else {
         const mc = transform(this, item.x, item.median)
-        if (clippingRect.containsPoint(mc)) {
-          const ellipseRect = new OxyRect(
+        if (OxyRectHelper.containsPoint(clippingRect, mc)) {
+          const ellipseRect = newOxyRect(
             mc.x - this.medianPointSize,
             mc.y - this.medianPointSize,
             this.medianPointSize * 2,
@@ -446,8 +471,8 @@ Mean: ${args.mean!.toFixed(2)}`
         )
       } else if (!isNaN(mean)) {
         const mc = transform(this, item.x, mean)
-        if (clippingRect.containsPoint(mc)) {
-          const ellipseRect = new OxyRect(
+        if (OxyRectHelper.containsPoint(clippingRect, mc)) {
+          const ellipseRect = newOxyRect(
             mc.x - this.meanPointSize,
             mc.y - this.meanPointSize,
             this.meanPointSize * 2,
@@ -481,9 +506,11 @@ Mean: ${args.mean!.toFixed(2)}`
    * @param legendBox The legend rectangle.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ybottom = legendBox.top + (legendBox.bottom - legendBox.top) * 0.7
-    const ytop = legendBox.top + (legendBox.bottom - legendBox.top) * 0.3
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ybottom = legendBox.top + (bottom - legendBox.top) * 0.7
+    const ytop = legendBox.top + (bottom - legendBox.top) * 0.3
     const ymid = (ybottom + ytop) * 0.5
 
     const halfBoxWidth = legendBox.width * 0.24
@@ -507,7 +534,7 @@ Mean: ${args.mean!.toFixed(2)}`
     )
 
     await rc.drawLine(
-      [newScreenPoint(xmid, ybottom), newScreenPoint(xmid, legendBox.bottom)],
+      [newScreenPoint(xmid, ybottom), newScreenPoint(xmid, bottom)],
       strokeColor,
       LegendStrokeThickness,
       actualEdgeRenderingMode,
@@ -517,10 +544,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
     if (this.whiskerWidth > 0) {
       await rc.drawLine(
-        [
-          newScreenPoint(xmid - halfWhiskerWidth, legendBox.bottom),
-          newScreenPoint(xmid + halfWhiskerWidth, legendBox.bottom),
-        ],
+        [newScreenPoint(xmid - halfWhiskerWidth, bottom), newScreenPoint(xmid + halfWhiskerWidth, bottom)],
         strokeColor,
         LegendStrokeThickness,
         actualEdgeRenderingMode,
@@ -543,7 +567,7 @@ Mean: ${args.mean!.toFixed(2)}`
 
     if (this.showBox) {
       await rc.drawRectangle(
-        new OxyRect(xmid - halfBoxWidth, ytop, 2 * halfBoxWidth, ybottom - ytop),
+        newOxyRect(xmid - halfBoxWidth, ytop, 2 * halfBoxWidth, ybottom - ytop),
         fillColor,
         strokeColor,
         LegendStrokeThickness,
@@ -561,7 +585,7 @@ Mean: ${args.mean!.toFixed(2)}`
         LineJoin.Miter,
       )
     } else {
-      const ellipseRect = new OxyRect(
+      const ellipseRect = newOxyRect(
         xmid - this.medianPointSize,
         ymid - this.medianPointSize,
         this.medianPointSize * 2,
@@ -581,8 +605,8 @@ Mean: ${args.mean!.toFixed(2)}`
     }
 
     this.clearItemsSourceItems()
-    this.itemsSourceItems.push(...this.itemsSource)
-    this.itemsSourceItems.forEach((x) => {
+    this._itemsSourceItems.push(...this.itemsSource)
+    this._itemsSourceItems.forEach((x) => {
       if (x.mean === undefined) x.median = NaN
     })
   }
@@ -666,14 +690,18 @@ Mean: ${args.mean!.toFixed(2)}`
     const p1 = PlotElementExtensions.transform(this, item.x - halfBoxWidth, item.boxTop)
     const p2 = PlotElementExtensions.transform(this, item.x + halfBoxWidth, item.boxBottom)
 
-    return OxyRect.fromScreenPoints(p1, p2)
+    return OxyRectHelper.fromScreenPoints(p1, p2)
   }
 
   /**
    * Clears or creates the itemsSourceItems list.
    */
   private clearItemsSourceItems(): void {
-    this.itemsSourceItems.length = 0
+    this._itemsSourceItems.length = 0
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultBoxPlotSeriesOptions
   }
 }
 
@@ -681,7 +709,7 @@ function getBoxPlotItemValues(item: BoxPlotItem): number[] {
   const values = [item.lowerWhisker, item.boxBottom, item.median, item.boxTop, item.upperWhisker]
 
   // As mean is an optional value and should not be checked for validation if not set don't add it if NaN
-  if (item.mean !== undefined && !isNaN(item.mean)) {
+  if (item.mean !== undefined && !isNaNOrUndef(item.mean)) {
     values.push(item.mean)
   }
 

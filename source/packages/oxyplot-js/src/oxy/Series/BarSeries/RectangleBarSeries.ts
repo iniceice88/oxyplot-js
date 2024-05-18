@@ -1,25 +1,29 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
 import {
+  type CreateXYAxisSeriesOptions,
   EdgeRenderingMode,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IRenderContext,
+  type LabelStringFormatterType,
   newDataPoint,
+  newOxyRect,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   TrackerHitResult,
+  type TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, Number_MIN_VALUE, removeUndef } from '@/patch'
+
+import { assignMethod, assignObject, isNaNOrUndef, isNullOrUndef, Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
 
 /**
  * Represents a rectangle item in a RectangleBarSeries.
@@ -81,6 +85,22 @@ export interface CreateRectangleBarSeriesOptions extends CreateXYAxisSeriesOptio
    * The label string formatter.
    */
   labelStringFormatter?: LabelStringFormatterType
+
+  items?: RectangleBarItem[]
+}
+
+export const DefaultRectangleBarSeriesOptions: CreateRectangleBarSeriesOptions = {
+  fillColor: OxyColors.Automatic,
+  strokeColor: OxyColors.Black,
+  strokeThickness: 1,
+
+  labelStringFormatter: undefined,
+  items: undefined,
+}
+
+export const ExtendedDefaultRectangleBarSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultRectangleBarSeriesOptions,
 }
 
 /**
@@ -90,52 +110,66 @@ export class RectangleBarSeries extends XYAxisSeries {
   /**
    * The default tracker formatter.
    */
-  public static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = (args) =>
-    `${args.title}
+  public static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = function (args) {
+    return `${args.title}
 ${args.xTitle}: ${args.xValue} ${args['x1Value']}  
 ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
+  }
+
+  public static readonly defaultLabelStringFormatter = function (item: any, args: any) {
+    return `${args[4] || ''}`
+  }
 
   /**
    * The default fill color.
    */
-  private defaultFillColor: OxyColor = OxyColors.Undefined
+  private _defaultFillColor: OxyColor = OxyColors.Undefined
 
   /**
    * Initializes a new instance of the RectangleBarSeries class.
    */
   constructor(opt?: CreateRectangleBarSeriesOptions) {
     super(opt)
-    this.items = []
 
-    this.fillColor = OxyColors.Automatic
-    this.strokeColor = OxyColors.Black
-    this.strokeThickness = 1
+    if (opt?.items) {
+      this._items = opt.items
+      delete opt.items
+    }
 
     this.trackerStringFormatter = RectangleBarSeries.defaultTrackerStringFormatter
+    assignMethod(this, 'trackerStringFormatter', opt)
 
-    this.labelStringFormatter = (item, args) => `${args[4] || ''}`
+    this.labelStringFormatter = RectangleBarSeries.defaultLabelStringFormatter
+    assignMethod(this, 'labelStringFormatter', opt)
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultRectangleBarSeriesOptions, opt, {
+      exclude: ['trackerStringFormatter', 'labelStringFormatter'],
+    })
+  }
+
+  getElementName() {
+    return 'RectangleBarSeries'
   }
 
   /**
    * Gets or sets the default color of the interior of the rectangles.
    */
-  public fillColor: OxyColor
+  public fillColor: OxyColor = DefaultRectangleBarSeriesOptions.fillColor!
 
   /**
    * Gets the actual fill color.
    */
   public get actualFillColor(): OxyColor {
-    return this.fillColor.getActualColor(this.defaultFillColor)
+    return OxyColorHelper.getActualColor(this.fillColor, this._defaultFillColor)
   }
 
+  private _items: RectangleBarItem[] = []
   /**
    * Gets the rectangle bar items.
    */
-  public items: RectangleBarItem[]
+  get items(): RectangleBarItem[] {
+    return this._items
+  }
 
   /**
    * Gets or sets the formatter for the labels.
@@ -145,12 +179,12 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
   /**
    * Gets or sets the color of the border around the rectangles.
    */
-  public strokeColor: OxyColor
+  public strokeColor: OxyColor = DefaultRectangleBarSeriesOptions.strokeColor!
 
   /**
    * Gets or sets the thickness of the border around the rectangles.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultRectangleBarSeriesOptions.strokeThickness!
 
   /**
    * Gets or sets the actual rectangles for the rectangles.
@@ -175,7 +209,7 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
 
     for (let i = 0; i < this.actualBarRectangles.length; i++) {
       const r = this.actualBarRectangles[i]
-      if (r.containsPoint(point)) {
+      if (OxyRectHelper.containsPoint(r, point)) {
         const value = (this.actualItems[i].y0 + this.actualItems[i].y1) / 2
         const sp = point
         const dp = newDataPoint(i, value)
@@ -240,14 +274,16 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
       const p0 = transform(this, item.x0, item.y0)
       const p1 = transform(this, item.x1, item.y1)
 
-      const rectangle = OxyRect.create(p0.x, p0.y, p1.x, p1.y)
+      const rectangle = OxyRectHelper.create(p0.x, p0.y, p1.x, p1.y)
 
       this.actualBarRectangles.push(rectangle)
       this.actualItems.push(item)
 
+      const color = item.color ?? OxyColors.Automatic
+
       await rc.drawRectangle(
         rectangle,
-        this.getSelectableFillColor(item.color.getActualColor(this.actualFillColor)),
+        this.getSelectableFillColor(OxyColorHelper.getActualColor(color, this.actualFillColor)),
         this.strokeColor,
         this.strokeThickness,
         actualEdgeRenderingMode,
@@ -255,8 +291,9 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
 
       if (this.labelStringFormatter) {
         const s = this.labelStringFormatter(this.getItem(i), [item.x0, item.x1, item.y0, item.y1, item.title])
-
-        const pt = newScreenPoint((rectangle.left + rectangle.right) / 2, (rectangle.top + rectangle.bottom) / 2)
+        const right = OxyRectHelper.right(rectangle)
+        const bottom = OxyRectHelper.bottom(rectangle)
+        const pt = newScreenPoint((rectangle.left + right) / 2, (rectangle.top + bottom) / 2)
 
         await rc.drawText(
           pt,
@@ -284,12 +321,14 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
    * @param legendBox The legend rectangle.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
-    const height = (legendBox.bottom - legendBox.top) * 0.8
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
+    const height = (bottom - legendBox.top) * 0.8
     const width = height
     await rc.drawRectangle(
-      new OxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
+      newOxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
       this.getSelectableFillColor(this.actualFillColor),
       this.strokeColor,
       this.strokeThickness,
@@ -302,8 +341,8 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
    * @internal
    */
   setDefaultValues(): void {
-    if (this.fillColor.isAutomatic()) {
-      this.defaultFillColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.fillColor)) {
+      this._defaultFillColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -311,15 +350,7 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
    * Updates the data.
    * @internal
    */
-  updateData(): void {
-    if (!this.itemsSource) {
-      return
-    }
-
-    this.items = []
-
-    throw new Error('Not implemented')
-  }
+  updateData(): void {}
 
   /**
    * Updates the maximum and minimum values of the series.
@@ -330,7 +361,7 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
 
     this.isXMonotonic = true
 
-    if (this.items === null || this.items.length === 0) {
+    if (isNullOrUndef(this.items) || this.items.length === 0) {
       return
     }
 
@@ -367,6 +398,18 @@ ${args.yTitle}: ${args.yValue} ${args['y1Value']}`
    * @returns True if the value is valid.
    */
   protected isValid(v: number): boolean {
-    return !isNaN(v) && isFinite(v)
+    return !isNaNOrUndef(v) && isFinite(v)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultRectangleBarSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this._items?.length) {
+      json.items = this._items
+    }
+    return json
   }
 }

@@ -2,9 +2,12 @@ import {
   CursorType,
   EdgeRenderingMode,
   type IRenderContext,
-  OxyColor,
+  newOxyRect,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectHelper,
   PlotModel,
   TrackerHitResult,
 } from 'oxyplot-js'
@@ -23,6 +26,7 @@ export class CanvasPlotView extends WebPlotViewBase {
   constructor(view: HTMLCanvasElement) {
     super()
     this._view = view
+    this.setupCanvas(view)
     this._drawCtx = this._view.getContext('2d') as CanvasRenderingContext2D
     if (!this._drawCtx) throw new Error('Could not get 2d context')
     this._tooltip = document.createElement('div')
@@ -37,6 +41,20 @@ export class CanvasPlotView extends WebPlotViewBase {
     this._renderContext = new CanvasRenderContext(this._view)
 
     addPlotViewEvents(this._view, this)
+
+    new ResizeObserver(() => {
+      this.setupCanvas(view)
+    }).observe(view)
+  }
+
+  private setupCanvas(canvas: HTMLCanvasElement) {
+    const dpr = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) return
+
+    // 设置 canvas 的宽高属性为 CSS 尺寸乘以设备像素比
+    canvas.width = rect.width * dpr
+    canvas.height = rect.height * dpr
   }
 
   get tooltip(): HTMLElement {
@@ -44,7 +62,7 @@ export class CanvasPlotView extends WebPlotViewBase {
   }
 
   get clientArea(): OxyRect {
-    return new OxyRect(0, 0, this._view.width, this._view.height)
+    return newOxyRect(0, 0, this._view.width, this._view.height)
   }
 
   hideTracker(): void {
@@ -58,11 +76,10 @@ export class CanvasPlotView extends WebPlotViewBase {
     const trackerStr = trackerHitResult.toString() || ''
     if (trackerStr.trim().length === 0) return
 
-    const topOffset = this._view.offsetTop
-    const leftOffset = this._view.offsetLeft
+    const { top, left } = this._view.getBoundingClientRect()
     this._tooltip.innerText = trackerStr
-    this._tooltip.style.top = `${topOffset + trackerHitResult.position.y}px`
-    this._tooltip.style.left = `${leftOffset + trackerHitResult.position.x}px`
+    this._tooltip.style.top = `${top + trackerHitResult.position.y}px`
+    this._tooltip.style.left = `${left + trackerHitResult.position.x}px`
     this._tooltip.style.visibility = 'visible'
   }
 
@@ -72,16 +89,20 @@ export class CanvasPlotView extends WebPlotViewBase {
 
   async renderOverride(model: PlotModel): Promise<void> {
     this._drawCtx = this._view.getContext('2d') as CanvasRenderingContext2D
+    const dpr = window.devicePixelRatio || 1
+    this._drawCtx.scale(dpr, dpr)
+
     const view = this._view
     this._drawCtx.reset()
-    if (!model.background.isUndefined()) {
+
+    if (!OxyColorHelper.isUndefined(model.background)) {
       this._drawCtx.fillStyle = this._styleConverter.convertStrokeOrFillStyle(model.background)
       this._drawCtx.fillRect(0, 0, view.width, view.height)
     }
 
-    await model.render(this._renderContext, new OxyRect(0, 0, view.width, view.height))
-    if (this._zoomRectangle && this._zoomRectangle.equals(OxyRect.Empty)) {
-      const fill = OxyColor.parse('#40FFFF00')
+    await model.render(this._renderContext, newOxyRect(0, 0, view.width, view.height))
+    if (this._zoomRectangle && OxyRectHelper.equals(this._zoomRectangle, OxyRect_Empty)) {
+      const fill = OxyColorHelper.parse('#40FFFF00')
       const stroke = OxyColors.Black
       await this._renderContext.drawRectangle(this._zoomRectangle, fill, stroke, 1, EdgeRenderingMode.Automatic)
     }

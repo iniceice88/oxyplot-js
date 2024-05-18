@@ -3,9 +3,11 @@ import {
   FontWeights,
   HorizontalAlignment,
   LineJoin,
-  OxyColor,
+  type OxyColor,
+  OxyColorEx,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
+  type OxyImage,
   type ScreenPoint,
   VerticalAlignment,
   XmlWriterBase,
@@ -70,22 +72,24 @@ export class SvgWriter extends XmlWriterBase {
     dashArray: number[] = [],
     lineJoin: LineJoin = LineJoin.Miter,
   ): string {
+    const f = OxyColorEx.fromOxyColor(fill)
     // http://oreilly.com/catalog/svgess/chapter/ch03.html
     let style = ''
-    if (fill.isInvisible()) {
+    if (OxyColorHelper.isInvisible(f)) {
       style += 'fill:none;'
     } else {
-      style += `fill:${this.colorToString(fill)};`
-      if (fill.a !== 0xff) {
-        style += `fill-opacity:${fill.a / 255.0};`
+      style += `fill:${this.colorToString(f)};`
+      if (f.a !== 0xff) {
+        style += `fill-opacity:${f.a / 255.0};`
       }
     }
 
-    if (stroke.isInvisible()) {
+    const s = OxyColorEx.fromOxyColor(stroke)
+    if (OxyColorHelper.isInvisible(stroke)) {
       style += 'stroke:none;'
     } else {
       const thicknessStr = this.numberFormat(thickness)
-      style += `stroke:${this.colorToString(stroke)};stroke-width:${thicknessStr}`
+      style += `stroke:${this.colorToString(s)};stroke-width:${thicknessStr}`
       switch (lineJoin) {
         case LineJoin.Round:
           style += ';stroke-linejoin:round'
@@ -95,8 +99,8 @@ export class SvgWriter extends XmlWriterBase {
           break
       }
 
-      if (stroke.a !== 0xff) {
-        style += `;stroke-opacity:${stroke.a / 255.0}`
+      if (s.a !== 0xff) {
+        style += `;stroke-opacity:${s.a / 255.0}`
       }
 
       if (dashArray && dashArray.length > 0) {
@@ -228,7 +232,7 @@ export class SvgWriter extends XmlWriterBase {
     if (!interpolate) {
       this.writeAttributeString('image-rendering', 'pixelated')
     }
-    const base64 = arrayBufferToBase64(image.data)
+    const base64 = arrayBufferToBase64(Uint8Array.from(image.data))
     const encodedImage = 'data:image/png;base64,' + base64
     this.writeAttributeString('xlink:href', encodedImage)
     this.writeEndElement()
@@ -379,14 +383,19 @@ export class SvgWriter extends XmlWriterBase {
     if (fontWeight > 0) {
       this.writeAttributeNumberString('font-weight', fontWeight)
     }
-
-    if (fill.isInvisible()) {
+    const f = OxyColorEx.fromOxyColor(fill)
+    if (OxyColorHelper.isInvisible(fill)) {
       this.writeAttributeString('fill', 'none')
     } else {
-      this.writeAttributeString('fill', this.colorToString(fill))
-      if (fill.a !== 0xff) {
-        this.writeAttributeNumberString('fill-opacity', fill.a / 255.0)
+      this.writeAttributeString('fill', this.colorToString(f))
+      if (f.a !== 0xff) {
+        this.writeAttributeNumberString('fill-opacity', f.a / 255.0)
       }
+    }
+
+    // preserve whitespace
+    if (text.length !== text.trim().length) {
+      this.writeAttributeString2('xml', 'space', '', 'preserve')
     }
 
     this.writeString(text)
@@ -398,8 +407,8 @@ export class SvgWriter extends XmlWriterBase {
    * @param color The color.
    * @returns The color string.
    */
-  protected colorToString(color: OxyColor): string {
-    if (color.equals(OxyColors.Black)) {
+  protected colorToString(color: OxyColorEx): string {
+    if (OxyColorHelper.equals(color, OxyColors.Black)) {
       return 'black'
     }
 
@@ -407,7 +416,7 @@ export class SvgWriter extends XmlWriterBase {
   }
 
   /**
-   * Writes an double attribute.
+   * Writes a double attribute.
    * @param name The name.
    * @param value The value.
    */

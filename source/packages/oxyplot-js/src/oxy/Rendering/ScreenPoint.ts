@@ -1,4 +1,4 @@
-﻿import { ScreenVector } from '@/oxyplot'
+﻿import { newScreenVector, type ScreenVector, ScreenVectorEx } from '@/oxyplot'
 
 /**
  * Represents a point defined in screen space.
@@ -44,7 +44,11 @@ export function screenPointPlus(p1: ScreenPoint, p2: ScreenVector): ScreenPoint 
  * @returns A ScreenVector structure that represents the difference between p1 and p2.
  */
 export function screenPointMinus(p1: ScreenPoint, p2: ScreenPoint): ScreenVector {
-  return new ScreenVector(p1.x - p2.x, p1.y - p2.y)
+  return newScreenVector(p1.x - p2.x, p1.y - p2.y)
+}
+
+export function screenPointMinusEx(p1: ScreenPoint, p2: ScreenPoint): ScreenVectorEx {
+  return ScreenVectorEx.fromVector(screenPointMinus(p1, p2))
 }
 
 /**

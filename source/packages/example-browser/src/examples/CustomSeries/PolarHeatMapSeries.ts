@@ -7,10 +7,13 @@ import {
   type IRenderContext,
   maxValueOfArray,
   minValueOfArray,
+  newOxyRect,
   newScreenPoint,
   OxyColor,
+  OxyColorHelper,
   OxyColors,
   OxyImage,
+  OxyImageEx,
   OxyRect,
   PlotElementExtensions,
   PlotModel,
@@ -37,22 +40,22 @@ export interface CreatePolarHeatMapSeriesOptions extends CreateXYAxisSeriesOptio
   imageSize?: number
 
   /**
-   * The x-coordinate of the left column mid point.
+   * The x-coordinate of the left column mid-point.
    */
   angle0?: number
 
   /**
-   * The x-coordinate of the right column mid point.
+   * The x-coordinate of the right column mid-point.
    */
   angle1?: number
 
   /**
-   * The y-coordinate of the top row mid point.
+   * The y-coordinate of the top row mid-point.
    */
   magnitude0?: number
 
   /**
-   * The y-coordinate of the bottom row mid point.
+   * The y-coordinate of the bottom row mid-point.
    */
   magnitude1?: number
 
@@ -103,28 +106,32 @@ export class PolarHeatMapSeries extends XYAxisSeries {
     }
   }
 
+  getElementName() {
+    return 'PolarHeatMapSeries'
+  }
+
   /**
    * Gets or sets the size of the image - if set to 0, the image will be generated at every update.
    */
   public imageSize: number = 0
 
   /**
-   * Gets or sets the x-coordinate of the left column mid point.
+   * Gets or sets the x-coordinate of the left column mid-point.
    */
   public angle0: number = 0
 
   /**
-   * Gets or sets the x-coordinate of the right column mid point.
+   * Gets or sets the x-coordinate of the right column mid-point.
    */
   public angle1: number = 0
 
   /**
-   * Gets or sets the y-coordinate of the top row mid point.
+   * Gets or sets the y-coordinate of the top row mid-point.
    */
   public magnitude0: number = 0
 
   /**
-   * Gets or sets the y-coordinate of the bottom row mid point.
+   * Gets or sets the y-coordinate of the bottom row mid-point.
    */
   public magnitude1: number = 0
 
@@ -231,7 +238,7 @@ export class PolarHeatMapSeries extends XYAxisSeries {
           const value = this.getValue(ii, jj)
 
           // use the color axis to get the color
-          const c = OxyColor.fromAColor(160, getColor(this.colorAxis!, value))
+          const c = OxyColorHelper.fromAColor(160, getColor(this.colorAxis!, value))
           p.set(x, y, c)
         } else {
           // outside the range of the Data array
@@ -241,7 +248,7 @@ export class PolarHeatMapSeries extends XYAxisSeries {
     }
 
     // Create the PNG image
-    this.image = await OxyImage.create(p, ImageFormat.Png)
+    this.image = await OxyImageEx.create(p, ImageFormat.Png)
 
     // Render the image
     await RenderingExtensions.drawImage(rc, this.image, dest.left, dest.top, dest.width, dest.height, 1, false)
@@ -289,7 +296,7 @@ export class PolarHeatMapSeries extends XYAxisSeries {
             const value = this.getValue(ii, jj)
 
             // use the color axis to get the color
-            const c = OxyColor.fromAColor(160, getColor(this.colorAxis!, value))
+            const c = OxyColorHelper.fromAColor(160, getColor(this.colorAxis!, value))
             p.set(xi, yi, c)
           } else {
             // outside the range of the Data array
@@ -299,7 +306,7 @@ export class PolarHeatMapSeries extends XYAxisSeries {
       }
 
       // Create the PNG image
-      this.image = await OxyImage.create(p, ImageFormat.Png)
+      this.image = await OxyImageEx.create(p, ImageFormat.Png)
     }
 
     if (!this.image) return
@@ -309,13 +316,13 @@ export class PolarHeatMapSeries extends XYAxisSeries {
     if (this.plotModel.plotType !== PlotType.Polar) {
       const topLeft = transform(this, -this.magnitude1, this.magnitude1)
       const bottomRight = transform(this, this.magnitude1, -this.magnitude1)
-      dest = new OxyRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
+      dest = newOxyRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y)
     } else {
       const top = transform(this, this.magnitude1, 90)
       const bottom = transform(this, this.magnitude1, 270)
       const left = transform(this, this.magnitude1, 180)
       const right = transform(this, this.magnitude1, 0)
-      dest = new OxyRect(left.x, top.y, right.x - left.x, bottom.y - top.y)
+      dest = newOxyRect(left.x, top.y, right.x - left.x, bottom.y - top.y)
     }
 
     // Render the image

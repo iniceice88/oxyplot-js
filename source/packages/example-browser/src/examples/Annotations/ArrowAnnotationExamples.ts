@@ -1,4 +1,12 @@
-import { ArrowAnnotation, AxisPosition, LinearAxis, newDataPoint, OxyColors, PlotModel, ScreenVector } from 'oxyplot-js'
+import {
+  ArrowAnnotation,
+  AxisPosition,
+  LinearAxis,
+  newDataPoint,
+  newScreenVector,
+  OxyColors,
+  PlotModel,
+} from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 
 function arrowAnnotation() {
@@ -17,7 +25,7 @@ function arrowAnnotation() {
 
   model.annotations.push(
     new ArrowAnnotation({
-      arrowDirection: new ScreenVector(30, 70),
+      arrowDirection: newScreenVector(30, 70),
       endPoint: newDataPoint(40, -3),
       color: OxyColors.Blue,
       text: 'ArrowDirection and EndPoint',
@@ -26,7 +34,7 @@ function arrowAnnotation() {
 
   model.annotations.push(
     new ArrowAnnotation({
-      arrowDirection: new ScreenVector(30, -70),
+      arrowDirection: newScreenVector(30, -70),
       endPoint: newDataPoint(10, -3),
       headLength: 14,
       headWidth: 6,

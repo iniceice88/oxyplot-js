@@ -252,20 +252,23 @@ function boxPlotSeries_DateTimeAxis(): PlotModel {
       intervalType: DateTimeIntervalType.Days,
       majorStep: 1,
       minorStep: 1,
-      stringFormatter: (d) => dateService.format(d, 'YYYY-MM-DD'),
+      stringFormatter: function (d) {
+        return dateService.format(d, 'YYYY-MM-DD')
+      },
     }),
   )
 
   const boxPlotSeries: BoxPlotSeries = new BoxPlotSeries({
     //'X: {1:yyyy-MM-dd}\nUpper Whisker: {2:0.00}\nThird Quartil: {3:0.00}\nMedian: {4:0.00}\nFirst Quartil: {5:0.00}\nLower Whisker: {6:0.00}\nMean: {7:0.00}',
-    trackerStringFormatter: (args) =>
-      `X: ${dateService.format(args.xValue, 'YYYY-MM-DD')}
+    trackerStringFormatter: function (args) {
+      return `X: ${dateService.format(args.xValue, 'YYYY-MM-DD')}
 Upper Whisker: ${args.upperWhisker!.toFixed(2)}
 Third Quartil: ${args.boxTop!.toFixed(2)}
 Median: ${args.median!.toFixed(2)}
 First Quartil: ${args.boxBottom!.toFixed(2)}
 Lower Whisker: ${args.lowerWhisker!.toFixed(2)}
-Mean: ${args.mean!.toFixed(2)}`,
+Mean: ${args.mean!.toFixed(2)}`
+    },
     items: [],
   })
 

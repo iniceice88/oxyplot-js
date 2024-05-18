@@ -1,16 +1,18 @@
 import {
   AxisPosition,
   type CreateLinearAxisOptions,
+  ExtendedDefaultLinearAxisOptions,
   type INumericColorAxis,
   type IRenderContext,
   LinearAxis,
   NumericColorAxisRenderer,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyPalette,
+  type OxyPalette,
   OxyPalettes,
 } from '@/oxyplot'
-import { assertInteger, Number_MIN_VALUE, removeUndef } from '@/patch'
+import { assertInteger, assignObject, isNaNOrUndef, Number_MIN_VALUE } from '@/patch'
 
 export interface CreateLinearColorAxisOptions extends CreateLinearAxisOptions {
   /** The color used to represent NaN values. */
@@ -29,41 +31,50 @@ export interface CreateLinearColorAxisOptions extends CreateLinearAxisOptions {
   renderAsImage?: boolean
 }
 
+export const DefaultLinearColorAxisOptions: CreateLinearColorAxisOptions = {
+  invalidNumberColor: OxyColors.Gray,
+  highColor: OxyColors.Undefined,
+  lowColor: OxyColors.Undefined,
+  palette: OxyPalettes.viridis(),
+  renderAsImage: false,
+
+  position: AxisPosition.None,
+  axisDistance: 20,
+  isPanEnabled: false,
+  isZoomEnabled: false,
+} as const
+
+export const ExtendedDefaultLinearColorAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultLinearColorAxisOptions,
+}
+
 /**
  * Represents a linear color axis.
  */
 export class LinearColorAxis extends LinearAxis implements INumericColorAxis {
   /** The color used to represent NaN values. */
-  invalidNumberColor: OxyColor
+  invalidNumberColor: OxyColor = DefaultLinearColorAxisOptions.invalidNumberColor!
 
   /** The color of values above the maximum value. */
-  highColor: OxyColor
+  highColor: OxyColor = DefaultLinearColorAxisOptions.highColor!
 
   /** The color of values below the minimum value. */
-  lowColor: OxyColor
+  lowColor: OxyColor = DefaultLinearColorAxisOptions.lowColor!
 
   /** The palette. */
-  palette: OxyPalette
+  palette: OxyPalette = DefaultLinearColorAxisOptions.palette!
 
   /** A value indicating whether to render the colors as an image. */
-  renderAsImage: boolean = false
+  renderAsImage: boolean = DefaultLinearColorAxisOptions.renderAsImage!
 
   constructor(opt?: CreateLinearColorAxisOptions) {
     super(opt)
-    this.position = AxisPosition.None
-    this.axisDistance = 20
+    assignObject(this, DefaultLinearColorAxisOptions, opt)
+  }
 
-    this.isPanEnabled = false
-    this.isZoomEnabled = false
-    this.palette = OxyPalettes.viridis()
-
-    this.lowColor = OxyColors.Undefined
-    this.highColor = OxyColors.Undefined
-    this.invalidNumberColor = OxyColors.Gray
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'LinearColorAxis'
   }
 
   /** Determines whether the axis is used for X/Y values. */
@@ -97,15 +108,15 @@ export class LinearColorAxis extends LinearAxis implements INumericColorAxis {
 
   /** Gets the palette index of the specified value. */
   getPaletteIndex(value: number): number {
-    if (isNaN(value)) {
+    if (isNaNOrUndef(value)) {
       return Number_MIN_VALUE
     }
 
-    if (!this.lowColor.isUndefined() && value < this.clipMinimum) {
+    if (!OxyColorHelper.isUndefined(this.lowColor) && value < this.clipMinimum) {
       return 0
     }
 
-    if (!this.highColor.isUndefined() && value > this.clipMaximum) {
+    if (!OxyColorHelper.isUndefined(this.highColor) && value > this.clipMaximum) {
       return this.palette.colors.length + 1
     }
 
@@ -121,5 +132,9 @@ export class LinearColorAxis extends LinearAxis implements INumericColorAxis {
     }
 
     return index
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLinearColorAxisOptions
   }
 }

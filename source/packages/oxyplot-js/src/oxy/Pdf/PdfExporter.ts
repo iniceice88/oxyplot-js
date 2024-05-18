@@ -1,5 +1,4 @@
-import type { IExporter, IPlotModel } from '@/oxyplot'
-import { OxyRect, PdfRenderContext } from '@/oxyplot'
+import { type IExporter, type IPlotModel, newOxyRect, PdfRenderContext } from '@/oxyplot'
 
 /**
  * Provides functionality to export plots to pdf.
@@ -41,7 +40,7 @@ export class PdfExporter implements IExporter {
   public async export(model: IPlotModel): Promise<ArrayBuffer> {
     const rc = new PdfRenderContext(this.Width, this.Height, model.background)
     model.update(true)
-    await model.render(rc, new OxyRect(0, 0, this.Width, this.Height))
+    await model.render(rc, newOxyRect(0, 0, this.Width, this.Height))
     return rc.save()
   }
 }

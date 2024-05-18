@@ -1,25 +1,43 @@
-import type {
-  AxisChangedEventArgs,
-  CreateMagnitudeAxisOptions,
-  IRenderContext,
-  ScreenPoint,
-  TickValuesType,
-} from '@/oxyplot'
 import {
+  type AxisChangedEventArgs,
   AxisChangeTypes,
   AxisPosition,
   AxisUtilities,
+  type CreateMagnitudeAxisOptions,
+  ExtendedDefaultMagnitudeAxisOptions,
+  type IRenderContext,
   LineStyle,
   MagnitudeAxis,
   MagnitudeAxisFullPlotAreaRenderer,
   newScreenPoint,
-  OxyRect,
+  type OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
+  type ScreenPoint,
   screenPointDistanceTo,
+  type TickValuesType,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateMagnitudeAxisFullPlotAreaOptions extends CreateMagnitudeAxisOptions {
   midShiftH?: number
   midShiftV?: number
+}
+
+export const DefaultMagnitudeAxisFullPlotAreaOptions: CreateMagnitudeAxisFullPlotAreaOptions = {
+  midShiftH: 0,
+  midShiftV: 0,
+
+  position: AxisPosition.None,
+  isPanEnabled: true,
+  isZoomEnabled: false,
+  majorGridlineStyle: LineStyle.Solid,
+  minorGridlineStyle: LineStyle.Solid,
+} as const
+
+export const ExtendedDefaultMagnitudeAxisFullPlotAreaOptions = {
+  ...ExtendedDefaultMagnitudeAxisOptions,
+  ...DefaultMagnitudeAxisFullPlotAreaOptions,
 }
 
 /** Represents a magnitude axis that covers the whole plot area. */
@@ -53,16 +71,11 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
   /** Initializes a new instance of the MagnitudeAxis class. */
   constructor(opt?: CreateMagnitudeAxisFullPlotAreaOptions) {
     super(opt)
-    this.position = AxisPosition.None
-    this.isPanEnabled = true
-    this.isZoomEnabled = false
+    assignObject(this, DefaultMagnitudeAxisFullPlotAreaOptions, opt)
+  }
 
-    this.majorGridlineStyle = LineStyle.Solid
-    this.minorGridlineStyle = LineStyle.Solid
-
-    if (opt) {
-      Object.assign(this, opt)
-    }
+  getElementName() {
+    return 'MagnitudeAxisFullPlotArea'
   }
 
   /** Renders the axis on the specified render context. */
@@ -72,7 +85,7 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
   }
 
   public getTickValues(): TickValuesType {
-    const axisRect = OxyRect.fromScreenPoints(this.screenMin, this.screenMax)
+    const axisRect = OxyRectEx.fromScreenPoints(this.screenMin, this.screenMax)
     const distanceTopLeft = screenPointDistanceTo(axisRect.topLeft, this.midPoint)
     const distanceTopRight = screenPointDistanceTo(axisRect.topRight, this.midPoint)
     const distanceBottomRight = screenPointDistanceTo(axisRect.bottomRight, this.midPoint)
@@ -103,8 +116,8 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
    * */
   updateTransform(bounds: OxyRect): void {
     const x0 = bounds.left
-    const x1 = bounds.right
-    const y0 = bounds.bottom
+    const x1 = OxyRectHelper.right(bounds)
+    const y0 = OxyRectHelper.bottom(bounds)
     const y1 = bounds.top
 
     this.screenMin = newScreenPoint(x0, y1)
@@ -203,5 +216,9 @@ export class MagnitudeAxisFullPlotArea extends MagnitudeAxis {
 
     super.zoomAt(factor, 0)
     return
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultMagnitudeAxisFullPlotAreaOptions
   }
 }

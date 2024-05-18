@@ -1,13 +1,4 @@
-﻿import type {
-  IBarSeries,
-  IColorAxis,
-  IPlotModel,
-  IPlotView,
-  IRenderContext,
-  ScreenPoint,
-  TrackerEventArgs,
-} from '@/oxyplot'
-import {
+﻿import {
   AngleAxis,
   Annotation,
   AnnotationLayer,
@@ -17,9 +8,16 @@ import {
   BarSeries,
   BarSeriesManager,
   CategoryAxis,
+  type CreateModelOptions,
+  DefaultCreateModelOptions,
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
+  type IBarSeries,
+  type IColorAxis,
+  type IPlotModel,
+  type IPlotView,
+  type IRenderContext,
   isBarSeries,
   isBottomLegend,
   isColorAxis,
@@ -34,31 +32,46 @@ import {
   MathRenderingExtensions,
   Model,
   newElementCollection,
+  newOxyRect,
+  newOxySize,
+  newOxyThickness,
   newScreenPoint,
-  OxyColor,
+  newScreenVector,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
-  OxySize,
-  OxyThickness,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRect_Everything,
+  OxyRectHelper,
+  type OxySize,
+  type OxyThickness,
+  OxyThickness_Zero,
+  OxyThicknessEx,
   PlotElement,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointDistanceTo,
   screenPointPlus,
-  ScreenVector,
   Series,
   toColorAxis,
+  type TrackerEventArgs,
   TrackerHitResult,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
+
 import {
+  assignObject,
+  copyPlotElementProperties,
   getReversedCopy,
   type IDisposable,
   isInfinity,
+  isNaNOrUndef,
   isNullOrUndef,
   Number_MAX_VALUE,
   removeProperties,
-  removeUndef,
 } from '@/patch'
 
 /**
@@ -98,7 +111,7 @@ export enum TitleHorizontalAlignment {
   CenteredWithinView,
 }
 
-export interface CreatePlotModelOptions {
+export interface CreatePlotModelOptions extends CreateModelOptions {
   axes?: Axis[]
   series?: Series[]
   annotations?: Annotation[]
@@ -136,6 +149,56 @@ export interface CreatePlotModelOptions {
   titleHorizontalAlignment?: TitleHorizontalAlignment
 }
 
+export const DefaultPlotModelOptions: CreatePlotModelOptions = {
+  plotType: PlotType.XY,
+  plotMargins: newOxyThickness(NaN),
+  padding: newOxyThickness(8),
+  background: OxyColors.Undefined,
+  plotAreaBackground: OxyColors.Undefined,
+  textColor: OxyColors.Black,
+  titleColor: OxyColors.Automatic,
+  subtitleColor: OxyColors.Automatic,
+  defaultFont: 'Segoe UI',
+  defaultFontSize: 12,
+  titleToolTip: undefined,
+  titleFont: undefined,
+  titleFontSize: 18,
+  titleFontWeight: FontWeights.Bold,
+  subtitleFont: undefined,
+  subtitleFontSize: 14,
+  subtitleFontWeight: FontWeights.Normal,
+  titlePadding: 6,
+  clipTitle: true,
+  titleClippingLength: 0.9,
+  plotAreaBorderColor: OxyColors.Black,
+  plotAreaBorderThickness: newOxyThickness(1),
+  edgeRenderingMode: EdgeRenderingMode.Automatic,
+  assignColorsToInvisibleSeries: true,
+  isLegendVisible: true,
+  axisTierDistance: 4.0,
+  title: undefined,
+  subtitle: undefined,
+  titleHorizontalAlignment: TitleHorizontalAlignment.CenteredWithinPlotArea,
+  defaultColors: [
+    OxyColorHelper.fromRgb(0x4e, 0x9a, 0x06),
+    OxyColorHelper.fromRgb(0xc8, 0x8d, 0x00),
+    OxyColorHelper.fromRgb(0xcc, 0x00, 0x00),
+    OxyColorHelper.fromRgb(0x20, 0x4a, 0x87),
+    OxyColors.Red,
+    OxyColors.Orange,
+    OxyColors.Yellow,
+    OxyColors.Green,
+    OxyColors.Blue,
+    OxyColors.Indigo,
+    OxyColors.Violet,
+  ],
+}
+
+export const ExtendedPlotModelOptions = {
+  ...DefaultCreateModelOptions,
+  ...DefaultPlotModelOptions,
+}
+
 /**
  * Represents a plot.
  */
@@ -143,89 +206,42 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The bar series managers.
    */
-  private barSeriesManagers: BarSeriesManager[] = []
+  private _barSeriesManagers: BarSeriesManager[] = []
 
   /**
    * The plot view that renders this plot.
    */
-  private plotViewReference?: IPlotView
+  private _plotViewReference?: IPlotView
 
   /**
    * The current color index.
    */
-  private currentColorIndex: number = 0
+  private _currentColorIndex: number = 0
 
   /**
    * Flags if the data has been updated.
    */
-  private isDataUpdated: boolean = false
+  private _isDataUpdated: boolean = false
 
   /**
    * The last update exception.
    */
-  private lastPlotException?: any | null
+  private _lastPlotException?: any | null
 
   /**
    * Initializes a new instance of the PlotModel class.
    */
   constructor(opt?: CreatePlotModelOptions) {
-    super()
+    super(opt)
     this._axes = newElementCollection<Axis>(this)
     this._series = newElementCollection<Series>(this)
     this._annotations = newElementCollection<Annotation>(this)
     this._legends = newElementCollection<LegendBase>(this)
-    this.plotType = PlotType.XY
-
-    this.plotMargins = new OxyThickness(NaN)
-    this.padding = new OxyThickness(8)
-
-    this.background = OxyColors.Undefined
-    this.plotAreaBackground = OxyColors.Undefined
-
-    this.textColor = OxyColors.Black
-    this.titleColor = OxyColors.Automatic
-    this.subtitleColor = OxyColors.Automatic
-
-    this.defaultFont = 'Segoe UI'
-    this.defaultFontSize = 12
-
-    this.titleToolTip = undefined
-    this.titleFont = undefined
-    this.titleFontSize = 18
-    this.titleFontWeight = FontWeights.Bold
-    this.subtitleFont = undefined
-    this.subtitleFontSize = 14
-    this.subtitleFontWeight = FontWeights.Normal
-    this.titlePadding = 6
-    this.clipTitle = true
-    this.titleClippingLength = 0.9
-
-    this.plotAreaBorderColor = OxyColors.Black
-    this.plotAreaBorderThickness = new OxyThickness(1)
-    this.edgeRenderingMode = EdgeRenderingMode.Automatic
-
-    this.assignColorsToInvisibleSeries = true
-    this.isLegendVisible = true
-
-    this.defaultColors = [
-      OxyColor.fromRgb(0x4e, 0x9a, 0x06),
-      OxyColor.fromRgb(0xc8, 0x8d, 0x00),
-      OxyColor.fromRgb(0xcc, 0x00, 0x00),
-      OxyColor.fromRgb(0x20, 0x4a, 0x87),
-      OxyColors.Red,
-      OxyColors.Orange,
-      OxyColors.Yellow,
-      OxyColors.Green,
-      OxyColors.Blue,
-      OxyColors.Indigo,
-      OxyColors.Violet,
-    ]
-
-    this.axisTierDistance = 4.0
 
     if (opt) {
       this.applyOptions(opt)
     }
+    assignObject(this, DefaultPlotModelOptions, opt)
   }
 
   private applyOptions(opt: CreatePlotModelOptions) {
@@ -243,8 +259,6 @@ export class PlotModel extends Model implements IPlotModel {
       this._legends.push(...opt.legends)
     }
     removeProperties(opt, 'axes', 'series', 'annotations', 'legends')
-
-    Object.assign(this, removeUndef(opt))
   }
 
   /**
@@ -265,14 +279,14 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * Gets or sets the default font.
    */
-  public defaultFont: string
+  public defaultFont: string = DefaultPlotModelOptions.defaultFont!
 
   /**
    * Gets or sets the default size of the fonts.
    */
-  public defaultFontSize: number
+  public defaultFontSize: number = DefaultPlotModelOptions.defaultFontSize!
 
-  private _actualPlotMargins: OxyThickness = OxyThickness.Zero
+  private _actualPlotMargins: OxyThickness = OxyThickness_Zero
   /**
    * The actual plot margins.
    */
@@ -285,7 +299,7 @@ export class PlotModel extends Model implements IPlotModel {
    * Only one view can render the plot at the same time.
    */
   public get plotView() {
-    return this.plotViewReference
+    return this._plotViewReference
   }
 
   private readonly _annotations: Annotation[]
@@ -321,29 +335,29 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The default colors.
    */
-  public defaultColors: OxyColor[]
+  public defaultColors: OxyColor[] = DefaultPlotModelOptions.defaultColors!
 
   /**
    * The edge rendering mode that is used for rendering the plot bounds and backgrounds.
    */
-  public edgeRenderingMode: EdgeRenderingMode
+  public edgeRenderingMode: EdgeRenderingMode = DefaultPlotModelOptions.edgeRenderingMode!
 
   /**
    * A value indicating whether invisible series should be assigned automatic colors.
    */
-  public assignColorsToInvisibleSeries: boolean
+  public assignColorsToInvisibleSeries: boolean = DefaultPlotModelOptions.assignColorsToInvisibleSeries!
 
   /**
    * A value indicating whether the legend is visible. The titles of the series must be set to use the legend.
    */
-  public isLegendVisible: boolean
+  public isLegendVisible: boolean = DefaultPlotModelOptions.isLegendVisible!
 
   /**
    * The padding around the plot.
    */
-  public padding: OxyThickness = OxyThickness.Zero
+  public padding: OxyThickness = DefaultPlotModelOptions.padding!
 
-  private _plotBounds: OxyRect = OxyRect.Empty
+  private _plotBounds: OxyRect = OxyRect_Empty
   /**
    * The PlotBounds of the plot (in device units).
    */
@@ -365,7 +379,7 @@ export class PlotModel extends Model implements IPlotModel {
     return this.plotBounds.height
   }
 
-  private _plotAndAxisArea: OxyRect = OxyRect.Empty
+  private _plotAndAxisArea: OxyRect = OxyRect_Empty
   /**
    * The area including both the plot and the axes. Outside legends are rendered outside this rectangle.
    */
@@ -373,7 +387,7 @@ export class PlotModel extends Model implements IPlotModel {
     return this._plotAndAxisArea
   }
 
-  private _plotArea: OxyRect = OxyRect.Empty
+  private _plotArea: OxyRect = OxyRect_Empty
   /**
    * The plot area. This area is used to draw the series (not including axes or legends).
    */
@@ -384,33 +398,33 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The distance between two neighborhood tiers of the same AxisPosition.
    */
-  public axisTierDistance: number
+  public axisTierDistance: number = DefaultPlotModelOptions.axisTierDistance!
 
   /**
    * The color of the background of the plot area.
    */
-  public plotAreaBackground: OxyColor = OxyColors.Undefined
+  public plotAreaBackground: OxyColor = DefaultPlotModelOptions.plotAreaBackground!
 
   /**
    * The color of the border around the plot area.
    */
-  public plotAreaBorderColor: OxyColor = OxyColors.Undefined
+  public plotAreaBorderColor: OxyColor = DefaultPlotModelOptions.plotAreaBorderColor!
 
   /**
    * The thickness of the border around the plot area.
    */
-  public plotAreaBorderThickness: OxyThickness
+  public plotAreaBorderThickness: OxyThickness = DefaultPlotModelOptions.plotAreaBorderThickness!
 
   /**
    * The margins around the plot (this should be large enough to fit the axes).
    * If any of the values is set to NaN, the margin is adjusted to the value required by the axes.
    */
-  public plotMargins: OxyThickness
+  public plotMargins: OxyThickness = DefaultPlotModelOptions.plotMargins!
 
   /**
    * The type of the coordinate system.
    */
-  public plotType: PlotType
+  public plotType: PlotType = DefaultPlotModelOptions.plotType!
 
   private readonly _series: Series[]
   /**
@@ -438,12 +452,12 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The size of the subtitle font.
    */
-  public subtitleFontSize: number
+  public subtitleFontSize: number = DefaultPlotModelOptions.subtitleFontSize!
 
   /**
    * The subtitle font weight.
    */
-  public subtitleFontWeight: number
+  public subtitleFontWeight: number = DefaultPlotModelOptions.subtitleFontWeight!
 
   /**
    * The default color of the text in the plot (titles, legends, annotations, axes).
@@ -469,12 +483,12 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * A value indicating whether to clip the title. The default value is true.
    */
-  public clipTitle: boolean
+  public clipTitle: boolean = DefaultPlotModelOptions.clipTitle!
 
   /**
    * The length of the title clipping rectangle (fraction of the available length of the title area). The default value is 0.9.
    */
-  public titleClippingLength: number
+  public titleClippingLength: number = DefaultPlotModelOptions.titleClippingLength!
 
   /**
    * The color of the subtitle.
@@ -484,9 +498,9 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The horizontal alignment of the title and subtitle.
    */
-  public titleHorizontalAlignment: TitleHorizontalAlignment = TitleHorizontalAlignment.CenteredWithinPlotArea
+  public titleHorizontalAlignment: TitleHorizontalAlignment = DefaultPlotModelOptions.titleHorizontalAlignment!
 
-  private _titleArea: OxyRect = OxyRect.Empty
+  private _titleArea: OxyRect = OxyRect_Empty
   /**
    * The title area.
    */
@@ -502,17 +516,17 @@ export class PlotModel extends Model implements IPlotModel {
   /**
    * The size of the title font.
    */
-  public titleFontSize: number
+  public titleFontSize: number = DefaultPlotModelOptions.titleFontSize!
 
   /**
    * The title font weight.
    */
-  public titleFontWeight: number
+  public titleFontWeight: number = DefaultPlotModelOptions.titleFontWeight!
 
   /**
    * The padding around the title.
    */
-  public titlePadding: number
+  public titlePadding: number = DefaultPlotModelOptions.titlePadding!
 
   private _defaultAngleAxis?: AngleAxis
   /**
@@ -580,7 +594,7 @@ export class PlotModel extends Model implements IPlotModel {
       throw new Error('This PlotModel is already in use by some other PlotView control.')
     }
 
-    this.plotViewReference = plotView
+    this._plotViewReference = plotView
   }
 
   /**
@@ -602,14 +616,16 @@ export class PlotModel extends Model implements IPlotModel {
     // Get the axis position of the given point. Using null if the point is inside the plot area.
     let position: AxisPosition | undefined = undefined
     let plotAreaValue = 0
+    const right = OxyRectHelper.right(this.plotArea)
+    const bottom = OxyRectHelper.bottom(this.plotArea)
     if (pt.x < this.plotArea.left) {
       position = AxisPosition.Left
       plotAreaValue = this.plotArea.left
     }
 
-    if (pt.x > this.plotArea.right) {
+    if (pt.x > right) {
       position = AxisPosition.Right
-      plotAreaValue = this.plotArea.right
+      plotAreaValue = right
     }
 
     if (pt.y < this.plotArea.top) {
@@ -617,9 +633,9 @@ export class PlotModel extends Model implements IPlotModel {
       plotAreaValue = this.plotArea.top
     }
 
-    if (pt.y > this.plotArea.bottom) {
+    if (pt.y > bottom) {
       position = AxisPosition.Bottom
-      plotAreaValue = this.plotArea.bottom
+      plotAreaValue = bottom
     }
 
     for (const axis of this.axes) {
@@ -698,7 +714,7 @@ export class PlotModel extends Model implements IPlotModel {
    * @returns The next default color.
    */
   public getDefaultColor(): OxyColor {
-    return this.defaultColors[this.currentColorIndex++ % this.defaultColors.length]
+    return this.defaultColors[this._currentColorIndex++ % this.defaultColors.length]
   }
 
   /**
@@ -706,7 +722,7 @@ export class PlotModel extends Model implements IPlotModel {
    * @returns The next default line style.
    */
   public getDefaultLineStyle(): LineStyle {
-    const lineStyleIdx = (this.currentColorIndex / this.defaultColors.length) % Number(LineStyle.None)
+    const lineStyleIdx = (this._currentColorIndex / this.defaultColors.length) % Number(LineStyle.None)
     return lineStyleIdx as LineStyle
   }
 
@@ -753,7 +769,7 @@ export class PlotModel extends Model implements IPlotModel {
    * @returns The exception or null if there was no exception.
    */
   public getLastPlotException(): Error | null | undefined {
-    return this.lastPlotException
+    return this._lastPlotException
   }
 
   /**
@@ -766,7 +782,7 @@ export class PlotModel extends Model implements IPlotModel {
    */
   public update(updateData: boolean): void {
     try {
-      this.lastPlotException = null
+      this._lastPlotException = null
       this.onUpdating()
 
       // Updates the default axes
@@ -774,12 +790,12 @@ export class PlotModel extends Model implements IPlotModel {
 
       const visibleSeries = this.series.filter((s) => s.isVisible)
       // Update data of the series
-      if (updateData || !this.isDataUpdated) {
+      if (updateData || !this._isDataUpdated) {
         for (const s of visibleSeries) {
           s.updateData()
         }
 
-        this.isDataUpdated = true
+        this._isDataUpdated = true
       }
 
       // Updates bar series managers and associated category axes
@@ -801,7 +817,7 @@ export class PlotModel extends Model implements IPlotModel {
       this.onUpdated()
     } catch (e: any) {
       console.log(e)
-      this.lastPlotException = e
+      this._lastPlotException = e
     }
   }
 
@@ -1080,7 +1096,7 @@ export class PlotModel extends Model implements IPlotModel {
    * Resets the default color index.
    */
   private resetDefaultColor(): void {
-    this.currentColorIndex = 0
+    this._currentColorIndex = 0
   }
 
   /**
@@ -1112,7 +1128,7 @@ export class PlotModel extends Model implements IPlotModel {
    * Updates the bar series managers.
    */
   private updateBarSeriesManagers(): void {
-    this.barSeriesManagers = []
+    this._barSeriesManagers = []
     const barSeries = this.series.filter((s) => s.isVisible && isBarSeries(s)).map((s) => s as unknown as IBarSeries)
 
     const barSeriesGroups = new Map<{ ca: CategoryAxis; va?: Axis }, IBarSeries[]>()
@@ -1133,7 +1149,7 @@ export class PlotModel extends Model implements IPlotModel {
     barSeriesGroups.forEach((group, key) => {
       const manager = new BarSeriesManager(key.ca, key.va!, group)
       manager.update()
-      this.barSeriesManagers.push(manager)
+      this._barSeriesManagers.push(manager)
     })
   }
 
@@ -1141,7 +1157,7 @@ export class PlotModel extends Model implements IPlotModel {
    * Updates category axes that are not managed by a BarSeriesManager.
    */
   private updateUnmanagedCategoryAxes(): void {
-    const managedCategoryAxes = this.barSeriesManagers.map((manager) => manager.categoryAxis)
+    const managedCategoryAxes = this._barSeriesManagers.map((manager) => manager.categoryAxis)
     const allCategoryAxis = this.axes.filter((s) => s instanceof CategoryAxis).map((s) => s as CategoryAxis)
     const unmanagedCategoryAxes = allCategoryAxis.filter((a) => !managedCategoryAxes.includes(a))
 
@@ -1149,7 +1165,7 @@ export class PlotModel extends Model implements IPlotModel {
       let defaultCategoryCount = 0
       if (
         !isInfinity(unmanagedAxis.dataMaximum) &&
-        !isNaN(unmanagedAxis.dataMaximum) &&
+        !isNaNOrUndef(unmanagedAxis.dataMaximum) &&
         unmanagedAxis.dataMaximum > 0
       ) {
         // support default categories for e.g. heat maps
@@ -1181,12 +1197,12 @@ export class PlotModel extends Model implements IPlotModel {
     // so we don't translate the lock statement.
 
     const initialClipCount = rc.clipCount
-    let autoResetClipDisp: IDisposable | null = null
+    let autoResetClipDisp: IDisposable | undefined = undefined
     try {
       autoResetClipDisp = RenderingExtensions.autoResetClip(rc, rect)
-      if (this.lastPlotException) {
-        const errorMessage = `An exception of type ${this.lastPlotException.constructor.name} was thrown when updating the plot model.\r\n${this.lastPlotException.stack}`
-        await this.renderErrorMessage(rc, `OxyPlot exception: ${this.lastPlotException.message}`, errorMessage)
+      if (this._lastPlotException) {
+        const errorMessage = `An exception of type ${this._lastPlotException.constructor.name} was thrown when updating the plot model.\r\n${this._lastPlotException.stack}`
+        await this.renderErrorMessage(rc, `OxyPlot exception: ${this._lastPlotException.message}`, errorMessage)
         return
       }
 
@@ -1196,11 +1212,11 @@ export class PlotModel extends Model implements IPlotModel {
 
       this._plotBounds = rect
 
-      this._actualPlotMargins = new OxyThickness(
-        isNaN(this.plotMargins.left) ? 0 : this.plotMargins.left,
-        isNaN(this.plotMargins.top) ? 0 : this.plotMargins.top,
-        isNaN(this.plotMargins.right) ? 0 : this.plotMargins.right,
-        isNaN(this.plotMargins.bottom) ? 0 : this.plotMargins.bottom,
+      this._actualPlotMargins = newOxyThickness(
+        isNaNOrUndef(this.plotMargins.left) ? 0 : this.plotMargins.left,
+        isNaNOrUndef(this.plotMargins.top) ? 0 : this.plotMargins.top,
+        isNaNOrUndef(this.plotMargins.right) ? 0 : this.plotMargins.right,
+        isNaNOrUndef(this.plotMargins.bottom) ? 0 : this.plotMargins.bottom,
       )
 
       for (const l of this.legends) {
@@ -1240,14 +1256,23 @@ export class PlotModel extends Model implements IPlotModel {
         throw new Error('Unbalanced calls to IRenderContext.pushClip were made during rendering.')
       }
     } catch (exception: any) {
+      try {
+        autoResetClipDisp?.dispose()
+      } catch (e2) {
+        exception = e2
+      } finally {
+        autoResetClipDisp = undefined
+      }
+
       debugger
       console.log(exception)
+
       while (rc.clipCount > initialClipCount) {
         rc.popClip()
       }
 
       const errorMessage = `An exception of type ${exception.constructor?.name} was thrown when rendering the plot model.\r\n${exception.stack}`
-      this.lastPlotException = exception
+      this._lastPlotException = exception
       await this.renderErrorMessage(rc, `OxyPlot exception: ${exception.message}`, errorMessage)
     } finally {
       autoResetClipDisp?.dispose()
@@ -1272,7 +1297,7 @@ export class PlotModel extends Model implements IPlotModel {
     await rc.drawText(p0, title, this.textColor, undefined, fontSize, FontWeights.Bold)
     await RenderingExtensions.drawMultilineText(
       rc,
-      screenPointPlus(p0, new ScreenVector(0, fontSize * 1.5)),
+      screenPointPlus(p0, newScreenVector(0, fontSize * 1.5)),
       errorMessage,
       this.textColor,
       undefined,
@@ -1292,12 +1317,12 @@ export class PlotModel extends Model implements IPlotModel {
       axis.measure(rc)
     })
 
-    let desiredMargin = OxyThickness.Zero
+    let desiredMargin = OxyThickness_Zero
 
     const includeInMargin = (size: number, borderPosition: AxisPosition) => {
       switch (borderPosition) {
         case AxisPosition.Bottom:
-          desiredMargin = new OxyThickness(
+          desiredMargin = newOxyThickness(
             desiredMargin.left,
             desiredMargin.top,
             desiredMargin.right,
@@ -1305,7 +1330,7 @@ export class PlotModel extends Model implements IPlotModel {
           )
           break
         case AxisPosition.Left:
-          desiredMargin = new OxyThickness(
+          desiredMargin = newOxyThickness(
             Math.max(desiredMargin.left, size),
             desiredMargin.top,
             desiredMargin.right,
@@ -1313,7 +1338,7 @@ export class PlotModel extends Model implements IPlotModel {
           )
           break
         case AxisPosition.Right:
-          desiredMargin = new OxyThickness(
+          desiredMargin = newOxyThickness(
             desiredMargin.left,
             desiredMargin.top,
             Math.max(desiredMargin.right, size),
@@ -1321,7 +1346,7 @@ export class PlotModel extends Model implements IPlotModel {
           )
           break
         case AxisPosition.Top:
-          desiredMargin = new OxyThickness(
+          desiredMargin = newOxyThickness(
             desiredMargin.left,
             Math.max(desiredMargin.top, size),
             desiredMargin.right,
@@ -1340,18 +1365,18 @@ export class PlotModel extends Model implements IPlotModel {
 
     // include the desired margin of all visible axes (including polar axes)
     visibleAxes.forEach((axis) => {
-      desiredMargin = desiredMargin.include(axis.desiredMargin)
+      desiredMargin = OxyThicknessEx.include(desiredMargin, axis.desiredMargin)
     })
 
     let currentMargin = this.plotMargins
-    currentMargin = new OxyThickness(
-      isNaN(currentMargin.left) ? desiredMargin.left : currentMargin.left,
-      isNaN(currentMargin.top) ? desiredMargin.top : currentMargin.top,
-      isNaN(currentMargin.right) ? desiredMargin.right : currentMargin.right,
-      isNaN(currentMargin.bottom) ? desiredMargin.bottom : currentMargin.bottom,
+    currentMargin = newOxyThickness(
+      isNaNOrUndef(currentMargin.left) ? desiredMargin.left : currentMargin.left,
+      isNaNOrUndef(currentMargin.top) ? desiredMargin.top : currentMargin.top,
+      isNaNOrUndef(currentMargin.right) ? desiredMargin.right : currentMargin.right,
+      isNaNOrUndef(currentMargin.bottom) ? desiredMargin.bottom : currentMargin.bottom,
     )
 
-    if (currentMargin.equals(this.actualPlotMargins)) {
+    if (OxyThicknessEx.equals(currentMargin, this.actualPlotMargins)) {
       return false
     }
 
@@ -1429,7 +1454,7 @@ export class PlotModel extends Model implements IPlotModel {
     )
     const height = titleSize.height + subtitleSize.height
     const width = Math.max(titleSize.width, subtitleSize.width)
-    return new OxySize(width, height)
+    return newOxySize(width, height)
   }
 
   /**
@@ -1466,13 +1491,11 @@ export class PlotModel extends Model implements IPlotModel {
   }
 
   private async renderLegends(rc: IRenderContext): Promise<void> {
-    if (this.isLegendVisible) {
-      return this.legends
-        .filter((l) => l.isLegendVisible)
-        .forEach((l) => {
-          rc.setToolTip(l.toolTip)
-          return l.renderLegends(rc)
-        })
+    if (!this.isLegendVisible) return
+
+    for (const l of this.legends.filter((l) => l.isLegendVisible)) {
+      rc.setToolTip(l.toolTip)
+      await l.renderLegends(rc)
     }
   }
 
@@ -1482,13 +1505,13 @@ export class PlotModel extends Model implements IPlotModel {
    */
   private async renderBackgrounds(rc: IRenderContext): Promise<void> {
     // Render the main background of the plot area (only if there are axes)
-    if (this.axes.length > 0 && this.plotAreaBackground.isVisible()) {
+    if (this.axes.length > 0 && OxyColorHelper.isVisible(this.plotAreaBackground)) {
       await rc.drawRectangle(this.plotArea, this.plotAreaBackground, OxyColors.Undefined, 0, this.edgeRenderingMode)
     }
 
     const xyAxisSeries = this.series.filter((s) => s instanceof XYAxisSeries).map((s) => s as XYAxisSeries)
 
-    const visibleXyAxisSeries = xyAxisSeries.filter((s) => s.isVisible && s.background.isVisible())
+    const visibleXyAxisSeries = xyAxisSeries.filter((s) => s.isVisible && OxyColorHelper.isVisible(s.background))
     for (const s of visibleXyAxisSeries) {
       await rc.drawRectangle(s.getScreenRectangle(), s.background, OxyColors.Undefined, 0, this.edgeRenderingMode)
     }
@@ -1520,7 +1543,7 @@ export class PlotModel extends Model implements IPlotModel {
    * @param rc The render context.
    */
   private async renderSeries(rc: IRenderContext): Promise<void> {
-    this.barSeriesManagers.forEach((barSeriesManager) => {
+    this._barSeriesManagers.forEach((barSeriesManager) => {
       barSeriesManager.initializeRender()
     })
 
@@ -1542,17 +1565,21 @@ export class PlotModel extends Model implements IPlotModel {
     rc: IRenderContext,
     renderAction: (plotElement: T) => Promise<void>,
   ): Promise<void> {
-    let previousClippingRect = OxyRect.Everything
+    let previousClippingRect = OxyRect_Everything
+
+    function eq(r: OxyRect, other: OxyRect) {
+      return OxyRectHelper.equals(r, other)
+    }
 
     for (const plotElement of plotElements) {
       const currentClippingRect = plotElement.getClippingRect()
-      if (!currentClippingRect.equals(previousClippingRect)) {
-        if (!previousClippingRect.equals(OxyRect.Everything)) {
+      if (!eq(currentClippingRect, previousClippingRect)) {
+        if (!eq(previousClippingRect, OxyRect_Everything)) {
           rc.popClip()
-          previousClippingRect = OxyRect.Everything
+          previousClippingRect = OxyRect_Everything
         }
 
-        if (!currentClippingRect.equals(OxyRect.Everything)) {
+        if (!eq(currentClippingRect, OxyRect_Everything)) {
           rc.pushClip(currentClippingRect)
           previousClippingRect = currentClippingRect
         }
@@ -1562,7 +1589,7 @@ export class PlotModel extends Model implements IPlotModel {
       await renderAction(plotElement)
     }
 
-    if (!previousClippingRect.equals(OxyRect.Everything)) {
+    if (!eq(previousClippingRect, OxyRect_Everything)) {
       rc.popClip()
     }
 
@@ -1577,12 +1604,12 @@ export class PlotModel extends Model implements IPlotModel {
     let maxSize: OxySize | undefined = undefined
 
     if (this.clipTitle) {
-      maxSize = new OxySize(this.titleArea.width * this.titleClippingLength, Number_MAX_VALUE)
+      maxSize = newOxySize(this.titleArea.width * this.titleClippingLength, Number_MAX_VALUE)
     }
 
     const titleSize = rc.measureText(this.title || '', this.actualTitleFont, this.titleFontSize, this.titleFontWeight)
 
-    const x = (this.titleArea.left + this.titleArea.right) * 0.5
+    const x = (this.titleArea.left + OxyRectHelper.right(this.titleArea)) * 0.5
     let y = this.titleArea.top
 
     if (this.title) {
@@ -1592,7 +1619,7 @@ export class PlotModel extends Model implements IPlotModel {
         rc,
         newScreenPoint(x, y),
         this.title,
-        this.titleColor.getActualColor(this.textColor),
+        OxyColorHelper.getActualColor(this.titleColor, this.textColor),
         this.actualTitleFont,
         this.titleFontSize,
         this.titleFontWeight,
@@ -1611,7 +1638,7 @@ export class PlotModel extends Model implements IPlotModel {
         rc,
         newScreenPoint(x, y),
         this.subtitle,
-        this.subtitleColor.getActualColor(this.textColor),
+        OxyColorHelper.getActualColor(this.subtitleColor, this.textColor),
         this.actualSubtitleFont,
         this.subtitleFontSize,
         this.subtitleFontWeight,
@@ -1628,7 +1655,7 @@ export class PlotModel extends Model implements IPlotModel {
    * @param rc The rendering context.
    */
   private async updatePlotArea(rc: IRenderContext): Promise<void> {
-    let plotAndAxisArea = new OxyRect(
+    let plotAndAxisArea = newOxyRect(
       this.plotBounds.left + this.padding.left,
       this.plotBounds.top + this.padding.top,
       Math.max(0, this.width - this.padding.left - this.padding.right),
@@ -1639,7 +1666,7 @@ export class PlotModel extends Model implements IPlotModel {
 
     if (titleSize.height > 0) {
       const titleHeight = titleSize.height + this.titlePadding
-      plotAndAxisArea = new OxyRect(
+      plotAndAxisArea = newOxyRect(
         plotAndAxisArea.left,
         plotAndAxisArea.top + titleHeight,
         plotAndAxisArea.width,
@@ -1647,12 +1674,12 @@ export class PlotModel extends Model implements IPlotModel {
       )
     }
 
-    let plotArea = plotAndAxisArea.deflate(this.actualPlotMargins)
+    let plotArea = OxyRectHelper.deflate(plotAndAxisArea, this.actualPlotMargins)
 
     if (this.isLegendVisible) {
       // Make space for legends
 
-      let maxLegendSize = new OxySize(0, 0)
+      let maxLegendSize = newOxySize(0, 0)
       let legendMargin = 0
       const outsideVisibleLegends = this.legends.filter(
         (l) => l.legendPlacement === LegendPlacement.Outside && l.isLegendVisible,
@@ -1666,9 +1693,9 @@ export class PlotModel extends Model implements IPlotModel {
           ? availableLegendHeight
           : Math.min(availableLegendHeight, legend.legendMaxHeight)
 
-        const lsiz = await legend.getLegendSize(rc, new OxySize(availableLegendWidth, availableLegendHeight))
+        const lsiz = await legend.getLegendSize(rc, newOxySize(availableLegendWidth, availableLegendHeight))
         legend.legendSize = lsiz
-        maxLegendSize = new OxySize(
+        maxLegendSize = newOxySize(
           Math.max(maxLegendSize.width, lsiz.width),
           Math.max(maxLegendSize.height, lsiz.height),
         )
@@ -1678,7 +1705,7 @@ export class PlotModel extends Model implements IPlotModel {
 
       // Adjust the plot area after the size of the legend has been calculated
       if (maxLegendSize.width > 0 || maxLegendSize.height > 0) {
-        plotArea = new OxyRect(
+        plotArea = newOxyRect(
           plotArea.left + maxLegendSize.width + legendMargin,
           plotArea.top,
           Math.max(0, plotArea.width - (maxLegendSize.width + legendMargin)),
@@ -1686,7 +1713,7 @@ export class PlotModel extends Model implements IPlotModel {
         )
       }
 
-      maxLegendSize = new OxySize(0, 0)
+      maxLegendSize = newOxySize(0, 0)
       legendMargin = 0
       // second run Outside Right-Side legends
       for (const legend of outsideVisibleLegends.filter((l) => isRightLegend(l.legendPosition))) {
@@ -1697,9 +1724,9 @@ export class PlotModel extends Model implements IPlotModel {
           ? availableLegendHeight
           : Math.min(availableLegendHeight, legend.legendMaxHeight)
 
-        const lsiz = await legend.getLegendSize(rc, new OxySize(availableLegendWidth, availableLegendHeight))
+        const lsiz = await legend.getLegendSize(rc, newOxySize(availableLegendWidth, availableLegendHeight))
         legend.legendSize = lsiz
-        maxLegendSize = new OxySize(
+        maxLegendSize = newOxySize(
           Math.max(maxLegendSize.width, lsiz.width),
           Math.max(maxLegendSize.height, lsiz.height),
         )
@@ -1709,7 +1736,7 @@ export class PlotModel extends Model implements IPlotModel {
 
       // Adjust the plot area after the size of the legend has been calculated
       if (maxLegendSize.width > 0 || maxLegendSize.height > 0) {
-        plotArea = new OxyRect(
+        plotArea = newOxyRect(
           plotArea.left,
           plotArea.top,
           Math.max(0, plotArea.width - (maxLegendSize.width + legendMargin)),
@@ -1717,7 +1744,7 @@ export class PlotModel extends Model implements IPlotModel {
         )
       }
 
-      maxLegendSize = new OxySize(0, 0)
+      maxLegendSize = newOxySize(0, 0)
       legendMargin = 0
       // third run Outside Top legends
       for (const legend of outsideVisibleLegends.filter((l) => isTopLegend(l.legendPosition))) {
@@ -1728,9 +1755,9 @@ export class PlotModel extends Model implements IPlotModel {
           ? availableLegendHeight
           : Math.min(availableLegendHeight, legend.legendMaxHeight)
 
-        const lsiz = await legend.getLegendSize(rc, new OxySize(availableLegendWidth, availableLegendHeight))
+        const lsiz = await legend.getLegendSize(rc, newOxySize(availableLegendWidth, availableLegendHeight))
         legend.legendSize = lsiz
-        maxLegendSize = new OxySize(
+        maxLegendSize = newOxySize(
           Math.max(maxLegendSize.width, lsiz.width),
           Math.max(maxLegendSize.height, lsiz.height),
         )
@@ -1740,7 +1767,7 @@ export class PlotModel extends Model implements IPlotModel {
 
       // Adjust the plot area after the size of the legend has been calculated
       if (maxLegendSize.width > 0 || maxLegendSize.height > 0) {
-        plotArea = new OxyRect(
+        plotArea = newOxyRect(
           plotArea.left,
           plotArea.top + maxLegendSize.height + legendMargin,
           plotArea.width,
@@ -1748,7 +1775,7 @@ export class PlotModel extends Model implements IPlotModel {
         )
       }
 
-      maxLegendSize = new OxySize(0, 0)
+      maxLegendSize = newOxySize(0, 0)
       legendMargin = 0
       // fourth run Outside Bottom legends
       for (const legend of outsideVisibleLegends.filter((l) => isBottomLegend(l.legendPosition))) {
@@ -1759,9 +1786,9 @@ export class PlotModel extends Model implements IPlotModel {
           ? availableLegendHeight
           : Math.min(availableLegendHeight, legend.legendMaxHeight)
 
-        const lsiz = await legend.getLegendSize(rc, new OxySize(availableLegendWidth, availableLegendHeight))
+        const lsiz = await legend.getLegendSize(rc, newOxySize(availableLegendWidth, availableLegendHeight))
         legend.legendSize = lsiz
-        maxLegendSize = new OxySize(
+        maxLegendSize = newOxySize(
           Math.max(maxLegendSize.width, lsiz.width),
           Math.max(maxLegendSize.height, lsiz.height),
         )
@@ -1771,7 +1798,7 @@ export class PlotModel extends Model implements IPlotModel {
 
       // Adjust the plot area after the size of the legend has been calculated
       if (maxLegendSize.width > 0 || maxLegendSize.height > 0) {
-        plotArea = new OxyRect(
+        plotArea = newOxyRect(
           plotArea.left,
           plotArea.top,
           plotArea.width,
@@ -1794,25 +1821,25 @@ export class PlotModel extends Model implements IPlotModel {
           availableLegendHeight -= legend.legendMargin * 2
         }
 
-        legend.legendSize = await legend.getLegendSize(rc, new OxySize(availableLegendWidth, availableLegendHeight))
+        legend.legendSize = await legend.getLegendSize(rc, newOxySize(availableLegendWidth, availableLegendHeight))
       }
     }
 
     /** Ensure the plot area is valid */
     if (plotArea.height < 0) {
-      plotArea = new OxyRect(plotArea.left, plotArea.top, plotArea.width, 1)
+      plotArea = newOxyRect(plotArea.left, plotArea.top, plotArea.width, 1)
     }
 
     if (plotArea.width < 0) {
-      plotArea = new OxyRect(plotArea.left, plotArea.top, 1, plotArea.height)
+      plotArea = newOxyRect(plotArea.left, plotArea.top, 1, plotArea.height)
     }
 
     this._plotArea = plotArea
-    this._plotAndAxisArea = plotArea.inflateAll(this.actualPlotMargins)
+    this._plotAndAxisArea = OxyRectHelper.inflateAll(plotArea, this.actualPlotMargins)
 
     switch (this.titleHorizontalAlignment) {
       case TitleHorizontalAlignment.CenteredWithinView:
-        this._titleArea = new OxyRect(
+        this._titleArea = newOxyRect(
           this.plotBounds.left,
           this.plotBounds.top + this.padding.top,
           this.width,
@@ -1820,7 +1847,7 @@ export class PlotModel extends Model implements IPlotModel {
         )
         break
       default:
-        this._titleArea = new OxyRect(
+        this._titleArea = newOxyRect(
           this.plotArea.left,
           this.plotBounds.top + this.padding.top,
           this.plotArea.width,
@@ -1833,5 +1860,38 @@ export class PlotModel extends Model implements IPlotModel {
     for (const l of this.legends) {
       l.legendArea = l.getLegendRectangle(l.legendSize)
     }
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const plotModel = copyPlotElementProperties(this, ExtendedPlotModelOptions, {
+      excludeDefault: opt?.excludeDefault,
+    })
+    if (this._axes.length > 0) {
+      plotModel.axes = this.arrayToJson(this._axes, opt)
+    }
+    if (this._legends.length > 0) {
+      plotModel.legends = this.arrayToJson(this._legends, opt)
+    }
+    if (this._series.length > 0) {
+      plotModel.series = this.arrayToJson(this._series, opt)
+    }
+    if (this._annotations.length > 0) {
+      plotModel.annotations = this.arrayToJson(this._annotations, opt)
+    }
+
+    return plotModel
+  }
+
+  private arrayToJson(elements: any[], opt?: PlotModelSerializeOptions) {
+    const jsonList = []
+    for (const ele of elements) {
+      if (!ele.toJSON) {
+        console.warn(`'${ele.getElementName()}' does not have a toJSON method`)
+        continue
+      }
+      jsonList.push(ele.toJSON(opt))
+    }
+
+    return jsonList
   }
 }

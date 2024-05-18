@@ -1,5 +1,4 @@
-import type { OxyImageInfo } from '@/oxyplot'
-import { OxyColor, OxyImage } from '@/oxyplot'
+import { type OxyColor, OxyColorEx, OxyColorHelper, type OxyImage, OxyImageEx, type OxyImageInfo } from '@/oxyplot'
 import { create2DArray } from '@/patch'
 import Image from 'image-js'
 import type { TwoDimensionalArray } from '../TwoDimensionalArray'
@@ -63,7 +62,7 @@ class DefaultOxyImageService implements ImageService {
         const green = data[idx++]
         const blue = data[idx++]
         const alpha = data[idx++]
-        pixels[h][w] = OxyColor.fromArgb(alpha, red, green, blue)
+        pixels[h][w] = OxyColorHelper.fromArgb(alpha, red, green, blue)
       }
     }
     return pixels
@@ -75,7 +74,7 @@ class DefaultOxyImageService implements ImageService {
     const pixels = option.pixels
     for (let y = 0; y < option.imageInfo.height; y++) {
       for (let x = 0; x < option.imageInfo.width; x++) {
-        const color = pixels.get(x, y) as OxyColor
+        const color = OxyColorEx.fromOxyColor(pixels.get(x, y) as OxyColor)
         view.setUint8(offset++, color.r)
         view.setUint8(offset++, color.g)
         view.setUint8(offset++, color.b)
@@ -95,18 +94,19 @@ class DefaultOxyImageService implements ImageService {
       bitsPerPixel: image.bitDepth,
       dpiX: 0,
       dpiY: 0,
-      format: OxyImage.getImageFormat(bytes)
+      format: OxyImageEx.getImageFormat(bytes),
     }
   }
 
   async load(uri: string) {
     const image = await Image.load(uri)
     const buffer = image.toBuffer()
+    const imgInfo = await this.getImageInfo(buffer)
+    const oxyImage: OxyImage = {
+      ...imgInfo,
+      data: Array.from(buffer),
+    }
 
-    const oxyImage = new OxyImage(buffer)
-    oxyImage.format = OxyImage.getImageFormat(buffer)
-    oxyImage.width = image.width
-    oxyImage.height = image.height
     return oxyImage
   }
 }

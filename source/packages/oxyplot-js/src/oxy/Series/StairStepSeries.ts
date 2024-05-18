@@ -1,7 +1,10 @@
-import type { CreateLineSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLineSeriesOptions,
+  type DataPoint,
   DataPoint_Undefined,
   EdgeRenderingMode,
+  ExtendedDefaultLineSeriesOptions,
+  type IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
@@ -10,14 +13,25 @@ import {
   newScreenPoint,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointDistanceToSquared,
   TrackerHitResult,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, removeUndef } from '@/patch'
+import { Number_MAX_VALUE, assignObject } from '@/patch'
 
 export interface CreateStairStepSeriesOptions extends CreateLineSeriesOptions {
   verticalStrokeThickness?: number
   verticalLineStyle?: LineStyle
+}
+
+export const DefaultStairStepSeriesOptions: CreateStairStepSeriesOptions = {
+  verticalStrokeThickness: NaN,
+  verticalLineStyle: LineStyle.None,
+}
+
+export const ExtendedDefaultStairStepSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
+  ...DefaultStairStepSeriesOptions,
 }
 
 /**
@@ -29,23 +43,22 @@ export class StairStepSeries extends LineSeries {
    */
   constructor(opt?: CreateStairStepSeriesOptions) {
     super(opt)
-    this.verticalStrokeThickness = NaN
-    this.verticalLineStyle = this.lineStyle
+    assignObject(this, DefaultStairStepSeriesOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'StairStepSeries'
   }
 
   /**
    * Gets or sets the stroke thickness of the vertical line segments.
    */
-  public verticalStrokeThickness: number
+  public verticalStrokeThickness: number = DefaultStairStepSeriesOptions.verticalStrokeThickness!
 
   /**
    * Gets or sets the line style of the vertical line segments.
    */
-  public verticalLineStyle: LineStyle
+  public verticalLineStyle: LineStyle = DefaultStairStepSeriesOptions.verticalLineStyle!
 
   /**
    * Gets the nearest point.
@@ -317,5 +330,9 @@ export class StairStepSeries extends LineSeries {
 
     const endOffset = offset
     return { valid: true, validOffset, endOffset }
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultStairStepSeriesOptions
   }
 }

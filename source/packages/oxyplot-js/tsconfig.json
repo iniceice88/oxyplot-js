@@ -6,12 +6,20 @@
       "@/patch": [
         "./src/patch"
       ],
+      "@/patch/*": [
+        "./src/patch/*"
+      ],
       "@/oxyplot": [
         "./src/oxy"
       ]
     }
   },
   "include": [
-    "src"
+    "src",
+    "test"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

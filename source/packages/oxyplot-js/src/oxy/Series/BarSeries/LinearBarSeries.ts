@@ -1,21 +1,32 @@
-import type { CreateDataPointSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateDataPointSeriesOptions,
+  type DataPoint,
   DataPointSeries,
   EdgeRenderingMode,
+  ExtendedDefaultDataPointSeriesOptions,
+  type IRenderContext,
   newDataPoint,
-  OxyColor,
+  newOxyRect,
+  newScreenVector,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
   TrackerHitResult,
 } from '@/oxyplot'
-import { minValueOfArray, removeUndef } from '@/patch'
+
+import { minValueOfArray, assignObject, isNaNOrUndef } from '@/patch'
 
 export interface CreateLinearBarSeriesOptions extends CreateDataPointSeriesOptions {
+  fillColor?: OxyColor
   barWidth?: number
   strokeColor?: OxyColor
   strokeThickness?: number
@@ -25,6 +36,22 @@ export interface CreateLinearBarSeriesOptions extends CreateDataPointSeriesOptio
   baseLine?: number
 }
 
+export const DefaultLinearBarSeriesOptions: CreateLinearBarSeriesOptions = {
+  fillColor: OxyColors.Automatic,
+  barWidth: 5,
+  strokeColor: OxyColors.Black,
+  strokeThickness: 0,
+  negativeFillColor: OxyColors.Undefined,
+  negativeStrokeColor: OxyColors.Undefined,
+  baseValue: 0,
+  baseLine: Number.NaN,
+} as const
+
+export const ExtendedDefaultLinearBarSeriesOptions = {
+  ...ExtendedDefaultDataPointSeriesOptions,
+  ...DefaultLinearBarSeriesOptions,
+}
+
 /**
  * Represents a series to display bars in a linear axis
  */
@@ -32,89 +59,88 @@ export class LinearBarSeries extends DataPointSeries {
   /**
    * The rendered rectangles.
    */
-  private readonly rectangles: OxyRect[] = []
+  private readonly _rectangles: OxyRect[] = []
 
   /**
    * The indexes matching rendered rectangles.
    */
-  private readonly rectanglesPointIndexes: number[] = []
+  private readonly _rectanglesPointIndexes: number[] = []
 
   /**
    * The default color.
    */
-  private defaultColor: OxyColor = OxyColors.Undefined
+  private _defaultColor: OxyColor = OxyColors.Undefined
 
   /**
    * Initializes a new instance of the LinearBarSeries class.
    */
   constructor(opt?: CreateLinearBarSeriesOptions) {
     super(opt)
-    this.fillColor = OxyColors.Automatic
-    this.barWidth = 5
-    this.strokeColor = OxyColors.Black
-    this.strokeThickness = 0
-    this.negativeFillColor = OxyColors.Undefined
-    this.negativeStrokeColor = OxyColors.Undefined
-    this.baseValue = 0
-    this.baseLine = Number.NaN
-    this.actualBaseLine = Number.NaN
+    assignObject(this, DefaultLinearBarSeriesOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'LinearBarSeries'
   }
 
   /**
    * Gets or sets the color of the interior of the bars.
    */
-  fillColor: OxyColor
+  fillColor: OxyColor = DefaultLinearBarSeriesOptions.fillColor!
 
   /**
    * Gets or sets the width of the bars.
    */
-  barWidth: number
+  barWidth: number = DefaultLinearBarSeriesOptions.barWidth!
 
   /**
    * Gets or sets the thickness of the curve.
    */
-  strokeThickness: number
+  strokeThickness: number = DefaultLinearBarSeriesOptions.strokeThickness!
 
   /**
    * Gets or sets the color of the border around the bars.
    */
-  strokeColor: OxyColor
+  strokeColor: OxyColor = DefaultLinearBarSeriesOptions.strokeColor!
 
   /**
    * Gets or sets the color of the interior of the bars when the value is negative.
    */
-  negativeFillColor: OxyColor
+  negativeFillColor: OxyColor = DefaultLinearBarSeriesOptions.negativeFillColor!
 
   /**
    * Gets or sets the color of the border around the bars when the value is negative.
    */
-  negativeStrokeColor: OxyColor
+  negativeStrokeColor: OxyColor = DefaultLinearBarSeriesOptions.negativeStrokeColor!
 
   /**
    * Gets the actual color.
    */
   get actualColor(): OxyColor {
-    return this.fillColor.getActualColor(this.defaultColor)
+    return OxyColorHelper.getActualColor(this.fillColor, this._defaultColor)
   }
 
   /**
    * Gets or sets the base value. Default value is 0.
    */
-  baseValue: number
+  baseValue: number = DefaultLinearBarSeriesOptions.baseValue!
 
   /**
    * Gets or sets the base value.
    */
-  baseLine: number
+  baseLine: number = DefaultLinearBarSeriesOptions.baseLine!
 
+  private _actualBaseLine: number = NaN
   /**
-   * Gets or sets the actual base line.
+   * Gets or sets the actual baseline.
    */
-  actualBaseLine: number
+  get actualBaseLine() {
+    return this._actualBaseLine
+  }
+
+  set actualBaseLine(value: number) {
+    this._actualBaseLine = value
+  }
 
   /**
    * Gets the nearest point.
@@ -128,12 +154,12 @@ export class LinearBarSeries extends DataPointSeries {
       return undefined
     }
 
-    const rectangle = this.rectangles[rectangleIndex]
-    if (!rectangle.containsPoint(point)) {
+    const rectangle = this._rectangles[rectangleIndex]
+    if (!OxyRectHelper.containsPoint(rectangle, point)) {
       return undefined
     }
 
-    const pointIndex = this.rectanglesPointIndexes[rectangleIndex]
+    const pointIndex = this._rectanglesPointIndexes[rectangleIndex]
     const dataPoint = this.actualPoints[pointIndex]
     const item = this.getItem(pointIndex)
 
@@ -153,8 +179,8 @@ export class LinearBarSeries extends DataPointSeries {
    * @param rc The rendering context.
    */
   public async render(rc: IRenderContext): Promise<void> {
-    this.rectangles.length = 0
-    this.rectanglesPointIndexes.length = 0
+    this._rectangles.length = 0
+    this._rectanglesPointIndexes.length = 0
 
     const actualPoints = this.actualPoints
     if (!actualPoints || actualPoints.length === 0) {
@@ -167,12 +193,14 @@ export class LinearBarSeries extends DataPointSeries {
 
   /** Renders the legend symbol for the line series on the specified rendering context. */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
-    const height = (legendBox.bottom - legendBox.top) * 0.8
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
+    const height = (bottom - legendBox.top) * 0.8
     const width = height
     await rc.drawRectangle(
-      new OxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
+      newOxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
       this.getSelectableColor(this.actualColor),
       this.strokeColor,
       this.strokeThickness,
@@ -185,8 +213,8 @@ export class LinearBarSeries extends DataPointSeries {
    * @internal
    * */
   setDefaultValues(): void {
-    if (this.fillColor.isAutomatic()) {
-      this.defaultColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.fillColor)) {
+      this._defaultColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -203,7 +231,7 @@ export class LinearBarSeries extends DataPointSeries {
 
   /** Computes the actual base value. */
   protected computeActualBaseLine(): void {
-    if (isNaN(this.baseLine)) {
+    if (isNaNOrUndef(this.baseLine)) {
       if (this.yAxis!.isLogarithmic()) {
         const lowestPositiveY = !this.actualPoints
           ? 1
@@ -228,8 +256,8 @@ export class LinearBarSeries extends DataPointSeries {
   private findRectangleIndex(point: ScreenPoint): number {
     let comparer: (a: OxyRect, b: OxyRect) => number
     if (PlotElementExtensions.isTransposed(this)) {
-      comparer = (x: OxyRect, y: OxyRect) => {
-        if (x.bottom < point.y) {
+      comparer = (x: OxyRect, _y: OxyRect) => {
+        if (OxyRectHelper.bottom(x) < point.y) {
           return 1
         }
 
@@ -240,8 +268,8 @@ export class LinearBarSeries extends DataPointSeries {
         return 0
       }
     } else {
-      comparer = (x: OxyRect, y: OxyRect) => {
-        if (x.right < point.x) {
+      comparer = (x: OxyRect, _y: OxyRect) => {
+        if (OxyRectHelper.right(x) < point.x) {
           return -1
         }
 
@@ -253,7 +281,7 @@ export class LinearBarSeries extends DataPointSeries {
       }
     }
 
-    return this.rectangles.findIndex((rect: OxyRect) => comparer(rect, OxyRect.Empty) === 0)
+    return this._rectangles.findIndex((rect: OxyRect) => comparer(rect, OxyRect_Empty) === 0)
   }
 
   /** Renders the series bars. */
@@ -261,7 +289,7 @@ export class LinearBarSeries extends DataPointSeries {
     const clampBase = this.yAxis!.isLogarithmic() && !this.yAxis!.isValidValue(this.baseValue)
 
     const widthOffset = this.getBarWidth(actualPoints) / 2
-    const widthVector = PlotElementExtensions.orientateVector(this, new ScreenVector(widthOffset, 0))
+    const widthVector = PlotElementExtensions.orientateVector(this, newScreenVector(widthOffset, 0))
 
     const actualEdgeRenderingMode = RenderingExtensions.getActualEdgeRenderingMode(
       this.edgeRenderingMode,
@@ -277,9 +305,9 @@ export class LinearBarSeries extends DataPointSeries {
       const screenPoint = screenPointMinusVector(this.transform(actualPoint), widthVector)
       const spBase = this.transform(newDataPoint(actualPoint.x, clampBase ? this.yAxis!.clipMinimum : this.baseValue))
       const basePoint = screenPointPlus(spBase, widthVector)
-      const rectangle = OxyRect.fromScreenPoints(basePoint, screenPoint)
-      this.rectangles.push(rectangle)
-      this.rectanglesPointIndexes.push(pointIndex)
+      const rectangle = OxyRectHelper.fromScreenPoints(basePoint, screenPoint)
+      this._rectangles.push(rectangle)
+      this._rectanglesPointIndexes.push(pointIndex)
 
       const barColors = this.getBarColors(actualPoint.y)
 
@@ -294,7 +322,7 @@ export class LinearBarSeries extends DataPointSeries {
   }
 
   /**
-   * Computes the bars width.
+   * Computes the bar width.
    * @param actualPoints The list of points.
    * @returns The bars width.
    */
@@ -318,15 +346,28 @@ export class LinearBarSeries extends DataPointSeries {
   private getBarColors(y: number): BarColors {
     const positive = y >= this.baseValue
     const fillColor =
-      positive || this.negativeFillColor.isUndefined()
+      positive || OxyColorHelper.isUndefined(this.negativeFillColor)
         ? this.getSelectableFillColor(this.actualColor)
         : this.negativeFillColor
-    const strokeColor = positive || this.negativeStrokeColor.isUndefined() ? this.strokeColor : this.negativeStrokeColor
+    const strokeColor =
+      positive || OxyColorHelper.isUndefined(this.negativeStrokeColor) ? this.strokeColor : this.negativeStrokeColor
 
     return {
       fillColor,
       strokeColor,
     }
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLinearBarSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this.points?.length) {
+      json.points = this.points
+    }
+    return json
   }
 }
 

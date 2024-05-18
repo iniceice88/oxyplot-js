@@ -1,13 +1,16 @@
-﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
   EdgeRenderingMode,
   HorizontalAlignment,
+  type IRenderContext,
   LineJoin,
   newScreenPoint,
-  OxyColor,
-  OxyImage,
-  OxyRect,
-  OxySize,
+  type OxyColor,
+  type OxyImage,
+  type OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
+  type OxySize,
+  type ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
 
@@ -318,8 +321,9 @@ export abstract class RenderContextBase implements IRenderContext {
    * @returns The points defining the ellipse.
    */
   protected static createEllipse(rect: OxyRect, n: number = 40): ScreenPoint[] {
-    const cx = rect.center.x
-    const cy = rect.center.y
+    const center = OxyRectHelper.center(rect)
+    const cx = center.x
+    const cy = center.y
     const dx = rect.width / 2
     const dy = rect.height / 2
     const points: ScreenPoint[] = new Array(n)
@@ -337,18 +341,19 @@ export abstract class RenderContextBase implements IRenderContext {
    * @returns The points defining the rectangle.
    */
   protected static createRectangle(rect: OxyRect): ScreenPoint[] {
+    const rectEx = OxyRectEx.fromRect(rect)
     return [
-      newScreenPoint(rect.left, rect.top),
-      newScreenPoint(rect.left, rect.bottom),
-      newScreenPoint(rect.right, rect.bottom),
-      newScreenPoint(rect.right, rect.top),
+      newScreenPoint(rectEx.left, rectEx.top),
+      newScreenPoint(rectEx.left, rectEx.bottom),
+      newScreenPoint(rectEx.right, rectEx.bottom),
+      newScreenPoint(rectEx.right, rectEx.top),
     ]
   }
 
   /**
-   * Returns a value indicating whether anti-aliasing should be used for the given edge rendering mode.
+   * Returns a value indicating whether antialiasing should be used for the given edge rendering mode.
    * @param edgeRenderingMode The edge rendering mode.
-   * @returns true if anti-aliasing should be used; false otherwise.
+   * @returns true if antialiasing should be used; false otherwise.
    */
   protected shouldUseAntiAliasingForRect(edgeRenderingMode: EdgeRenderingMode): boolean {
     switch (edgeRenderingMode) {

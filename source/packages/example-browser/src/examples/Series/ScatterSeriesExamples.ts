@@ -611,7 +611,9 @@ function trackerFormatString(): PlotModel {
   const model = new PlotModel({ title: 'TrackerFormatString' })
 
   const s1 = new ScatterSeries({
-    trackerStringFormatter: (args) => (args.item as MyPoint).sum.toString(),
+    trackerStringFormatter: function (args) {
+      return (args.item as MyPoint).sum.toString()
+    },
     dataFieldX: 'x',
     dataFieldY: 'y',
   })

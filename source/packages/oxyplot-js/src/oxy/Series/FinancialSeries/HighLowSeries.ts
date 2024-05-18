@@ -1,28 +1,31 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IRenderContext,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
 import {
   Axis,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultXYAxisSeriesOptions,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  newScreenVector,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
+  type PlotModelSerializeOptions,
+  type ScreenPoint,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
   XYAxisSeries,
 } from '@/oxyplot'
-import { getOrDefault, Number_MAX_VALUE, removeUndef, round } from '@/patch'
+
+import { getOrDefault, Number_MAX_VALUE, assignObject, round } from '@/patch'
 
 export interface HighLowItem {
   /**
@@ -91,6 +94,27 @@ export interface CreateHighLowSeriesOptions extends CreateXYAxisSeriesOptions {
   strokeThickness?: number
   tickLength?: number
   trackerStringFormatter?: HighLowSeriesTrackerStringFormatterType
+  items?: HighLowItem[]
+}
+
+export const DefaultHighLowSeriesOptions: CreateHighLowSeriesOptions = {
+  color: OxyColors.Automatic,
+  lineJoin: LineJoin.Miter,
+  lineStyle: LineStyle.Solid,
+  strokeThickness: 1,
+  tickLength: 4,
+
+  dataFieldClose: undefined,
+  dataFieldHigh: undefined,
+  dataFieldLow: undefined,
+  dataFieldOpen: undefined,
+  dataFieldX: undefined,
+  items: undefined,
+}
+
+export const ExtendedDefaultHighLowSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultHighLowSeriesOptions,
 }
 
 /**
@@ -101,13 +125,14 @@ export class HighLowSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  public static readonly DefaultTrackerStringFormatter: HighLowSeriesTrackerStringFormatterType = (args) =>
-    `${args.title}
+  public static readonly DefaultTrackerStringFormatter: HighLowSeriesTrackerStringFormatterType = function (args) {
+    return `${args.title}
 ${args.xTitle}: ${args.xValue}
 High: ${round(args.high!, 3)}
 Low: ${round(args.low!, 3)}
 Open: ${round(args.open!, 3)}
 Close: ${round(args.close!, 3)}`
+  }
 
   /**
    * High/low items
@@ -117,21 +142,23 @@ Close: ${round(args.close!, 3)}`
   /**
    * The default color.
    */
-  private defaultColor: OxyColor = OxyColors.Undefined
+  private _defaultColor: OxyColor = OxyColors.Undefined
 
   /**
    * Initializes a new instance of the HighLowSeries class.
    */
   constructor(opt?: CreateHighLowSeriesOptions) {
     super(opt)
-    this.color = OxyColors.Automatic
-    this.tickLength = 4
-    this.strokeThickness = 1
     this.trackerStringFormatter = HighLowSeries.DefaultTrackerStringFormatter
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    if (opt?.items) {
+      this._items = opt.items
+      delete opt.items
     }
+    assignObject(this, DefaultHighLowSeriesOptions, opt)
+  }
+
+  getElementName() {
+    return 'HighLowSeries'
   }
 
   /**
@@ -143,13 +170,13 @@ Close: ${round(args.close!, 3)}`
   /**
    * Gets or sets the color of the item.
    */
-  color: OxyColor
+  color: OxyColor = DefaultHighLowSeriesOptions.color!
 
   /**
    * Gets the actual color of the item.
    */
   get actualColor(): OxyColor {
-    return this.color.getActualColor(this.defaultColor)
+    return OxyColorHelper.getActualColor(this.color, this._defaultColor)
   }
 
   /**
@@ -193,12 +220,12 @@ Close: ${round(args.close!, 3)}`
   /**
    * Gets or sets the line join.
    */
-  lineJoin: LineJoin = LineJoin.Miter
+  lineJoin: LineJoin = DefaultHighLowSeriesOptions.lineJoin!
 
   /**
    * Gets or sets the line style.
    */
-  lineStyle: LineStyle = LineStyle.Solid
+  lineStyle: LineStyle = DefaultHighLowSeriesOptions.lineStyle!
 
   /**
    * Gets or sets the mapping delegate.
@@ -209,12 +236,12 @@ Close: ${round(args.close!, 3)}`
   /**
    * Gets or sets the thickness of the curve.
    */
-  strokeThickness: number
+  strokeThickness: number = DefaultHighLowSeriesOptions.strokeThickness!
 
   /**
    * Gets or sets the length of the open/close ticks (screen coordinates).
    */
-  tickLength: number
+  tickLength: number = DefaultHighLowSeriesOptions.tickLength!
 
   /**
    * Gets the point on the series that is nearest the specified point.
@@ -290,8 +317,8 @@ Close: ${round(args.close!, 3)}`
   /**
    * Determines whether the point is valid.
    * @param pt The point.
-   * @param xaxis The x axis.
-   * @param yaxis The y axis.
+   * @param xaxis The x-axis.
+   * @param yaxis The y-axis.
    * @returns true if the specified point is valid; otherwise, false.
    */
   public isValidItem(pt: HighLowItem, xaxis: Axis, yaxis: Axis): boolean {
@@ -331,7 +358,7 @@ Close: ${round(args.close!, 3)}`
           this.lineJoin,
         )
 
-        const tickVector = PlotElementExtensions.orientateVector(this, new ScreenVector(this.tickLength, 0))
+        const tickVector = PlotElementExtensions.orientateVector(this, newScreenVector(this.tickLength, 0))
         if (!isNaN(v.open)) {
           const open = transform(this, v.x, v.open)
           const openTick = screenPointMinusVector(open, tickVector)
@@ -367,15 +394,17 @@ Close: ${round(args.close!, 3)}`
    * @param legendBox The bounding rectangle of the legend box.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const yopen = legendBox.top + (legendBox.bottom - legendBox.top) * 0.7
-    const yclose = legendBox.top + (legendBox.bottom - legendBox.top) * 0.3
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const yopen = legendBox.top + (bottom - legendBox.top) * 0.7
+    const yclose = legendBox.top + (bottom - legendBox.top) * 0.3
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
     const color = this.getSelectableColor(this.actualColor)
 
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await rc.drawLine(
-        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, legendBox.bottom)],
+        [newScreenPoint(xmid, legendBox.top), newScreenPoint(xmid, bottom)],
         color,
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -406,9 +435,9 @@ Close: ${round(args.close!, 3)}`
    * @internal
    */
   setDefaultValues(): void {
-    if (this.color.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.color)) {
       this.lineStyle = this.plotModel.getDefaultLineStyle()
-      this.defaultColor = this.plotModel.getDefaultColor()
+      this._defaultColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -472,5 +501,17 @@ Close: ${round(args.close!, 3)}`
       (i) => i.low,
       (i) => i.high,
     )
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultHighLowSeriesOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const json = super.toJSON(opt)
+    if (this._items?.length) {
+      json.items = this._items
+    }
+    return json
   }
 }

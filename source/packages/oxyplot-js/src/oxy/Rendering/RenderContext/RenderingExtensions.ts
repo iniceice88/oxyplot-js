@@ -1,4 +1,13 @@
-﻿import type { DataPoint, IRenderContext, ITransposablePlotElement, ScreenPoint } from '@/oxyplot'
+﻿import type {
+  DataPoint,
+  IRenderContext,
+  ITransposablePlotElement,
+  OxyColor,
+  OxyRect,
+  OxySize,
+  OxyThickness,
+  ScreenPoint,
+} from '@/oxyplot'
 import {
   DataPoint_isUnDefined,
   DataPoint_Undefined,
@@ -11,14 +20,14 @@ import {
   LineStyle,
   LineStyleHelper,
   MarkerType,
+  newOxyRect,
+  newOxySize,
   newScreenPoint,
-  OxyColor,
   OxyColors,
-  OxyImage,
+  type OxyImage,
   OxyPen,
-  OxyRect,
-  OxySize,
-  OxyThickness,
+  OxyRectHelper,
+  OxySizeEx,
   ScreenPoint_LeftTop,
   ScreenPoint_Undefined,
   screenPointDistanceToSquared,
@@ -382,7 +391,7 @@ export class RenderingExtensions {
     thickness: number,
     edgeRenderingMode: EdgeRenderingMode,
   ): Promise<void> {
-    await rc.drawEllipse(new OxyRect(x - r, y - r, r * 2, r * 2), fill, stroke, thickness, edgeRenderingMode)
+    await rc.drawEllipse(newOxyRect(x - r, y - r, r * 2, r * 2), fill, stroke, thickness, edgeRenderingMode)
   }
 
   /**
@@ -460,15 +469,17 @@ export class RenderingExtensions {
       await rc.drawRectangle(rect, OxyColors.Undefined, stroke, thickness.left, edgeRenderingMode)
       return
     }
+    const right = OxyRectHelper.right(rect)
+    const bottom = OxyRectHelper.bottom(rect)
 
     const adjustedLeft = rect.left - thickness.left / 2 + 0.5
-    const adjustedRight = rect.right + thickness.right / 2 - 0.5
+    const adjustedRight = right + thickness.right / 2 - 0.5
     const adjustedTop = rect.top - thickness.top / 2 + 0.5
-    const adjustedBottom = rect.bottom + thickness.bottom / 2 - 0.5
+    const adjustedBottom = bottom + thickness.bottom / 2 - 0.5
 
     const pointsTop = [newScreenPoint(adjustedLeft, rect.top), newScreenPoint(adjustedRight, rect.top)]
-    const pointsRight = [newScreenPoint(rect.right, adjustedTop), newScreenPoint(rect.right, adjustedBottom)]
-    const pointsBottom = [newScreenPoint(adjustedLeft, rect.bottom), newScreenPoint(adjustedRight, rect.bottom)]
+    const pointsRight = [newScreenPoint(right, adjustedTop), newScreenPoint(right, adjustedBottom)]
+    const pointsBottom = [newScreenPoint(adjustedLeft, bottom), newScreenPoint(adjustedRight, bottom)]
     const pointsLeft = [newScreenPoint(rect.left, adjustedTop), newScreenPoint(rect.left, adjustedBottom)]
 
     await rc.drawLine(pointsTop, stroke, thickness.top, edgeRenderingMode, undefined, LineJoin.Miter)
@@ -542,10 +553,10 @@ export class RenderingExtensions {
 
     switch (type) {
       case MarkerType.Circle:
-        ellipses.push(new OxyRect(p.x - size, p.y - size, size * 2, size * 2))
+        ellipses.push(newOxyRect(p.x - size, p.y - size, size * 2, size * 2))
         break
       case MarkerType.Square:
-        rects.push(new OxyRect(p.x - size, p.y - size, size * 2, size * 2))
+        rects.push(newOxyRect(p.x - size, p.y - size, size * 2, size * 2))
         break
       case MarkerType.Diamond:
         polygons.push([
@@ -590,8 +601,8 @@ export class RenderingExtensions {
    * @returns A minimum bounding rectangle.
    */
   private static measureRotatedRectangleBound(bounds: OxySize, angle: number): OxySize {
-    const oxyRect = bounds.getBounds(angle, HorizontalAlignment.Center, VerticalAlignment.Middle)
-    return new OxySize(oxyRect.width, oxyRect.height)
+    const oxyRect = OxySizeEx.getBounds(bounds, angle, HorizontalAlignment.Center, VerticalAlignment.Middle)
+    return newOxySize(oxyRect.width, oxyRect.height)
   }
 
   /**
@@ -645,7 +656,7 @@ export class RenderingExtensions {
       let last = DataPoint_Undefined
 
       for (const next of points) {
-        // detect and remove invalid points (TODO: replace write a ClipLines method)
+        // detect and remove invalid points (todo: replace write a ClipLines method)
         if (
           DataPoint_isUnDefined(next) ||
           (xaxis.isLogarithmic() && next.x <= 0) ||
@@ -744,6 +755,7 @@ export class RenderingExtensions {
  */
 class AutoResetClipToken implements IDisposable {
   private readonly renderContext: IRenderContext
+  private _disposed: boolean = false
 
   constructor(renderContext: IRenderContext, clippingRectangle: OxyRect) {
     this.renderContext = renderContext
@@ -751,6 +763,9 @@ class AutoResetClipToken implements IDisposable {
   }
 
   public dispose(): void {
+    if (this._disposed) return
+
+    this._disposed = true
     this.renderContext.popClip()
   }
 }

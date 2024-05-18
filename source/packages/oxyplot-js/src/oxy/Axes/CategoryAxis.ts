@@ -1,12 +1,39 @@
-﻿import type { CreateAxisAxisOptions, TickValuesType } from '@/oxyplot'
-import { AxisPosition, LinearAxis, TickStyle } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+﻿import {
+  AxisPosition,
+  type CreateAxisOptions,
+  ExtendedDefaultLinearAxisOptions,
+  LinearAxis,
+  type PlotModelSerializeOptions,
+  TickStyle,
+  type TickValuesType,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
 
-export interface CreateCategoryAxisOptions extends CreateAxisAxisOptions {
+export interface CreateCategoryAxisOptions extends CreateAxisOptions {
   gapWidth?: number
   isTickCentered?: boolean
   itemsSource?: any[]
   labelField?: string
+
+  labels?: string[]
+}
+
+export const DefaultCategoryAxisOptions: CreateCategoryAxisOptions = {
+  isTickCentered: false,
+  tickStyle: TickStyle.Outside,
+  position: AxisPosition.Bottom,
+  minimumPadding: 0,
+  maximumPadding: 0,
+  majorStep: 1,
+  gapWidth: 1,
+
+  itemsSource: undefined,
+  labelField: undefined,
+}
+
+export const ExtendedDefaultCategoryAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultCategoryAxisOptions,
 }
 
 /**
@@ -31,15 +58,15 @@ export class CategoryAxis extends LinearAxis {
    */
   constructor(opt?: CreateCategoryAxisOptions) {
     super(opt)
-    this.tickStyle = TickStyle.Outside
-    this.position = AxisPosition.Bottom
-    this.minimumPadding = 0
-    this.maximumPadding = 0
-    this.majorStep = 1
-    this.gapWidth = 1
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    if (opt?.labels) {
+      this._labels = opt.labels
+      delete opt.labels
     }
+    assignObject(this, DefaultCategoryAxisOptions, opt)
+  }
+
+  getElementName() {
+    return 'CategoryAxis'
   }
 
   /**
@@ -61,12 +88,12 @@ export class CategoryAxis extends LinearAxis {
    * Gets or sets the gap width.
    * The default value is 1.0 (100%). The gap width is given as a fraction of the total width/height of the items in a category.
    */
-  gapWidth: number
+  gapWidth: number = DefaultCategoryAxisOptions.gapWidth!
 
   /**
    * Gets or sets a value indicating whether the ticks are centered. If this is false, ticks will be drawn between each category. If this is true, ticks will be drawn in the middle of each category.
    */
-  isTickCentered: boolean = false
+  isTickCentered: boolean = DefaultCategoryAxisOptions.isTickCentered!
 
   /**
    * Gets or sets the items source (used to update the Labels collection).
@@ -186,5 +213,15 @@ export class CategoryAxis extends LinearAxis {
     }
 
     return ''
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultCategoryAxisOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions): any {
+    const json = super.toJSON(opt)
+    if (this._labels.length > 0) json.labels = this._labels
+    return json
   }
 }

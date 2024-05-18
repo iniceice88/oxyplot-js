@@ -1,12 +1,20 @@
-﻿import type {
-  Axis,
-  CreatePlotElementOptions,
-  DataPoint,
-  IRenderContext,
-  IXyAxisPlotElement,
-  ScreenPoint,
+﻿import {
+  AnnotationLayer,
+  type Axis,
+  type CreatePlotElementOptions,
+  type DataPoint,
+  ExtendedDefaultPlotElementOptions,
+  type IRenderContext,
+  type IXyAxisPlotElement,
+  newScreenPoint,
+  type OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
+  PlotElement,
+  PlotElementUtilities,
+  type ScreenPoint,
 } from '@/oxyplot'
-import { AnnotationLayer, newScreenPoint, OxyRect, PlotElement, PlotElementUtilities } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateAnnotationOptions extends CreatePlotElementOptions {
   xAxisKey?: string
@@ -18,6 +26,22 @@ export interface CreateAnnotationOptions extends CreatePlotElementOptions {
   yAxis?: Axis
 }
 
+export const DefaultAnnotationOptions: CreateAnnotationOptions = {
+  clipByXAxis: true,
+  clipByYAxis: true,
+  layer: AnnotationLayer.AboveSeries,
+
+  xAxisKey: undefined,
+  yAxisKey: undefined,
+  xAxis: undefined,
+  yAxis: undefined,
+}
+
+export const ExtendedDefaultAnnotationOptions = {
+  ...ExtendedDefaultPlotElementOptions,
+  ...DefaultAnnotationOptions,
+}
+
 /**
  * Provides an abstract base class for annotations.
  */
@@ -25,7 +49,7 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
   /**
    * The rendering layer of the annotation. The default value is AnnotationLayer.AboveSeries.
    */
-  public layer: AnnotationLayer
+  public layer: AnnotationLayer = DefaultAnnotationOptions.layer!
 
   private _xAxis?: Axis
   /**
@@ -51,12 +75,12 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
   /**
    * A value indicating whether to clip the annotation by the X axis range.
    */
-  public clipByXAxis: boolean
+  public clipByXAxis: boolean = DefaultAnnotationOptions.clipByXAxis!
 
   /**
    * A value indicating whether to clip the annotation by the Y axis range.
    */
-  public clipByYAxis: boolean
+  public clipByYAxis: boolean = DefaultAnnotationOptions.clipByYAxis!
 
   /**
    * The Y axis key.
@@ -67,10 +91,9 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
    * Initializes a new instance of the Annotation class.
    */
   protected constructor(opt?: CreateAnnotationOptions) {
-    super()
-    this.layer = AnnotationLayer.AboveSeries
-    this.clipByXAxis = true
-    this.clipByYAxis = true
+    super(opt)
+
+    assignObject(this, DefaultAnnotationOptions, opt)
 
     if (opt) {
       if (opt.xAxis) this._xAxis = opt.xAxis
@@ -97,7 +120,7 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
    */
   public getClippingRect(): OxyRect {
     const rect = this.plotModel.plotArea
-    const axisRect = PlotElementUtilities.getClippingRect(this)
+    const axisRect = new OxyRectEx(PlotElementUtilities.getClippingRect(this))
 
     let minX = 0
     let maxX = Number.POSITIVE_INFINITY
@@ -117,8 +140,8 @@ export abstract class Annotation extends PlotElement implements IXyAxisPlotEleme
     const minPoint = newScreenPoint(minX, minY)
     const maxPoint = newScreenPoint(maxX, maxY)
 
-    const axisClipRect = OxyRect.fromScreenPoints(minPoint, maxPoint)
-    return rect.clip(axisClipRect)
+    const axisClipRect = OxyRectHelper.fromScreenPoints(minPoint, maxPoint)
+    return OxyRectHelper.clip(rect, axisClipRect)
   }
 
   /**

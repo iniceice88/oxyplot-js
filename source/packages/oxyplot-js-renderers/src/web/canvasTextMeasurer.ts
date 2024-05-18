@@ -1,4 +1,4 @@
-import { FontWeights, type ITextMeasurer, LineJoin, OxyColor, OxySize } from 'oxyplot-js'
+import { FontWeights, type ITextMeasurer, LineJoin, newOxySize, type OxyColor, OxyColorHelper } from 'oxyplot-js'
 
 let cachedContext: CanvasRenderingContext2D | null = null
 
@@ -26,7 +26,7 @@ export function canvasTextMeasurer(context?: CanvasRenderingContext2D): ITextMea
 
     context.font = getFont(fontFamily, fontSize, fontWeight)
     const metrics = context.measureText(text)
-    return new OxySize(metrics.width, fontSize)
+    return newOxySize(metrics.width, fontSize)
   }
 
   return {
@@ -48,7 +48,7 @@ export class OxyStyleToCanvasStyleConverter {
   }
 
   convertStrokeOrFillStyle(color: OxyColor) {
-    return color.toRgba()
+    return OxyColorHelper.toRgba(color)
   }
 
   convertFont(fontFamily: string | undefined, fontSize: number, fontWeight: number) {

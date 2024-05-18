@@ -1,16 +1,21 @@
-import type { CreateAreaSeriesOptions, DataPoint, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   AreaRenderContext,
   AreaSeries,
+  type CreateAreaSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultAreaSeriesOptions,
+  type IRenderContext,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
   RenderingExtensions,
+  type ScreenPoint,
   TrackerHitResult,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CreateTwoColorAreaSeriesOptions extends CreateAreaSeriesOptions {
   color2?: OxyColor
@@ -21,6 +26,22 @@ export interface CreateTwoColorAreaSeriesOptions extends CreateAreaSeriesOptions
   limit?: number
 }
 
+export const DefaultTwoColorAreaSeriesOptions: CreateTwoColorAreaSeriesOptions = {
+  color2: OxyColorHelper.fromRgb(0, 0, 255), // Blue
+  fill2: OxyColors.Automatic,
+  lineStyle2: LineStyle.Solid,
+  markerFill2: OxyColors.Automatic,
+  markerStroke2: OxyColors.Automatic,
+  limit: 0,
+
+  fill: OxyColors.Automatic,
+}
+
+export const ExtendedDefaultTwoColorAreaSeriesOptions = {
+  ...ExtendedDefaultAreaSeriesOptions,
+  ...DefaultTwoColorAreaSeriesOptions,
+}
+
 /**
  * Represents a two-color area series.
  */
@@ -28,59 +49,52 @@ export class TwoColorAreaSeries extends AreaSeries {
   /**
    * The default second color.
    */
-  private defaultColor2: OxyColor = OxyColors.Undefined
+  private _defaultColor2: OxyColor = OxyColors.Undefined
 
   /**
    * The collection of points above the limit.
    */
-  private abovePoints: DataPoint[] = []
+  private _abovePoints: DataPoint[] = []
 
   /**
    * The collection of points below the limit.
    */
-  private belowPoints: DataPoint[] = []
+  private _belowPoints: DataPoint[] = []
 
   /**
    * Start index of a visible rendering window for markers.
    */
-  private markerStartIndex: number = 0
+  private _markerStartIndex: number = 0
 
   /**
    * Initializes a new instance of the TwoColorAreaSeries class.
    */
   constructor(opt?: CreateTwoColorAreaSeriesOptions) {
     super(opt)
-    this.color2 = OxyColor.fromRgb(0, 0, 255) // Blue
+    assignObject(this, DefaultTwoColorAreaSeriesOptions, opt)
+  }
 
-    this.fill = OxyColors.Automatic
-    this.fill2 = OxyColors.Automatic
-
-    this.markerFill2 = OxyColors.Automatic
-    this.markerStroke2 = OxyColors.Automatic
-    this.lineStyle2 = LineStyle.Solid
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'TwoColorAreaSeries'
   }
 
   /**
    * Gets or sets the area fill color below the limit line.
    */
-  fill2: OxyColor
+  fill2: OxyColor = DefaultTwoColorAreaSeriesOptions.fill2!
 
   /**
    * Gets the actual fill color below the limit line.
    */
   get actualFill2(): OxyColor {
-    return this.fill2.getActualColor(OxyColor.fromAColor(100, this.actualColor2))
+    return OxyColorHelper.getActualColor(this.fill2, OxyColorHelper.fromAColor(100, this.actualColor2))
   }
 
   /**
    * Gets the actual second color.
    */
   get actualColor2(): OxyColor {
-    return this.color2.getActualColor(this.defaultColor2)
+    return OxyColorHelper.getActualColor(this.color2, this._defaultColor2)
   }
 
   /**
@@ -91,7 +105,7 @@ export class TwoColorAreaSeries extends AreaSeries {
   /**
    * Gets or sets the line style for the part of the line that is below the limit.
    */
-  lineStyle2: LineStyle
+  lineStyle2: LineStyle = DefaultTwoColorAreaSeriesOptions.lineStyle2!
 
   /**
    * Gets the actual line style for the part of the line that is below the limit.
@@ -110,17 +124,17 @@ export class TwoColorAreaSeries extends AreaSeries {
   /**
    * Gets or sets the marker fill color which is below the limit line. The default is OxyColors.Automatic.
    */
-  markerFill2: OxyColor
+  markerFill2: OxyColor = DefaultTwoColorAreaSeriesOptions.markerFill2!
 
   /**
    * Gets or sets the marker stroke which is below the limit line. The default is OxyColors.Automatic.
    */
-  markerStroke2: OxyColor
+  markerStroke2: OxyColor = DefaultTwoColorAreaSeriesOptions.markerStroke2!
 
   /**
    * Gets or sets a baseline for the series.
    */
-  limit: number = 0
+  limit: number = DefaultTwoColorAreaSeriesOptions.limit!
 
   /**
    * Gets the nearest point.
@@ -154,13 +168,13 @@ export class TwoColorAreaSeries extends AreaSeries {
     const xmax = this.xAxis!.clipMaximum
     const getPointX = (dp: DataPoint) => dp.x
 
-    this.windowStartIndex = this.updateWindowStartIndex(this.abovePoints, getPointX, xmin, this.windowStartIndex)
-    this.windowStartIndex2 = this.updateWindowStartIndex(this.belowPoints, getPointX, xmin, this.windowStartIndex2)
+    this.windowStartIndex = this.updateWindowStartIndex(this._abovePoints, getPointX, xmin, this.windowStartIndex)
+    this.windowStartIndex2 = this.updateWindowStartIndex(this._belowPoints, getPointX, xmin, this.windowStartIndex2)
 
     const minDistSquared = this.minimumSegmentLength * this.minimumSegmentLength
 
     const areaContext: TwoColorAreaRenderContext = {
-      points: this.abovePoints,
+      points: this._abovePoints,
       windowStartIndex: this.windowStartIndex,
       xMax: xmax,
       renderContext: rc,
@@ -176,7 +190,7 @@ export class TwoColorAreaSeries extends AreaSeries {
 
     await this.renderChunkedPoints(areaContext)
 
-    areaContext.points = this.belowPoints
+    areaContext.points = this._belowPoints
     areaContext.windowStartIndex = this.windowStartIndex2
     areaContext.reverse = this.reverse2
     areaContext.color = this.actualColor2
@@ -196,10 +210,10 @@ export class TwoColorAreaSeries extends AreaSeries {
       const points = this.actualPoints
       const aboveMarkers: ScreenPoint[] = []
       const belowMarkers: ScreenPoint[] = []
-      this.markerStartIndex = this.updateWindowStartIndex(points, getPointX, xmin, this.markerStartIndex)
+      this._markerStartIndex = this.updateWindowStartIndex(points, getPointX, xmin, this._markerStartIndex)
 
       let markerClipCount = 0
-      for (let i = this.markerStartIndex; i < points.length; i++) {
+      for (let i = this._markerStartIndex; i < points.length; i++) {
         const point = points[i]
         ;(point.y >= limit ? aboveMarkers : belowMarkers).push(this.transform(point))
 
@@ -244,8 +258,8 @@ export class TwoColorAreaSeries extends AreaSeries {
   setDefaultValues(): void {
     super.setDefaultValues()
 
-    if (this.color2.isAutomatic()) {
-      this.defaultColor2 = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.color2)) {
+      this._defaultColor2 = this.plotModel.getDefaultColor()
     }
 
     if (this.lineStyle2 === LineStyle.Automatic) {
@@ -261,8 +275,8 @@ export class TwoColorAreaSeries extends AreaSeries {
     super.updateData()
 
     if (this.isPoints2Defined) {
-      this.abovePoints = this.actualPoints
-      this.belowPoints = this.actualPoints2
+      this._abovePoints = this.actualPoints
+      this._belowPoints = this.actualPoints2
     } else {
       this.splitPoints(this.actualPoints)
     }
@@ -320,24 +334,24 @@ export class TwoColorAreaSeries extends AreaSeries {
   private splitPoints(source: DataPoint[]): void {
     const nan = newDataPoint(Number.NaN, Number.NaN)
     const limit = this.limit
-    this.abovePoints = new Array<DataPoint>()
-    this.belowPoints = new Array<DataPoint>()
+    this._abovePoints = new Array<DataPoint>()
+    this._belowPoints = new Array<DataPoint>()
 
     let lastAbove = false
-    let lastPoint: DataPoint | null = null
+    let lastPoint: DataPoint | undefined = undefined
     for (const point of source) {
       const isAbove = point.y >= limit
 
       if (lastPoint && isAbove !== lastAbove) {
         const shared = newDataPoint(this.getInterpolatedX(lastPoint, point, limit), limit)
-        this.abovePoints.push(isAbove ? nan : shared)
-        this.abovePoints.push(isAbove ? shared : nan)
+        this._abovePoints.push(isAbove ? nan : shared)
+        this._abovePoints.push(isAbove ? shared : nan)
 
-        this.belowPoints.push(isAbove ? shared : nan)
-        this.belowPoints.push(isAbove ? nan : shared)
+        this._belowPoints.push(isAbove ? shared : nan)
+        this._belowPoints.push(isAbove ? nan : shared)
       }
 
-      ;(isAbove ? this.abovePoints : this.belowPoints).push(point)
+      ;(isAbove ? this._abovePoints : this._belowPoints).push(point)
 
       lastPoint = point
       lastAbove = isAbove
@@ -382,6 +396,10 @@ export class TwoColorAreaSeries extends AreaSeries {
    */
   private getInterpolatedX(a: DataPoint, b: DataPoint, y: number): number {
     return ((y - a.y) / (b.y - a.y)) * (b.x - a.x) + a.x
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultTwoColorAreaSeriesOptions
   }
 }
 

@@ -1,79 +1,83 @@
-﻿import { trimString } from '@/patch'
+﻿import { isNullOrUndef, toUint, trimString } from '@/patch'
+
+export type OxyColor = string
+
+export class OxyColorEx {
+  /**
+   * The alpha component.0-255
+   */
+  readonly a: number
+  /**
+   * The blue component.Rendering
+   */
+  readonly b: number
+  /**
+   * The green component.Rendering
+   */
+  readonly g: number
+  /**
+   * The red component.Rendering
+   */
+  readonly r: number
+
+  readonly hex: OxyColor
+
+  constructor(a: number, r: number, g: number, b: number) {
+    this.a = a
+    this.r = r
+    this.g = g
+    this.b = b
+    this.hex = OxyColorHelper.toHexString(r, g, b, a)
+  }
+
+  static fromArgb(a: number, r: number, g: number, b: number): OxyColorEx {
+    return new OxyColorEx(a, r, g, b)
+  }
+
+  static fromHex(hex: string): OxyColorEx {
+    if (!hex) hex = OxyColor_Undefined
+    const { a, r, g, b } = OxyColorHelper.parseHex(hex)
+    return new OxyColorEx(a, r, g, b)
+  }
+
+  static fromOxyColor(c: OxyColorEx | OxyColor): OxyColorEx {
+    if (c instanceof OxyColorEx) return c
+    return OxyColorEx.fromHex(c)
+  }
+
+  static fromRgb(r: number, g: number, b: number): OxyColorEx {
+    return this.fromArgb(255, r, g, b)
+  }
+
+  static fromHsv(hue: number, sat: number, val: number): OxyColorEx {
+    return this.fromOxyColor(OxyColorHelper.fromHsv(hue, sat, val))
+  }
+
+  static fromAColor(a: number, color: OxyColorEx | OxyColor): OxyColorEx {
+    return this.fromOxyColor(OxyColorHelper.fromAColor(a, color))
+  }
+}
 
 /**
- * Describes a color in terms of alpha, red, green, and blue channels.
+ * The undefined color.
  */
-export class OxyColor {
-  /**
-   * The undefined color.
-   */
-  private static readonly _undefined = OxyColor.fromUInt32(0x00000000)
+export const OxyColor_Undefined: OxyColor = '#00000000'
 
-  /**
-   * The automatic color.
-   */
-  private static readonly _automatic = OxyColor.fromUInt32(0x00000001)
+/**
+ * The automatic color.
+ */
+export const OxyColor_Automatic: OxyColor = '#00000001'
 
-  /**
-   * The red component.
-   */
-  private readonly _r: number
-
-  /**
-   * The green component.
-   */
-  private readonly _g: number
-
-  /**
-   * The blue component.
-   */
-  private readonly _b: number
-
-  /**
-   * The alpha component.
-   */
-  private readonly _a: number
-
-  /**
-   * Initializes a new instance of the OxyColor class.
-   * @param a The alpha value.
-   * @param r The red value.
-   * @param g The green value.
-   * @param b The blue value.
-   */
-  constructor(a: number, r: number, g: number, b: number) {
-    this._a = toByte(a)
-    this._r = toByte(r)
-    this._g = toByte(g)
-    this._b = toByte(b)
+export class OxyColorHelper {
+  static isOxyColor(obj: any): obj is OxyColor {
+    if (!obj) return false
+    if (typeof obj !== 'string') return false
+    return true // trade any string as OxyColor
   }
 
-  /**
-   * Gets the alpha value.
-   */
-  public get a(): number {
-    return this._a
-  }
-
-  /**
-   * Gets the blue value.
-   */
-  public get b(): number {
-    return this._b
-  }
-
-  /**
-   * Gets the green value.
-   */
-  public get g(): number {
-    return this._g
-  }
-
-  /**
-   * Gets the red value.
-   */
-  public get r(): number {
-    return this._r
+  static getOxyColor(c: OxyColor | OxyColorEx): OxyColor {
+    if (typeof c === 'string') return c
+    return OxyColorEx.fromOxyColor(c).hex
   }
 
   /**
@@ -82,15 +86,20 @@ export class OxyColor {
    * @returns The parsed color.
    * @throws Error if the format is invalid.
    */
-  public static parse(value: string): OxyColor {
+  static parse(value: string): OxyColor {
     if (!value || value.toLowerCase() === 'none') {
-      return this._undefined
+      return OxyColor_Undefined
     }
 
     if (value.toLowerCase() === 'auto') {
-      return this._automatic
+      return OxyColor_Automatic
     }
 
+    const { a, r, g, b } = this.parseHex(value)
+    return this.fromArgb(a, r, g, b)
+  }
+
+  static parseHex(value: string): { a: number; r: number; g: number; b: number } {
     value = value.trim()
     if (value.startsWith('#')) {
       value = trimString(value, '#')
@@ -105,9 +114,10 @@ export class OxyColor {
         u += 0xff000000
       }
 
-      return OxyColor.fromUInt32(u)
+      return this.uint32ToArgb(u)
     }
 
+    // r,g,b
     const values = value.split(',')
     if (values.length < 3 || values.length > 4) {
       throw new Error('Invalid format.')
@@ -115,16 +125,16 @@ export class OxyColor {
 
     let i = 0
 
-    let alpha = 255
+    let a = 255
     if (values.length > 3) {
-      alpha = parseInt(values[i], 10)
+      a = parseInt(values[i], 10)
       i++
     }
 
-    const red = parseInt(values[i], 10)
-    const green = parseInt(values[i + 1], 10)
-    const blue = parseInt(values[i + 2], 10)
-    return OxyColor.fromArgb(alpha, red, green, blue)
+    const r = parseInt(values[i], 10)
+    const g = parseInt(values[i + 1], 10)
+    const b = parseInt(values[i + 2], 10)
+    return { a, r, g, b }
   }
 
   /**
@@ -133,7 +143,7 @@ export class OxyColor {
    * @param c2 The second color.
    * @returns L2-norm in ARGB space.
    */
-  public static colorDifference(c1: OxyColor, c2: OxyColor): number {
+  static colorDifference(c1: OxyColorEx, c2: OxyColorEx): number {
     // http://en.wikipedia.org/wiki/OxyColor_difference
     // http://mathworld.wolfram.com/L2-Norm.html
     const dr = (c1.r - c2.r) / 255.0
@@ -149,12 +159,17 @@ export class OxyColor {
    * @param color The unsigned integer color value.
    * @returns The OxyColor.
    */
-  public static fromUInt32(color: number): OxyColor {
+  static fromUInt32(color: number): OxyColor {
+    const { a, r, g, b } = this.uint32ToArgb(color)
+    return this.fromArgb(a, r, g, b)
+  }
+
+  private static uint32ToArgb(color: number) {
     const a = (color >> 24) & 0xff
     const r = (color >> 16) & 0xff
     const g = (color >> 8) & 0xff
     const b = color & 0xff
-    return OxyColor.fromArgb(a, r, g, b)
+    return { a, r, g, b }
   }
 
   /**
@@ -165,7 +180,7 @@ export class OxyColor {
    * @returns The `OxyColor`.
    * @remarks See [Wikipedia](http://en.wikipedia.org/wiki/HSL_Color_space).
    */
-  public static fromHsv(hue: number, sat: number, val: number): OxyColor {
+  static fromHsv(hue: number, sat: number, val: number): OxyColor {
     let g: number, b: number
     let r = (g = b = 0)
 
@@ -218,7 +233,7 @@ export class OxyColor {
       }
     }
 
-    return OxyColor.fromRgb(r * 255, g * 255, b * 255)
+    return this.fromRgb(r * 255, g * 255, b * 255)
   }
 
   /**
@@ -227,8 +242,9 @@ export class OxyColor {
    * @param color The original color.
    * @returns A color.
    */
-  public static fromAColor(a: number, color: OxyColor): OxyColor {
-    return OxyColor.fromArgb(a, color.r, color.g, color.b)
+  static fromAColor(a: number, color: OxyColorEx | OxyColor): OxyColor {
+    const c = OxyColorEx.fromOxyColor(color)
+    return this.fromArgb(a, c.r, c.g, c.b)
   }
 
   /**
@@ -239,8 +255,8 @@ export class OxyColor {
    * @param b The blue value.
    * @returns A color.
    */
-  public static fromArgb(a: number, r: number, g: number, b: number): OxyColor {
-    return new OxyColor(a, r, g, b)
+  static fromArgb(a: number, r: number, g: number, b: number): OxyColor {
+    return new OxyColorEx(a, r, g, b).hex
   }
 
   /**
@@ -250,8 +266,8 @@ export class OxyColor {
    * @param b The blue value.
    * @returns An `OxyColor` structure with the specified values and an alpha channel value of 1.
    */
-  public static fromRgb(r: number, g: number, b: number): OxyColor {
-    return new OxyColor(255, r, g, b)
+  static fromRgb(r: number, g: number, b: number): OxyColor {
+    return this.fromArgb(255, r, g, b)
   }
 
   /**
@@ -261,94 +277,261 @@ export class OxyColor {
    * @param t The t.
    * @returns The interpolated color
    */
-  public static interpolate(color1: OxyColor, color2: OxyColor, t: number): OxyColor {
-    const a = color1.a * (1 - t) + color2.a * t
-    const r = color1.r * (1 - t) + color2.r * t
-    const g = color1.g * (1 - t) + color2.g * t
-    const b = color1.b * (1 - t) + color2.b * t
-    return OxyColor.fromArgb(toByte(a), toByte(r), toByte(g), toByte(b))
+  static interpolate(color1: OxyColorEx | OxyColor, color2: OxyColorEx | OxyColor, t: number): OxyColorEx {
+    const c1 = OxyColorEx.fromOxyColor(color1)
+    const c2 = OxyColorEx.fromOxyColor(color2)
+    const a = c1.a * (1 - t) + c2.a * t
+    const r = c1.r * (1 - t) + c2.r * t
+    const g = c1.g * (1 - t) + c2.g * t
+    const b = c1.b * (1 - t) + c2.b * t
+    return OxyColorEx.fromArgb(toByte(a), toByte(r), toByte(g), toByte(b))
   }
 
   /**
    * Determines whether the specified OxyColor is equal to the current instance.
-   * @param other The OxyColor to compare with the current instance.
    * @returns true if the specified OxyColor is equal to the current instance; otherwise, false.
    */
-  public equals(other: OxyColor): boolean {
-    return other.a === this.a && other.r === this.r && other.g === this.g && other.b === this.b
+  static equals(c: OxyColorEx | OxyColor, other: OxyColorEx | OxyColor): boolean {
+    if (typeof c === 'string' && typeof other === 'string') return c === other
+
+    const c1 = OxyColorEx.fromOxyColor(c)
+    const c2 = OxyColorEx.fromOxyColor(other)
+    return c1.a === c2.a && c1.r === c2.r && c1.g === c2.g && c1.b === c2.b
   }
 
-  public toArgb(): string {
-    return this.toArgbInner('start')
+  static toArgb(c: OxyColorEx | OxyColor): string {
+    return this.toArgbInner(c, 'start')
   }
 
-  public toRgba(): string {
-    return this.toArgbInner('end')
+  static toRgba(c: OxyColorEx | OxyColor): string {
+    return this.toArgbInner(c, 'end')
   }
 
-  public toRgb(): string {
-    return this.toArgbInner('none')
+  static toRgb(c: OxyColorEx | OxyColor): string {
+    return this.toArgbInner(c, 'none')
   }
 
-  private toArgbInner(aPosition: 'none' | 'start' | 'end') {
-    const toHex = (v: number) => v.toString(16).padStart(2, '0')
-    const rgb = `${toHex(this.r)}${toHex(this.g)}${toHex(this.b)}`
+  static toHexString(r: number, g: number, b: number, a?: number) {
+    const toHex = numToHex
+    const [hexR, hexG, hexB] = [toHex(r), toHex(g), toHex(b)]
+    const rgb = `${hexR}${hexG}${hexB}`
+    if (isNullOrUndef(a) || a === 255) {
+      // #RRGGBB -> #RGB if possible
+      if (hexR[0] === hexR[1] && hexG[0] === hexG[1] && hexB[0] === hexB[1]) {
+        return `#${hexR[0]}${hexG[0]}${hexB[0]}`
+      }
+      return `#${rgb}`
+    }
+    return `#${toHex(a)}${rgb}`
+  }
 
-    if (aPosition === 'start') return `#${toHex(this.a)}${rgb}`
-    else if (aPosition === 'end') return `#${rgb}${toHex(this.a)}`
+  private static toArgbInner(c: OxyColorEx | OxyColor, aPosition: 'none' | 'start' | 'end') {
+    const { r, g, b, a } = OxyColorEx.fromOxyColor(c)
+    const toHex = numToHex
+    const rgb = `${toHex(r)}${toHex(g)}${toHex(b)}`
+
+    if (aPosition === 'start') return `#${toHex(a)}${rgb}`
+    else if (aPosition === 'end') return `#${rgb}${toHex(a)}`
 
     return `#${rgb}`
-    //return `#${toHex(this.a)}${toHex(this.r)}${toHex(this.g)}${toHex(this.b)}`
-  }
-
-  /**
-   * Returns a string that represents the current instance.
-   * @returns A string that represents the current instance.
-   */
-  public toString(): string {
-    return this.toArgb()
   }
 
   /**
    * Determines whether the current color is invisible.
    * @returns True if the alpha value is 0.
    */
-  public isInvisible(): boolean {
-    return this.a === 0
+  static isInvisible(color: OxyColorEx | OxyColor): boolean {
+    if (!color) return true
+    const c = OxyColorEx.fromOxyColor(color)
+    return c.a === 0
   }
 
   /**
    * Determines whether the current color is visible.
    * @returns True if the alpha value is greater than 0.
    */
-  public isVisible(): boolean {
-    return this.a > 0
+  static isVisible(color: OxyColorEx | OxyColor): boolean {
+    if (!color) return false
+    const c = OxyColorEx.fromOxyColor(color)
+    return c.a > 0
   }
 
   /**
    * Determines whether the current color is undefined.
    * @returns True if the color equals OxyColors.Undefined.
    */
-  public isUndefined(): boolean {
-    return this.equals(OxyColor._undefined)
+  static isUndefined(color: OxyColorEx | OxyColor): boolean {
+    return this.equals(color, OxyColor_Undefined)
   }
 
   /**
    * Determines whether the current color is automatic.
    * @returns True if the color equals OxyColors.Automatic.
    */
-  public isAutomatic(): boolean {
-    return this.equals(OxyColor._automatic)
+  static isAutomatic(color: OxyColorEx | OxyColor): boolean {
+    return this.equals(color, OxyColor_Automatic)
   }
 
   /**
    * Gets the actual color.
-   * @param defaultColor The default color.
    * @returns The default color if the current color equals OxyColors.Automatic, otherwise the color itself.
    */
-  public getActualColor(defaultColor: OxyColor): OxyColor {
-    return this.isAutomatic() ? defaultColor : this
+  static getActualColor(c: OxyColor | OxyColorEx, defaultColor: OxyColor | OxyColorEx): OxyColor {
+    if (this.isAutomatic(c)) return this.getOxyColor(defaultColor)
+    return this.getOxyColor(c)
   }
+
+  /**
+   * Changes the intensity.
+   * @param color The color.
+   * @param factor The factor.
+   * @returns A color with the new intensity.
+   */
+  static changeIntensity(color: OxyColor | OxyColorEx, factor: number): OxyColorEx {
+    const hsv = this.toHsv(color)
+    hsv[2] *= factor
+    if (hsv[2] > 1.0) {
+      hsv[2] = 1.0
+    }
+
+    return OxyColorEx.fromHsv(hsv[0], hsv[1], hsv[2])
+  }
+
+  /**
+   * Changes the saturation.
+   * @param color The color.
+   * @param factor The factor.
+   * @returns A color with the new saturation.
+   */
+  static changeSaturation(color: OxyColor | OxyColorEx, factor: number): OxyColorEx {
+    const hsv = this.toHsv(color)
+    hsv[1] *= factor
+    if (hsv[1] > 1.0) {
+      hsv[1] = 1.0
+    }
+
+    return OxyColorEx.fromHsv(hsv[0], hsv[1], hsv[2])
+  }
+
+  /**
+   * Changes the opacity.
+   * @param color The color.
+   * @param factor The factor.
+   * @returns A color with the new opacity.
+   */
+  static changeOpacity(color: OxyColor | OxyColorEx, factor: number): OxyColorEx {
+    const { a } = OxyColorEx.fromOxyColor(color)
+    return OxyColorEx.fromAColor(a * factor, color)
+  }
+
+  /**
+   * Calculates the complementary color.
+   * @param color The color to convert.
+   * @returns The complementary color.
+   */
+  static complementary(color: OxyColor | OxyColorEx): OxyColorEx {
+    // http://en.wikipedia.org/wiki/Complementary_Color
+    const hsv = this.toHsv(color)
+    let newHue = hsv[0] - 0.5
+
+    // clamp to [0,1]
+    if (newHue < 0) {
+      newHue += 1.0
+    }
+
+    return OxyColorEx.fromHsv(newHue, hsv[1], hsv[2])
+  }
+
+  /**
+   * Converts from a `OxyColor` to HSV values (double)
+   * @param color The color.
+   * @returns Array of [Hue,Saturation,Value] in the range [0,1]
+   */
+  static toHsv(color: OxyColor | OxyColorEx): number[] {
+    const { r, g, b } = OxyColorEx.fromOxyColor(color)
+
+    const min = Math.min(Math.min(r, g), b)
+    const v = Math.max(Math.max(r, g), b)
+    const delta = v - min
+
+    const s = v === 0 ? 0 : delta / v
+    let h = 0
+
+    if (s === 0) {
+      h = 0.0
+    } else {
+      if (r === v) {
+        h = (g - b) / delta
+      } else if (g === v) {
+        h = 2 + (b - r) / delta
+      } else if (b === v) {
+        h = 4 + (r - g) / delta
+      }
+
+      h *= 60
+      if (h < 0.0) {
+        h += 360
+      }
+    }
+
+    const hsv = new Array(3)
+    hsv[0] = h / 360.0
+    hsv[1] = s
+    hsv[2] = v / 255.0
+    return hsv
+  }
+
+  /**
+   * Converts to an unsigned integer.
+   * @param color The color.
+   * @returns The color as an unsigned integer.
+   */
+  static toUint(color: OxyColor | OxyColorEx): number {
+    const { r, g, b, a } = OxyColorEx.fromOxyColor(color)
+    let u = toUint(a << 24)
+    u += toUint(r << 16)
+    u += toUint(g << 8)
+    u += toUint(b)
+    return toUint(u)
+  }
+
+  /**
+   * Converts an OxyColor to a string containing the ARGB byte values.
+   * @param color The color.
+   * @returns A string that contains byte values of the alpha, red, green and blue components separated by comma.
+   */
+  static toByteString(color: OxyColor | OxyColorEx): string {
+    const { r, g, b, a } = OxyColorEx.fromOxyColor(color)
+    return `${a},${r},${g},${b}`
+  }
+
+  /**
+   * Calculate the difference in hue between two `OxyColor`s.
+   * @param c1 The first color.
+   * @param c2 The second color.
+   * @returns The hue difference.
+   */
+  static hueDifference(c1: OxyColor, c2: OxyColor): number {
+    const hsv1 = this.toHsv(c1)
+    const hsv2 = this.toHsv(c2)
+    let dh = hsv1[0] - hsv2[0]
+
+    // clamp to [-0.5,0.5]
+    if (dh > 0.5) {
+      dh -= 1.0
+    }
+
+    if (dh < -0.5) {
+      dh += 1.0
+    }
+
+    const e = Math.pow(dh, 2)
+    return Math.sqrt(e)
+  }
+}
+
+function numToHex(v: number) {
+  return v.toString(16).padStart(2, '0')
 }
 
 function toByte(n: number) {

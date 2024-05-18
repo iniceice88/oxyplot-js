@@ -1,6 +1,5 @@
 import {
   AxisPosition,
-  DataRange,
   ExtrapolationLineSeries,
   Legend,
   LegendPosition,
@@ -10,6 +9,7 @@ import {
   maxValueOfArray,
   minValueOfArray,
   newDataPoint,
+  newDataRange,
   OxyColors,
   PlotModel,
   PlotModelUtilities,
@@ -56,10 +56,10 @@ function extrapolatedLineSeries(): PlotModel {
   })
 
   lineSeries.intervals.push(
-    new DataRange(Number.NEGATIVE_INFINITY, minValueOfArray(scatterSeries.points.map((p) => p.x))),
+    newDataRange(Number.NEGATIVE_INFINITY, minValueOfArray(scatterSeries.points.map((p) => p.x))),
   )
   lineSeries.intervals.push(
-    new DataRange(maxValueOfArray(scatterSeries.points.map((p) => p.x)), Number.POSITIVE_INFINITY),
+    newDataRange(maxValueOfArray(scatterSeries.points.map((p) => p.x)), Number.POSITIVE_INFINITY),
   )
 
   const fitPoints = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => newDataPoint(x, slope * x + intercept))
@@ -92,9 +92,9 @@ function interpolationStyleLineSeries(): PlotModel {
     strokeThickness: 3,
   })
 
-  lineSeries.intervals.push(new DataRange(Number.NEGATIVE_INFINITY, -15))
-  lineSeries.intervals.push(new DataRange(10, 30))
-  lineSeries.intervals.push(new DataRange(55, Number.POSITIVE_INFINITY))
+  lineSeries.intervals.push(newDataRange(Number.NEGATIVE_INFINITY, -15))
+  lineSeries.intervals.push(newDataRange(10, 30))
+  lineSeries.intervals.push(newDataRange(55, Number.POSITIVE_INFINITY))
 
   const coefficients = [0.1, -6.0, -12, 0]
 
@@ -137,9 +137,9 @@ function twoColorLineSeriesReversed(): PlotModel {
 function intersectingIntervals(): PlotModel {
   const model: PlotModel = new PlotModel({ title: 'Intersecting Intervals' })
 
-  const i1 = new DataRange(-20, 20)
-  const i2 = new DataRange(0, 30)
-  const i3 = new DataRange(10, 40)
+  const i1 = newDataRange(-20, 20)
+  const i2 = newDataRange(0, 30)
+  const i3 = newDataRange(10, 40)
 
   const lineSeries = new ExtrapolationLineSeries({
     title: `Overlapping intervals ${i1}, ${i2}, ${i3}`,
@@ -194,7 +194,7 @@ function customDashes(): PlotModel {
     strokeThickness: 3,
   })
 
-  lineSeries.intervals.push(new DataRange(Number.NEGATIVE_INFINITY, 0))
+  lineSeries.intervals.push(newDataRange(Number.NEGATIVE_INFINITY, 0))
 
   const points = Array.from({ length: 200 }, (_, i) => i - 100).map((x) => newDataPoint(x, 5))
 
@@ -227,13 +227,13 @@ function manyIntervals(): PlotModel {
     ignoreExtraplotationForScaling: true,
   })
 
-  lineSeries.intervals.push(new DataRange(-1000, 10000))
+  lineSeries.intervals.push(newDataRange(-1000, 10000))
 
-  const intervals = Array.from({ length: 98 }, (_, i) => new DataRange(1000 * i, 1000 * i + 500))
+  const intervals = Array.from({ length: 98 }, (_, i) => newDataRange(1000 * i, 1000 * i + 500))
 
   intervals.forEach((interval) => lineSeries.intervals.push(interval))
 
-  lineSeries.intervals.push(new DataRange(200000, Number.POSITIVE_INFINITY))
+  lineSeries.intervals.push(newDataRange(200000, Number.POSITIVE_INFINITY))
 
   const points = Array.from({ length: 100000 }, (_, i) => newDataPoint(i, i))
 
@@ -285,7 +285,7 @@ function mooresLaw(): PlotModel {
     strokeThickness: 3,
   })
 
-  lineSeries.intervals.push(new DataRange(2015, Number.POSITIVE_INFINITY))
+  lineSeries.intervals.push(newDataRange(2015, Number.POSITIVE_INFINITY))
 
   const fitPoints = Array.from({ length: 55 }, (_, i) => i + 1970).map((x) =>
     newDataPoint(x, Math.pow(10, slope * x + intercept)),

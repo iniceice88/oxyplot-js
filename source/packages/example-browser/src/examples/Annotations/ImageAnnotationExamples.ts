@@ -7,11 +7,12 @@ import {
   ImageAnnotation,
   ImageFormat,
   LinearAxis,
+  newOxyThickness,
+  newPlotLength,
   OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyImage,
-  OxyThickness,
-  PlotLength,
+  OxyImageEx,
   PlotLengthUnit,
   PlotModel,
   TwoDimensionalArray,
@@ -25,7 +26,7 @@ async function imageAnnotation(): Promise<PlotModel> {
 
   const model = new PlotModel({
     title: 'ImageAnnotation',
-    plotMargins: new OxyThickness(60, 4, 4, 60),
+    plotMargins: newOxyThickness(60, 4, 4, 60),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -38,9 +39,9 @@ async function imageAnnotation(): Promise<PlotModel> {
       imageSource: image,
       opacity: 0.2,
       interpolate: false,
-      x: new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
-      y: new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
-      width: new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+      x: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+      y: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+      width: newPlotLength(1, PlotLengthUnit.RelativeToPlotArea),
       horizontalAlignment: HorizontalAlignment.Center,
       verticalAlignment: VerticalAlignment.Middle,
     }),
@@ -49,9 +50,9 @@ async function imageAnnotation(): Promise<PlotModel> {
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
-      x: new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
-      y: new PlotLength(0, PlotLengthUnit.RelativeToPlotArea),
-      width: new PlotLength(120, PlotLengthUnit.ScreenUnits),
+      x: newPlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+      y: newPlotLength(0, PlotLengthUnit.RelativeToPlotArea),
+      width: newPlotLength(120, PlotLengthUnit.ScreenUnits),
       horizontalAlignment: HorizontalAlignment.Right,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -60,10 +61,10 @@ async function imageAnnotation(): Promise<PlotModel> {
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
-      x: new PlotLength(0, PlotLengthUnit.RelativeToPlotArea),
-      y: new PlotLength(0, PlotLengthUnit.RelativeToPlotArea),
-      offsetY: new PlotLength(-5, PlotLengthUnit.ScreenUnits),
-      height: new PlotLength(20, PlotLengthUnit.ScreenUnits),
+      x: newPlotLength(0, PlotLengthUnit.RelativeToPlotArea),
+      y: newPlotLength(0, PlotLengthUnit.RelativeToPlotArea),
+      offsetY: newPlotLength(-5, PlotLengthUnit.ScreenUnits),
+      height: newPlotLength(20, PlotLengthUnit.ScreenUnits),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Bottom,
     }),
@@ -72,9 +73,9 @@ async function imageAnnotation(): Promise<PlotModel> {
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
-      x: new PlotLength(50, PlotLengthUnit.Data),
-      y: new PlotLength(50, PlotLengthUnit.Data),
-      width: new PlotLength(200, PlotLengthUnit.ScreenUnits),
+      x: newPlotLength(50, PlotLengthUnit.Data),
+      y: newPlotLength(50, PlotLengthUnit.Data),
+      width: newPlotLength(200, PlotLengthUnit.ScreenUnits),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -83,9 +84,9 @@ async function imageAnnotation(): Promise<PlotModel> {
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
-      x: new PlotLength(50, PlotLengthUnit.Data),
-      y: new PlotLength(20, PlotLengthUnit.Data),
-      width: new PlotLength(50, PlotLengthUnit.Data),
+      x: newPlotLength(50, PlotLengthUnit.Data),
+      y: newPlotLength(20, PlotLengthUnit.Data),
+      width: newPlotLength(50, PlotLengthUnit.Data),
       horizontalAlignment: HorizontalAlignment.Center,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -94,10 +95,10 @@ async function imageAnnotation(): Promise<PlotModel> {
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
-      x: new PlotLength(0.5, PlotLengthUnit.RelativeToViewport),
-      y: new PlotLength(1, PlotLengthUnit.RelativeToViewport),
-      offsetY: new PlotLength(-35, PlotLengthUnit.ScreenUnits),
-      height: new PlotLength(30, PlotLengthUnit.ScreenUnits),
+      x: newPlotLength(0.5, PlotLengthUnit.RelativeToViewport),
+      y: newPlotLength(1, PlotLengthUnit.RelativeToViewport),
+      offsetY: newPlotLength(-35, PlotLengthUnit.ScreenUnits),
+      height: newPlotLength(30, PlotLengthUnit.ScreenUnits),
       horizontalAlignment: HorizontalAlignment.Center,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -108,9 +109,9 @@ async function imageAnnotation(): Promise<PlotModel> {
       new ImageAnnotation({
         imageSource: image,
         opacity: (y + 1) / 10.0,
-        x: new PlotLength(10, PlotLengthUnit.Data),
-        y: new PlotLength(y * 2, PlotLengthUnit.Data),
-        width: new PlotLength(100, PlotLengthUnit.ScreenUnits),
+        x: newPlotLength(10, PlotLengthUnit.Data),
+        y: newPlotLength(y * 2, PlotLengthUnit.Data),
+        width: newPlotLength(100, PlotLengthUnit.ScreenUnits),
         horizontalAlignment: HorizontalAlignment.Center,
         verticalAlignment: VerticalAlignment.Bottom,
       }),
@@ -128,7 +129,7 @@ async function imageAnnotationAsBackgroundGradient(): Promise<PlotModel> {
   const model = new PlotModel({
     title: 'Using ImageAnnotations to draw a gradient backgrounds',
     subtitle: "But do you really want this? This is called 'chartjunk'!",
-    plotMargins: new OxyThickness(60, 4, 4, 60),
+    plotMargins: newOxyThickness(60, 4, 4, 60),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -139,14 +140,14 @@ async function imageAnnotationAsBackgroundGradient(): Promise<PlotModel> {
   const imageData1 = new TwoDimensionalArray<OxyColor>(1, n)
   for (let i = 0; i < n; i++) {
     //imageData1[i][0] = OxyColor.interpolate(OxyColors.Blue, OxyColors.Red, i / (n - 1.0))
-    imageData1.set(0, i, OxyColor.interpolate(OxyColors.Blue, OxyColors.Red, i / (n - 1.0)))
+    imageData1.set(0, i, OxyColorHelper.interpolate(OxyColors.Blue, OxyColors.Red, i / (n - 1.0)).hex)
   }
-  const image1 = await OxyImage.create(imageData1, ImageFormat.Png) // png is required for silverlight
+  const image1 = await OxyImageEx.create(imageData1, ImageFormat.Png) // png is required for silverlight
 
   // or create a gradient image of height 2 (requires bitmap interpolation to be supported)
   // top color, bottom color
   const imageData2 = TwoDimensionalArray.fromArray([[OxyColors.Yellow], [OxyColors.Gray]])
-  const image2 = await OxyImage.create(imageData2, ImageFormat.Png) // png is required for silverlight
+  const image2 = await OxyImageEx.create(imageData2, ImageFormat.Png) // png is required for silverlight
 
   // gradient filling the viewport
   model.annotations.push(
@@ -154,10 +155,10 @@ async function imageAnnotationAsBackgroundGradient(): Promise<PlotModel> {
       imageSource: image2,
       interpolate: true,
       layer: AnnotationLayer.BelowAxes,
-      x: new PlotLength(0, PlotLengthUnit.RelativeToViewport),
-      y: new PlotLength(0, PlotLengthUnit.RelativeToViewport),
-      width: new PlotLength(1, PlotLengthUnit.RelativeToViewport),
-      height: new PlotLength(1, PlotLengthUnit.RelativeToViewport),
+      x: newPlotLength(0, PlotLengthUnit.RelativeToViewport),
+      y: newPlotLength(0, PlotLengthUnit.RelativeToViewport),
+      width: newPlotLength(1, PlotLengthUnit.RelativeToViewport),
+      height: newPlotLength(1, PlotLengthUnit.RelativeToViewport),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -169,10 +170,10 @@ async function imageAnnotationAsBackgroundGradient(): Promise<PlotModel> {
       imageSource: image1,
       interpolate: true,
       layer: AnnotationLayer.BelowAxes,
-      x: new PlotLength(0, PlotLengthUnit.RelativeToPlotArea),
-      y: new PlotLength(0, PlotLengthUnit.RelativeToPlotArea),
-      width: new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
-      height: new PlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+      x: newPlotLength(0, PlotLengthUnit.RelativeToPlotArea),
+      y: newPlotLength(0, PlotLengthUnit.RelativeToPlotArea),
+      width: newPlotLength(1, PlotLengthUnit.RelativeToPlotArea),
+      height: newPlotLength(1, PlotLengthUnit.RelativeToPlotArea),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Top,
     }),
@@ -203,16 +204,16 @@ async function imageAnnotation_NormalAxes(): Promise<PlotModel> {
 
   // create an image
   const pixels = fourColorPixels
-  const image = await OxyImage.create(pixels, ImageFormat.Png)
+  const image = await OxyImageEx.create(pixels, ImageFormat.Png)
 
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
       interpolate: false,
-      x: new PlotLength(0, PlotLengthUnit.Data),
-      y: new PlotLength(0, PlotLengthUnit.Data),
-      width: new PlotLength(80, PlotLengthUnit.Data),
-      height: new PlotLength(50, PlotLengthUnit.Data),
+      x: newPlotLength(0, PlotLengthUnit.Data),
+      y: newPlotLength(0, PlotLengthUnit.Data),
+      width: newPlotLength(80, PlotLengthUnit.Data),
+      height: newPlotLength(50, PlotLengthUnit.Data),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Bottom,
     }),
@@ -231,16 +232,16 @@ async function imageAnnotation_ReverseHorizontalAxis(): Promise<PlotModel> {
 
   // create an image
   const pixels = fourColorPixels
-  const image = await OxyImage.create(pixels, ImageFormat.Png)
+  const image = await OxyImageEx.create(pixels, ImageFormat.Png)
 
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
       interpolate: false,
-      x: new PlotLength(100, PlotLengthUnit.Data),
-      y: new PlotLength(0, PlotLengthUnit.Data),
-      width: new PlotLength(80, PlotLengthUnit.Data),
-      height: new PlotLength(50, PlotLengthUnit.Data),
+      x: newPlotLength(100, PlotLengthUnit.Data),
+      y: newPlotLength(0, PlotLengthUnit.Data),
+      width: newPlotLength(80, PlotLengthUnit.Data),
+      height: newPlotLength(50, PlotLengthUnit.Data),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Bottom,
     }),
@@ -259,16 +260,16 @@ async function imageAnnotation_ReverseVerticalAxis(): Promise<PlotModel> {
 
   // create an image
   const pixels = fourColorPixels
-  const image = await OxyImage.create(pixels, ImageFormat.Png)
+  const image = await OxyImageEx.create(pixels, ImageFormat.Png)
 
   model.annotations.push(
     new ImageAnnotation({
       imageSource: image,
       interpolate: false,
-      x: new PlotLength(0, PlotLengthUnit.Data),
-      y: new PlotLength(100, PlotLengthUnit.Data),
-      width: new PlotLength(80, PlotLengthUnit.Data),
-      height: new PlotLength(50, PlotLengthUnit.Data),
+      x: newPlotLength(0, PlotLengthUnit.Data),
+      y: newPlotLength(100, PlotLengthUnit.Data),
+      width: newPlotLength(80, PlotLengthUnit.Data),
+      height: newPlotLength(50, PlotLengthUnit.Data),
       horizontalAlignment: HorizontalAlignment.Left,
       verticalAlignment: VerticalAlignment.Bottom,
     }),

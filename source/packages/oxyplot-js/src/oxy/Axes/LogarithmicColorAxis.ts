@@ -2,16 +2,18 @@ import {
   AxisPosition,
   ColorAxisExtensions,
   type CreateLogarithmicAxisOptions,
+  ExtendedDefaultLogarithmicAxisOptions,
   type INumericColorAxis,
   type IRenderContext,
   LogarithmicAxis,
   NumericColorAxisRenderer,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyPalette,
+  type OxyPalette,
   OxyPalettes,
 } from '@/oxyplot'
-import { Number_MIN_VALUE, removeUndef } from '@/patch'
+import { assignObject, isNaNOrUndef, Number_MIN_VALUE } from '@/patch'
 
 export interface CreateLogarithmicColorAxisOptions extends CreateLogarithmicAxisOptions {
   /** The color of values above the maximum value. */
@@ -25,6 +27,26 @@ export interface CreateLogarithmicColorAxisOptions extends CreateLogarithmicAxis
 
   /** The palette. */
   palette?: OxyPalette
+
+  renderAsImage?: boolean
+}
+
+export const DefaultLogarithmicColorAxisOptions: CreateLogarithmicColorAxisOptions = {
+  highColor: OxyColors.Undefined,
+  lowColor: OxyColors.Undefined,
+  invalidNumberColor: OxyColors.Gray,
+  palette: OxyPalettes.viridis(),
+
+  position: AxisPosition.None,
+  axisDistance: 20,
+  isPanEnabled: false,
+  isZoomEnabled: false,
+  renderAsImage: false,
+} as const
+
+export const ExtendedDefaultLogarithmicColorAxisOptions = {
+  ...ExtendedDefaultLogarithmicAxisOptions,
+  ...DefaultLogarithmicColorAxisOptions,
 }
 
 /**
@@ -36,27 +58,18 @@ export class LogarithmicColorAxis extends LogarithmicAxis implements INumericCol
    */
   public constructor(opt?: CreateLogarithmicColorAxisOptions) {
     super(opt)
-    this.position = AxisPosition.None
-    this.axisDistance = 20
-
-    this.isPanEnabled = false
-    this.isZoomEnabled = false
-    this.palette = OxyPalettes.viridis()
-
-    this.lowColor = OxyColors.Undefined
-    this.highColor = OxyColors.Undefined
-    this.invalidNumberColor = OxyColors.Gray
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultLogarithmicColorAxisOptions, opt)
   }
 
-  invalidNumberColor: OxyColor
-  highColor: OxyColor
-  lowColor: OxyColor
-  palette: OxyPalette
-  renderAsImage: boolean = false
+  getElementName() {
+    return 'LogarithmicColorAxis'
+  }
+
+  invalidNumberColor: OxyColor = DefaultLogarithmicColorAxisOptions.invalidNumberColor!
+  highColor: OxyColor = DefaultLogarithmicColorAxisOptions.highColor!
+  lowColor: OxyColor = DefaultLogarithmicColorAxisOptions.lowColor!
+  palette: OxyPalette = DefaultLogarithmicColorAxisOptions.palette!
+  renderAsImage: boolean = DefaultLogarithmicColorAxisOptions.renderAsImage!
 
   public isXyAxis(): boolean {
     return false
@@ -72,15 +85,15 @@ export class LogarithmicColorAxis extends LogarithmicAxis implements INumericCol
   }
 
   public getPaletteIndex(value: number): number {
-    if (isNaN(value)) {
+    if (isNaNOrUndef(value)) {
       return Number_MIN_VALUE
     }
 
-    if (this.lowColor.isUndefined() && value < this.clipMinimum) {
+    if (OxyColorHelper.isUndefined(this.lowColor) && value < this.clipMinimum) {
       return 0
     }
 
-    if (this.highColor.isUndefined() && value > this.clipMaximum) {
+    if (OxyColorHelper.isUndefined(this.highColor) && value > this.clipMaximum) {
       return this.palette.colors.length + 1
     }
 
@@ -101,5 +114,9 @@ export class LogarithmicColorAxis extends LogarithmicAxis implements INumericCol
     }
 
     return index
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLogarithmicColorAxisOptions
   }
 }

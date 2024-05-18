@@ -15,9 +15,17 @@ module.exports = {
     ecmaVersion: 'latest',
     'project': './tsconfig.json',
   },
-  ignorePatterns: ['.eslintrc.js', 'vite.config.ts', 'dist', 'node_modules'],
+  ignorePatterns: ['.eslintrc.js', 'vite.config.ts', 'vitest.config.ts', 'postcss.config.js', 'tailwind.config.js', 'dist', 'node_modules'],
   'rules': {
     // no-floating-promises
     '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'caughtErrorsIgnorePattern': '^_',
+      },
+    ],
   },
 }

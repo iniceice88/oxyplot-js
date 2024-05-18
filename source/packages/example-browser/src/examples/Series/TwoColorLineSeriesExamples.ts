@@ -27,7 +27,9 @@ function twoColorLineSeries(): PlotModel {
 
   const s1 = new TwoColorLineSeries({
     title: 'Temperature at Eidesmoen, December 1986.',
-    trackerStringFormatter: (args) => `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`,
+    trackerStringFormatter: function (args) {
+      return `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`
+    },
     //trackerFormatString: 'December {2:0}: {4:0.0} °C',
     color: OxyColors.Red,
     color2: OxyColors.LightBlue,

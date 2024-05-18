@@ -1,26 +1,34 @@
-import type { CreateTextualAnnotationOptions, DataPoint, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateTextualAnnotationOptions,
+  type DataPoint,
   DataPoint_isDefined,
   DataPoint_Zero,
+  ExtendedDefaultTextualAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
   HorizontalAlignment,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
-  OxyColor,
+  type OxyColor,
   OxyColors,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
-  screenPointMinus,
+  screenPointMinusEx,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
+  type ScreenVector,
+  ScreenVector_Zero,
+  ScreenVectorEx,
+  ScreenVectorHelper,
   TextualAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CreateArrowAnnotationOptions extends CreateTextualAnnotationOptions {
   arrowDirection?: ScreenVector
@@ -35,6 +43,25 @@ export interface CreateArrowAnnotationOptions extends CreateTextualAnnotationOpt
   veeness?: number
 }
 
+export const DefaultArrowAnnotationOptions: CreateArrowAnnotationOptions = {
+  color: OxyColors.Blue,
+  headLength: 10,
+  headWidth: 3,
+  strokeThickness: 2,
+  lineStyle: LineStyle.Solid,
+  lineJoin: LineJoin.Miter,
+
+  arrowDirection: undefined,
+  endPoint: undefined,
+  startPoint: undefined,
+  veeness: undefined,
+}
+
+export const ExtendedDefaultArrowAnnotationOptions = {
+  ...ExtendedDefaultTextualAnnotationOptions,
+  ...DefaultArrowAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows an arrow.
  */
@@ -42,39 +69,36 @@ export class ArrowAnnotation extends TextualAnnotation {
   /**
    * The end point in screen coordinates.
    */
-  private screenEndPoint: ScreenPoint = ScreenPoint_LeftTop
+  private _screenEndPoint: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * The start point in screen coordinates.
    */
-  private screenStartPoint: ScreenPoint = ScreenPoint_LeftTop
+  private _screenStartPoint: ScreenPoint = ScreenPoint_LeftTop
 
   /**
    * Initializes a new instance of the ArrowAnnotation class.
    */
   public constructor(opt?: CreateArrowAnnotationOptions) {
-    super()
-    this.headLength = 10
-    this.headWidth = 3
-    this.color = OxyColors.Blue
-    this.strokeThickness = 2
-    this.lineStyle = LineStyle.Solid
-    this.lineJoin = LineJoin.Miter
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    super(opt)
+
+    assignObject(this, DefaultArrowAnnotationOptions, opt)
+  }
+
+  getElementName() {
+    return 'ArrowAnnotation'
   }
 
   /**
    * Gets or sets the arrow direction.
    * Setting this property overrides the StartPoint property.
    */
-  public arrowDirection: ScreenVector = ScreenVector.Zero
+  public arrowDirection: ScreenVector = ScreenVector_Zero
 
   /**
    * Gets or sets the color of the arrow.
    */
-  public color: OxyColor
+  public color: OxyColor = DefaultArrowAnnotationOptions.color!
 
   /**
    * Gets or sets the end point of the arrow.
@@ -84,22 +108,22 @@ export class ArrowAnnotation extends TextualAnnotation {
   /**
    * Gets or sets the length of the head (relative to the stroke thickness) (the default value is 10).
    */
-  public headLength: number
+  public headLength: number = DefaultArrowAnnotationOptions.headLength!
 
   /**
    * Gets or sets the width of the head (relative to the stroke thickness) (the default value is 3).
    */
-  public headWidth: number
+  public headWidth: number = DefaultArrowAnnotationOptions.headWidth!
 
   /**
    * Gets or sets the line join type.
    */
-  public lineJoin: LineJoin
+  public lineJoin: LineJoin = DefaultArrowAnnotationOptions.lineJoin!
 
   /**
    * Gets or sets the line style.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultArrowAnnotationOptions.lineStyle!
 
   /**
    * Gets or sets the start point of the arrow.
@@ -110,7 +134,7 @@ export class ArrowAnnotation extends TextualAnnotation {
   /**
    * Gets or sets the stroke thickness (the default value is 2).
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultArrowAnnotationOptions.strokeThickness!
 
   /**
    * Gets or sets the 'veeness' of the arrow head (relative to thickness) (the default value is 0).
@@ -118,35 +142,34 @@ export class ArrowAnnotation extends TextualAnnotation {
   public veeness: number = 0
 
   public async render(rc: IRenderContext): Promise<void> {
-    this.screenEndPoint = this.transform(this.endPoint)
+    this._screenEndPoint = this.transform(this.endPoint)
 
-    if (this.arrowDirection.lengthSquared > 0) {
-      this.screenStartPoint = screenPointMinusVector(
-        this.screenEndPoint,
+    if (ScreenVectorHelper.lengthSquared(this.arrowDirection) > 0) {
+      this._screenStartPoint = screenPointMinusVector(
+        this._screenEndPoint,
         PlotElementExtensions.orientateVector(this, this.arrowDirection),
       )
     } else {
-      this.screenStartPoint = this.transform(this.startPoint)
+      this._screenStartPoint = this.transform(this.startPoint)
     }
 
-    const d = screenPointMinus(this.screenEndPoint, this.screenStartPoint)
-    d.normalize()
-    const n = new ScreenVector(d.y, -d.x)
+    const d = screenPointMinusEx(this._screenEndPoint, this._screenStartPoint).normalize()
+    const n = ScreenVectorEx.fromXY(d.y, -d.x)
 
-    const p1 = screenPointMinusVector(this.screenEndPoint, d.times(this.headLength * this.strokeThickness))
+    const p1 = screenPointMinusVector(this._screenEndPoint, d.times(this.headLength * this.strokeThickness))
     const p2 = screenPointPlus(p1, n.times(this.headWidth * this.strokeThickness))
     const p3 = screenPointMinusVector(p1, n.times(this.headWidth * this.strokeThickness))
     const p4 = screenPointPlus(p1, d.times(this.veeness * this.strokeThickness))
 
-    const MinimumSegmentLength = 0
+    const minimumSegmentLength = 0
 
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
 
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await RenderingExtensions.drawReducedLine(
         rc,
-        [this.screenStartPoint, p4],
-        MinimumSegmentLength * MinimumSegmentLength,
+        [this._screenStartPoint, p4],
+        minimumSegmentLength * minimumSegmentLength,
         this.getSelectableColor(this.color),
         this.strokeThickness,
         this.edgeRenderingMode,
@@ -156,8 +179,8 @@ export class ArrowAnnotation extends TextualAnnotation {
 
       await RenderingExtensions.drawReducedPolygon(
         rc,
-        [p3, this.screenEndPoint, p2, p4],
-        MinimumSegmentLength * MinimumSegmentLength,
+        [p3, this._screenEndPoint, p2, p4],
+        minimumSegmentLength * minimumSegmentLength,
         this.getSelectableColor(this.color),
         OxyColors.Undefined,
         0,
@@ -194,7 +217,7 @@ export class ArrowAnnotation extends TextualAnnotation {
       }
     }
 
-    const textPoint = this.getActualTextPosition(() => this.screenStartPoint)
+    const textPoint = this.getActualTextPosition(() => this._screenStartPoint)
     await rc.drawText(
       textPoint,
       this.text!,
@@ -214,24 +237,24 @@ export class ArrowAnnotation extends TextualAnnotation {
    * @returns The result of the hit test.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (screenPointMinus(args.point, this.screenStartPoint).length < args.tolerance) {
+    if (screenPointMinusEx(args.point, this._screenStartPoint).length < args.tolerance) {
       return {
         element: this,
-        nearestHitPoint: this.screenStartPoint,
+        nearestHitPoint: this._screenStartPoint,
         index: 0,
       }
     }
 
-    if (screenPointMinus(args.point, this.screenEndPoint).length < args.tolerance) {
+    if (screenPointMinusEx(args.point, this._screenEndPoint).length < args.tolerance) {
       return {
         element: this,
-        nearestHitPoint: this.screenEndPoint,
+        nearestHitPoint: this._screenEndPoint,
         index: 2,
       }
     }
 
-    const p = ScreenPointHelper.findPointOnLine(args.point, this.screenStartPoint, this.screenEndPoint)
-    if (screenPointMinus(p, args.point).length < args.tolerance) {
+    const p = ScreenPointHelper.findPointOnLine(args.point, this._screenStartPoint, this._screenEndPoint)
+    if (screenPointMinusEx(p, args.point).length < args.tolerance) {
       return {
         element: this,
         nearestHitPoint: p,
@@ -239,5 +262,9 @@ export class ArrowAnnotation extends TextualAnnotation {
     }
 
     return undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultArrowAnnotationOptions
   }
 }

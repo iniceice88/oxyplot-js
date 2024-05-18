@@ -56,12 +56,13 @@ function highLowSeriesDateTimeAxis(): PlotModel {
   m.axes.push(a)
   const s = new HighLowSeries({
     //trackerFormatString: 'X: {1:yyyy-MM-dd}\nHigh: {2:0.00}\nLow: {3:0.00}\nOpen: {4:0.00}\nClose: {5:0.00}'
-    trackerStringFormatter: (args) =>
-      `X: ${dateService.format(args.xValue, 'YYYY-MM-DD')}
+    trackerStringFormatter: function (args) {
+      return `X: ${dateService.format(args.xValue, 'YYYY-MM-DD')}
 High: ${args.high!.toFixed(2)}
 Low: ${args.low!.toFixed(2)}
 Open: ${args.open!.toFixed(2)}
-Close: ${args.close!.toFixed(2)}`,
+Close: ${args.close!.toFixed(2)}`
+    },
   })
 
   s.items.push(createHighLowItem(x0, 14, 10, 13, 12.4))

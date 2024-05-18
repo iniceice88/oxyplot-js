@@ -8,6 +8,7 @@ import {
   LineStyle,
   MarkerType,
   newDataPoint,
+  newOxyRect,
   OxyColors,
   OxyRect,
   PlotModel,
@@ -111,7 +112,7 @@ function lineSeriesItemsSourceMapping(): PlotModel {
   const s1 = new LineSeries()
   const points: DataPoint[] = []
   addDataPoints(points, 100000)
-  const rects = points.map((pt) => new OxyRect(pt.x, pt.y, 0, 0))
+  const rects = points.map((pt) => newOxyRect(pt.x, pt.y, 0, 0))
   s1.itemsSource = rects
   s1.mapping = (r) => newDataPoint((r as OxyRect).left, (r as OxyRect).top)
   model.series.push(s1)
@@ -131,7 +132,7 @@ function lineSeriesItemsSourceReflection(): PlotModel {
   const s1 = new LineSeries()
   const points: DataPoint[] = []
   addDataPoints(points, 100000)
-  const rects = points.map((pt) => new OxyRect(pt.x, pt.y, 0, 0))
+  const rects = points.map((pt) => newOxyRect(pt.x, pt.y, 0, 0))
   s1.itemsSource = rects
   s1.dataFieldX = 'left'
   s1.dataFieldY = 'top'

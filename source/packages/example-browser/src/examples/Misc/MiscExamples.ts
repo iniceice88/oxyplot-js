@@ -15,7 +15,7 @@ import {
   LineStyle,
   MarkerType,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   OxyMouseButton,
   PlotModel,
@@ -108,7 +108,7 @@ function trainSchedule(): PlotModel {
       majorGridlineStyle: LineStyle.Solid,
       majorGridlineColor: OxyColors.LightGray,
       minorGridlineStyle: LineStyle.Solid,
-      minorGridlineColor: OxyColor.fromArgb(255, 240, 240, 240),
+      minorGridlineColor: OxyColorHelper.fromArgb(255, 240, 240, 240),
     }),
   )
 
@@ -148,7 +148,7 @@ Bergen;526.64;3.9;1422;1442;1752;1850;1945;2204;2235;0656;0758;1028;1240;1458;15
   const stations = new LineSeries({
     strokeThickness: 0,
     markerType: MarkerType.Circle,
-    markerFill: OxyColor.fromAColor(200, OxyColors.Black),
+    markerFill: OxyColorHelper.fromAColor(200, OxyColors.Black),
     markerSize: 4,
   })
 
@@ -157,13 +157,14 @@ Bergen;526.64;3.9;1422;1442;1752;1850;1945;2204;2235;0656;0758;1028;1240;1458;15
   for (let i = 0; i < series.length; i++) {
     series[i] = new LineSeries({
       title: headerFields[3 + i],
-      color: OxyColor.fromAColor(180, OxyColors.Black),
+      color: OxyColorHelper.fromAColor(180, OxyColors.Black),
       strokeThickness: 2,
       // trackerFormatString: 'Train {0}\nTime: {2}\nDistance from Oslo S: {4:0.0} km'
-      trackerStringFormatter: (args) =>
-        `Train ${args.title}
+      trackerStringFormatter: function (args) {
+        return `Train ${args.title}
 Time: ${formatTimeSpan(args.xValue, 'hh:mm:ss')}
-Distance from Oslo S: ${args.yValue.toFixed(1)} km`,
+Distance from Oslo S: ${args.yValue.toFixed(1)} km`
+      },
     })
     model.series.push(series[i])
   }
@@ -237,7 +238,7 @@ function laLineaAreaSeries(): PlotModel {
   const model = new PlotModel({
     title: 'La Linea',
     plotType: PlotType.Cartesian,
-    background: OxyColor.fromRgb(84, 98, 207),
+    background: OxyColorHelper.fromRgb(84, 98, 207),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -500, maximum: 1000 }))
   const series1 = new AreaSeries({ fill: OxyColors.White, strokeThickness: 0 })
@@ -250,7 +251,7 @@ function laLinea(): PlotModel {
   const model = new PlotModel({
     title: 'La Linea',
     plotType: PlotType.Cartesian,
-    background: OxyColor.fromRgb(84, 98, 207),
+    background: OxyColorHelper.fromRgb(84, 98, 207),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Left, minimum: -500, maximum: 1000 }))
   const series1 = new LineSeries({ color: OxyColors.White, strokeThickness: 1.5 })

@@ -10,10 +10,10 @@ import {
   LinearColorAxis,
   MagnitudeAxis,
   newDataPoint,
+  newOxyPalette,
+  newOxyThickness,
   OxyColors,
-  OxyPalette,
   OxyPalettes,
-  OxyThickness,
   PlotModel,
   PlotType,
   TwoDimensionalArray,
@@ -24,6 +24,7 @@ import { FlagSeries } from './FlagSeries'
 import { LineSegmentSeries } from './LineSegmentSeries'
 import { MatrixSeries } from './MatrixSeries'
 import { PolarHeatMapSeries } from './PolarHeatMapSeries'
+import { Random } from '../Random.ts'
 
 function errorSeries(): PlotModel {
   const n = 20
@@ -37,7 +38,7 @@ function errorSeries(): PlotModel {
 
   const s1 = new ErrorSeries()
   s1.title = 'Measurements'
-  const random = Math.random()
+  const random = new Random().next()
   let x = 0
   let y = 0
   for (let i = 0; i < n; i++) {
@@ -116,9 +117,9 @@ function diagonalMatrix(): PlotModel {
 function polarHeatMap(): PlotModel {
   const model = new PlotModel({
     title: 'Polar heat map',
-    plotMargins: new OxyThickness(40, 80, 40, 40),
+    plotMargins: newOxyThickness(40, 80, 40, 40),
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   const matrix: number[][] = [
@@ -289,7 +290,7 @@ function designStructureMatrix(): PlotModel {
   model.axes.push(
     new LinearColorAxis({
       position: AxisPosition.None,
-      palette: new OxyPalette([OxyColors.White, OxyColors.LightGreen]),
+      palette: newOxyPalette([OxyColors.White, OxyColors.LightGreen]),
       lowColor: OxyColors.Black,
       minimum: 0,
       isAxisVisible: false,

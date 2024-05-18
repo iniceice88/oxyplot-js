@@ -1,4 +1,4 @@
-import { type IColorAxis, OxyColor, OxyPalette } from '@/oxyplot'
+import { type IColorAxis, type OxyColor, type OxyPalette } from '@/oxyplot'
 
 /**
  * Specifies functionality for numeric color axes.

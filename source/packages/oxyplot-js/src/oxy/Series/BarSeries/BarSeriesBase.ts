@@ -1,29 +1,28 @@
-﻿import type {
-  CreateXYAxisSeriesOptions,
-  IBarSeries,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-} from '@/oxyplot'
-import {
+﻿import {
   Axis,
-  BarItem,
-  BarItemBase,
+  type BarItemBase,
   BarSeriesManager,
   CategoryAxis,
+  type CreateXYAxisSeriesOptions,
+  ExtendedDefaultXYAxisSeriesOptions,
+  getBarItemCategoryIndex,
   HorizontalAlignment,
-  IntervalBarItem,
+  type IBarSeries,
+  type IRenderContext,
   LabelPlacement,
-  OxyColor,
+  type LabelStringFormatterType,
+  newScreenVector,
+  newScreenVectorEx,
+  type OxyColor,
   OxyColors,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointPlus,
-  ScreenVector,
-  TornadoBarItem,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
+import { assignObject } from '@/patch'
 
 export interface CreateBarSeriesBaseOptions extends CreateXYAxisSeriesOptions {
   barWidth?: number
@@ -34,6 +33,24 @@ export interface CreateBarSeriesBaseOptions extends CreateXYAxisSeriesOptions {
   labelAngle?: number
   labelPlacement?: LabelPlacement
   labelStringFormatter?: LabelStringFormatterType
+  items?: BarItemBase[]
+}
+
+export const DefaultBarSeriesBaseOptions: CreateBarSeriesBaseOptions = {
+  barWidth: 1,
+  strokeColor: OxyColors.Black,
+  strokeThickness: 0,
+  labelColor: OxyColors.Undefined,
+  labelMargin: 0,
+  labelAngle: 0,
+  labelPlacement: LabelPlacement.Outside,
+  labelStringFormatter: undefined,
+  items: [],
+}
+
+export const ExtendedDefaultBarSeriesBaseOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultBarSeriesBaseOptions,
 }
 
 /**
@@ -53,7 +70,7 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
   /**
    * The width of the bars. The default value is 1.
    */
-  public barWidth: number
+  public barWidth: number = DefaultBarSeriesBaseOptions.barWidth!
 
   /**
    * The items from the items source.
@@ -63,17 +80,24 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
   /**
    * The color of the border around the bars.
    */
-  public strokeColor: OxyColor
+  public strokeColor: OxyColor = DefaultBarSeriesBaseOptions.strokeColor!
 
   /**
    * The thickness of the bar border strokes.
    */
-  public strokeThickness: number = 0
+  public strokeThickness: number = DefaultBarSeriesBaseOptions.strokeThickness!
 
+  private _manager?: BarSeriesManager
   /**
    * The manager of this BarSeriesBase.
    */
-  manager?: BarSeriesManager
+  public get manager(): BarSeriesManager | undefined {
+    return this._manager
+  }
+
+  public set manager(value: BarSeriesManager) {
+    this._manager = value
+  }
 
   /**
    * The valid items.
@@ -88,30 +112,29 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
   /**
    * The label color.
    */
-  public labelColor: OxyColor = OxyColors.Undefined
+  public labelColor: OxyColor = DefaultBarSeriesBaseOptions.labelColor!
 
   /**
    * The label margins.
    */
-  public labelMargin: number = 0
+  public labelMargin: number = DefaultBarSeriesBaseOptions.labelMargin!
 
   /**
    * The label angle in degrees.
    */
-  public labelAngle: number = 0
+  public labelAngle: number = DefaultBarSeriesBaseOptions.labelAngle!
 
   /**
    * Label placements.
    */
-  public labelPlacement: LabelPlacement = LabelPlacement.Outside
+  public labelPlacement: LabelPlacement = DefaultBarSeriesBaseOptions.labelPlacement!
 
   /**
    * Initializes a new instance of the BarSeriesBase class.
    */
   protected constructor(opt?: CreateBarSeriesBaseOptions) {
     super(opt)
-    this.strokeColor = OxyColors.Black
-    this.barWidth = 1
+    assignObject(this, DefaultBarSeriesBaseOptions, opt)
   }
 
   /**
@@ -225,15 +248,11 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
   ): Promise<void> {
     const v: any[] = []
     if (!labelValues.length) {
-      if (item instanceof BarItem) {
-        v.push((item as BarItem).value)
-      } else if (item instanceof IntervalBarItem) {
-        v.push((item as IntervalBarItem).start)
-        v.push((item as IntervalBarItem).end)
-      } else if (item instanceof TornadoBarItem) {
-        throw new Error(
-          `RenderLabel does not support automatic determination of label values for TornadoBarItem objects. Please populate the labelValues parameter.`,
-        )
+      if ('value' in item) {
+        v.push(item.value)
+      } else if ('start' in item && 'end' in item) {
+        v.push(item.start)
+        v.push(item.end)
       } else {
         throw new Error(
           `RenderLabel automatic value determination not implemented for ${this.constructor.name}. Please populate the labelValues parameter.`,
@@ -247,8 +266,8 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
     let pt: ScreenPoint
     const y = (categoryEndValue + categoryValue) / 2
     const sign = Math.sign(topValue - baseValue)
-    let marginVector = new ScreenVector(this.labelMargin, 0).times(sign)
-    let centreVector = new ScreenVector(0, 0)
+    let marginVector = newScreenVectorEx(this.labelMargin, 0).times(sign)
+    let centreVector = newScreenVector(0, 0)
 
     const size = RenderingExtensions.measureText(
       rc,
@@ -265,19 +284,19 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
       case LabelPlacement.Inside:
         pt = transform(this, topValue, y)
         marginVector = marginVector.negate()
-        centreVector = new ScreenVector(-sign * halfSize, 0)
+        centreVector = newScreenVector(-sign * halfSize, 0)
         break
       case LabelPlacement.Outside:
         pt = transform(this, topValue, y)
-        centreVector = new ScreenVector(sign * halfSize, 0)
+        centreVector = newScreenVector(sign * halfSize, 0)
         break
       case LabelPlacement.Middle:
         pt = transform(this, (topValue + baseValue) / 2, y)
-        marginVector = new ScreenVector(0, 0)
+        marginVector = newScreenVectorEx(0, 0)
         break
       case LabelPlacement.Base:
         pt = transform(this, baseValue, y)
-        centreVector = new ScreenVector(sign * halfSize, 0)
+        centreVector = newScreenVector(sign * halfSize, 0)
         break
       default:
         throw new Error('Invalid label placement')
@@ -332,10 +351,14 @@ export abstract class BarSeriesBase<T extends BarItemBase> extends XYAxisSeries 
     const numberOfCategories = this.manager!.categories.length
     for (let index = 0; index < this.actualItems.length; index++) {
       const item = this.actualItems[index]
-      if (item && item.getCategoryIndex(index) < numberOfCategories && this.isValid(item)) {
+      if (item && getBarItemCategoryIndex(item, index) < numberOfCategories && this.isValid(item)) {
         this.validItemsIndexInversion.set(this.validItems.length, index)
         this.validItems.push(item)
       }
     }
+  }
+
+  protected getJsonIgnoreProperties(): string[] {
+    return [...super.getJsonIgnoreProperties(), 'itemsSourceItems', 'validItems', 'validItemsIndexInversion']
   }
 }

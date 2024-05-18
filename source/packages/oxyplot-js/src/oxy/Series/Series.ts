@@ -1,14 +1,19 @@
-﻿import type { CreatePlotElementOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
-import {
+﻿import {
   Axis,
+  type CreatePlotElementOptions,
+  ExtendedDefaultPlotElementOptions,
   HitTestArguments,
-  OxyColor,
+  type HitTestResult,
+  type IRenderContext,
+  type OxyColor,
   OxyColors,
-  OxyRect,
+  type OxyRect,
   PlotElement,
+  type ScreenPoint,
   screenPointDistanceTo,
   TrackerHitResult,
 } from '@/oxyplot'
+import { assignMethod, assignObject } from '@/patch'
 
 export type LabelStringFormatterType = (item: any, trackerParameters: any[]) => any
 
@@ -38,6 +43,21 @@ export interface CreateSeriesOptions extends CreatePlotElementOptions {
   trackerKey?: string
 }
 
+export const DefaultSeriesOptions: CreateSeriesOptions = {
+  background: OxyColors.Undefined,
+  isVisible: true,
+  renderInLegend: true,
+  title: undefined,
+  legendKey: undefined,
+  seriesGroupName: undefined,
+  trackerKey: undefined,
+}
+
+export const ExtendedDefaultSeriesOptions = {
+  ...ExtendedDefaultPlotElementOptions,
+  ...DefaultSeriesOptions,
+}
+
 /**
  * Provides an abstract base class for plot series.
  * This class contains internal methods that should be called only from the PlotModel.
@@ -48,21 +68,20 @@ export abstract class Series extends PlotElement {
    */
   protected constructor(opt?: CreateSeriesOptions) {
     super(opt)
-    this.isVisible = true
-    this.background = OxyColors.Undefined
-    this.renderInLegend = true
+    assignMethod(this, 'trackerStringFormatter', opt)
+    assignObject(this, DefaultSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
   }
 
   /**
    * The background color of the series. The default is OxyColors.Undefined.
    * This property defines the background color in the area defined by the x and y axes used by this series.
    */
-  public background: OxyColor
+  public background: OxyColor = DefaultSeriesOptions.background!
 
   /**
    * A value indicating whether this series is visible. The default is true.
    */
-  public isVisible: boolean
+  public isVisible: boolean = DefaultSeriesOptions.isVisible!
 
   /**
    * The title of the series. The default is null.
@@ -85,7 +104,7 @@ export abstract class Series extends PlotElement {
   /**
    * A value indicating whether the series should be rendered in the legend. The default is true.
    */
-  public renderInLegend: boolean
+  public renderInLegend: boolean = DefaultSeriesOptions.renderInLegend!
 
   /**
    * A format function used for the tracker. The default depends on the series.

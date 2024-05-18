@@ -2,7 +2,6 @@ import {
   AngleAxis,
   ArrayBuilder,
   AxisPosition,
-  BarItem,
   BarSeries,
   CategoryAxis,
   ContourSeries,
@@ -21,18 +20,19 @@ import {
   LineStyle,
   MagnitudeAxis,
   MarkerType,
+  newBarItem,
   newDataPoint,
+  newOxyPalette,
+  newOxyThickness,
+  newScreenVectorEx,
   OxyColor,
-  OxyColorExtensions,
+  OxyColorHelper,
   OxyColors,
-  OxyPalette,
-  OxyThickness,
   PlotModel,
   PlotType,
-  screenPointMinus,
+  screenPointMinusEx,
   screenPointMinusVector,
   screenPointPlus,
-  ScreenVector,
   StairStepSeries,
   TickStyle,
   XYAxisSeries,
@@ -79,7 +79,7 @@ function heatMapSeriesInterpolationColor(): PlotModel {
   model.axes.push(
     new LinearColorAxis({
       position: AxisPosition.Right,
-      palette: new OxyPalette([OxyColors.Red, OxyColors.Green, OxyColors.Blue]),
+      palette: newOxyPalette([OxyColors.Red, OxyColors.Green, OxyColors.Blue]),
     }),
   )
 
@@ -147,13 +147,13 @@ function reducedColorSaturation(): PlotModel {
   model.axes.push(new CategoryAxis({ position: AxisPosition.Bottom }))
 
   // modify the saturation of the default colors
-  model.defaultColors = model.defaultColors.map((c) => OxyColorExtensions.changeSaturation(c, 0.5))
+  model.defaultColors = model.defaultColors.map((c) => OxyColorHelper.changeSaturation(c, 0.5).hex)
 
   const r = new Random()
   for (let i = 0; i < model.defaultColors.length; i++) {
     const columnSeries = new BarSeries()
-    columnSeries.items.push(BarItem.fromValue(50 + r.next() * 50))
-    columnSeries.items.push(BarItem.fromValue(40 + r.next() * 50))
+    columnSeries.items.push(newBarItem(50 + r.next() * 50))
+    columnSeries.items.push(newBarItem(40 + r.next() * 50))
     model.series.push(columnSeries)
   }
 
@@ -170,21 +170,21 @@ function mediumIntensityColors(): PlotModel {
 
   // See http://www.perceptualedge.com/articles/visual_business_intelligence/rules_for_using_color.pdf
   model.defaultColors = [
-    OxyColor.fromRgb(114, 114, 114),
-    OxyColor.fromRgb(241, 89, 95),
-    OxyColor.fromRgb(121, 195, 106),
-    OxyColor.fromRgb(89, 154, 211),
-    OxyColor.fromRgb(249, 166, 90),
-    OxyColor.fromRgb(158, 102, 171),
-    OxyColor.fromRgb(205, 112, 88),
-    OxyColor.fromRgb(215, 127, 179),
+    OxyColorHelper.fromRgb(114, 114, 114),
+    OxyColorHelper.fromRgb(241, 89, 95),
+    OxyColorHelper.fromRgb(121, 195, 106),
+    OxyColorHelper.fromRgb(89, 154, 211),
+    OxyColorHelper.fromRgb(249, 166, 90),
+    OxyColorHelper.fromRgb(158, 102, 171),
+    OxyColorHelper.fromRgb(205, 112, 88),
+    OxyColorHelper.fromRgb(215, 127, 179),
   ]
 
   const r = new Random()
   for (let i = 0; i < model.defaultColors.length; i++) {
     const columnSeries = new BarSeries()
-    columnSeries.items.push(BarItem.fromValue(50 + r.next() * 50))
-    columnSeries.items.push(BarItem.fromValue(40 + r.next() * 50))
+    columnSeries.items.push(newBarItem(50 + r.next() * 50))
+    columnSeries.items.push(newBarItem(40 + r.next() * 50))
     model.series.push(columnSeries)
   }
 
@@ -201,17 +201,17 @@ function brewerColors4(): PlotModel {
 
   // See http://colorbrewer2.org/?type=qualitative&scheme=Accent&n=4
   model.defaultColors = [
-    OxyColor.fromRgb(127, 201, 127),
-    OxyColor.fromRgb(190, 174, 212),
-    OxyColor.fromRgb(253, 192, 134),
-    OxyColor.fromRgb(255, 255, 153),
+    OxyColorHelper.fromRgb(127, 201, 127),
+    OxyColorHelper.fromRgb(190, 174, 212),
+    OxyColorHelper.fromRgb(253, 192, 134),
+    OxyColorHelper.fromRgb(255, 255, 153),
   ]
 
   const r = new Random()
   for (let i = 0; i < model.defaultColors.length; i++) {
     const columnSeries = new BarSeries()
-    columnSeries.items.push(BarItem.fromValue(50 + r.next() * 50))
-    columnSeries.items.push(BarItem.fromValue(40 + r.next() * 50))
+    columnSeries.items.push(newBarItem(50 + r.next() * 50))
+    columnSeries.items.push(newBarItem(40 + r.next() * 50))
     model.series.push(columnSeries)
   }
 
@@ -228,19 +228,19 @@ function brewerColors6(): PlotModel {
 
   // See http://colorbrewer2.org/?type=qualitative&scheme=Paired&n=6
   model.defaultColors = [
-    OxyColor.fromRgb(166, 206, 227),
-    OxyColor.fromRgb(31, 120, 180),
-    OxyColor.fromRgb(178, 223, 138),
-    OxyColor.fromRgb(51, 160, 44),
-    OxyColor.fromRgb(251, 154, 153),
-    OxyColor.fromRgb(227, 26, 28),
+    OxyColorHelper.fromRgb(166, 206, 227),
+    OxyColorHelper.fromRgb(31, 120, 180),
+    OxyColorHelper.fromRgb(178, 223, 138),
+    OxyColorHelper.fromRgb(51, 160, 44),
+    OxyColorHelper.fromRgb(251, 154, 153),
+    OxyColorHelper.fromRgb(227, 26, 28),
   ]
 
   const r = new Random()
   for (let i = 0; i < model.defaultColors.length; i++) {
     const columnSeries = new BarSeries()
-    columnSeries.items.push(BarItem.fromValue(50 + r.next() * 50))
-    columnSeries.items.push(BarItem.fromValue(40 + r.next() * 50))
+    columnSeries.items.push(newBarItem(50 + r.next() * 50))
+    columnSeries.items.push(newBarItem(40 + r.next() * 50))
     model.series.push(columnSeries)
   }
 
@@ -314,7 +314,7 @@ function polarPlotWithArrows(): PlotModel {
 function markerTypeCircleProblem(): PlotModel {
   const plotModel = new PlotModel({
     plotType: PlotType.Cartesian,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   const l = new Legend()
@@ -326,7 +326,7 @@ function markerTypeCircleProblem(): PlotModel {
     position: AxisPosition.Bottom,
     tickStyle: TickStyle.None,
     axislineStyle: LineStyle.Solid,
-    axislineColor: OxyColor.fromRgb(153, 153, 153),
+    axislineColor: OxyColorHelper.fromRgb(153, 153, 153),
     stringFormatter: (dt: Date, format) => {
       return monthsShort[dt.getMonth()] + dateService.format(dt, 'd HH')
     },
@@ -346,7 +346,7 @@ function markerTypeCircleProblem(): PlotModel {
   plotModel.axes.push(yaxis)
 
   const series1 = new LineSeries({
-    color: OxyColor.fromRgb(44, 169, 173),
+    color: OxyColorHelper.fromRgb(44, 169, 173),
     strokeThickness: 1,
     markerType: MarkerType.Circle,
     markerStroke: OxyColors.Blue,
@@ -354,9 +354,9 @@ function markerTypeCircleProblem(): PlotModel {
     markerSize: 2,
     dataFieldX: 'Date',
     dataFieldY: 'Value',
-    trackerStringFormatter: (args) => {
+    trackerStringFormatter: function (args) {
       //trackerFormatString: 'Date: {2:d HH}\nValue: {4}'
-      return `Date: ${dateService.format(args.xValue, 'DD HH')}\nValue: ${args.yValue}`
+      return 'Date: ' + dateService.format(args.xValue, 'DD HH') + '\nValue: ' + args.yValue
     },
   })
 
@@ -391,14 +391,18 @@ class ArrowSeries549839 extends XYAxisSeries {
     }
   }
 
+  getElementName() {
+    return 'ArrowSeries549839'
+  }
+
   setDefaultValues(): void {
-    if (this.color.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.color)) {
       this.defaultColor = this.plotModel.getDefaultColor()
     }
   }
 
   public get actualColor(): OxyColor {
-    return this.color.getActualColor(this.defaultColor)
+    return OxyColorHelper.getActualColor(this.color, this.defaultColor)
   }
 
   public async render(rc: IRenderContext): Promise<void> {
@@ -406,8 +410,8 @@ class ArrowSeries549839 extends XYAxisSeries {
     const p0 = this.transform(this.startPoint)
     const p1 = this.transform(this.endPoint)
 
-    const direction = screenPointMinus(p1, p0)
-    const normal = new ScreenVector(direction.y, -direction.x)
+    const direction = screenPointMinusEx(p1, p0)
+    const normal = newScreenVectorEx(direction.y, -direction.x)
 
     // the end points of the arrow head, scaled by length of arrow
     const p2 = screenPointPlus(screenPointMinusVector(p1, direction.times(0.2)), normal.times(0.1))

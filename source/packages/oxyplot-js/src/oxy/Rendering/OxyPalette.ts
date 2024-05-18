@@ -1,38 +1,42 @@
-import { OxyColor } from './OxyColor'
+import { type OxyColor, OxyColorEx, OxyColorHelper } from './OxyColor'
 import { getReversedCopy } from '@/patch'
 
 /**
  * Represents a palette of colors.
  */
-export class OxyPalette {
+export interface OxyPalette {
   /**
    * The list of colors in the palette.
    */
-  public colors: OxyColor[] = []
+  colors: OxyColor[]
+}
 
-  /**
-   * Initializes a new instance of the `OxyPalette` class.
-   */
-  constructor(colors?: OxyColor[]) {
-    if (colors) {
-      this.colors = [...colors]
-      Object.freeze(this.colors)
-    }
+export function newOxyPalette(colors?: (OxyColorEx | OxyColor)[]): OxyPalette {
+  if (!colors?.length) return Object.freeze({ colors: [] })
+  let cList = colors as OxyColor[]
+  if ((colors[0] as OxyColorEx).hex) {
+    cList = (colors as OxyColorEx[]).map((x) => x.hex)
   }
+  return Object.freeze({ colors: cList })
+}
 
+/**
+ * Represents a palette of colors.
+ */
+export class OxyPaletteHelper {
   /**
    * Interpolates the specified colors to a palette of the specified size.
    * @param paletteSize The size of the palette.
    * @param colors The colors to interpolate.
    * @returns A palette.
    */
-  public static interpolate(paletteSize: number, ...colors: OxyColor[]): OxyPalette {
+  static interpolate(paletteSize: number, ...colors: (OxyColorEx | OxyColor)[]): OxyPalette {
     if (!colors || colors.length === 0 || paletteSize < 1) {
       // No color to interpolate or no color required.
-      return new OxyPalette([])
+      return newOxyPalette([])
     }
 
-    const palette: OxyColor[] = []
+    const palette: OxyColorEx[] = []
     const incrementStepSize = paletteSize === 1 ? 0 : 1.0 / (paletteSize - 1)
 
     for (let i = 0; i < paletteSize; i++) {
@@ -40,17 +44,19 @@ export class OxyPalette {
       const x = y * (colors.length - 1)
       const i0 = Math.floor(x)
       const i1 = i0 + 1 < colors.length ? i0 + 1 : i0
-      palette[i] = OxyColor.interpolate(colors[i0], colors[i1], x - i0)
+      const c1 = OxyColorEx.fromOxyColor(colors[i0])
+      const c2 = OxyColorEx.fromOxyColor(colors[i1])
+      palette[i] = OxyColorHelper.interpolate(c1, c2, x - i0)
     }
 
-    return new OxyPalette(palette)
+    return newOxyPalette(palette)
   }
 
   /**
    * Creates a new palette with the color order reversed.
    * @returns The reversed palette.
    */
-  public reverse(): OxyPalette {
-    return new OxyPalette(getReversedCopy(this.colors))
+  static reverse(p: OxyPalette): OxyPalette {
+    return newOxyPalette(getReversedCopy(p.colors))
   }
 }

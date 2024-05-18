@@ -9,9 +9,8 @@ import {
   LinearAxis,
   LineStyle,
   MagnitudeAxis,
-  MarkerType,
+  MarkerType, newOxyThickness,
   OxyColors,
-  OxyThickness,
   PlotModel,
   PlotType,
 } from 'oxyplot-js'
@@ -128,7 +127,7 @@ function roseCurve(): PlotModel {
   const m = new PlotModel({
     title: 'Rose curve',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   m.axes.push(

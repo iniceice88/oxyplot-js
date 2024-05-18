@@ -1,19 +1,34 @@
 import {
   type CreateShapeAnnotationOptions,
+  ExtendedDefaultShapeAnnotationOptions,
   HitTestArguments,
   type HitTestResult,
   type IRenderContext,
-  OxyRect,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectHelper,
   PlotElementExtensions,
   ShapeAnnotation,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CreateEllipseAnnotationOptions extends CreateShapeAnnotationOptions {
   x?: number
   y?: number
   width?: number
   height?: number
+}
+
+export const DefaultEllipseAnnotationOptions: CreateEllipseAnnotationOptions = {
+  x: 0,
+  y: 0,
+  width: NaN,
+  height: NaN,
+}
+
+export const ExtendedDefaultEllipseAnnotationOptions = {
+  ...ExtendedDefaultShapeAnnotationOptions,
+  ...DefaultEllipseAnnotationOptions,
 }
 
 /**
@@ -23,40 +38,39 @@ export class EllipseAnnotation extends ShapeAnnotation {
   /**
    * The rectangle transformed to screen coordinates.
    */
-  private screenRectangle: OxyRect = OxyRect.Empty
+  private _screenRectangle: OxyRect = OxyRect_Empty
 
   /**
    * Initializes a new instance of the EllipseAnnotation class.
    */
   constructor(opt?: CreateEllipseAnnotationOptions) {
     super(opt)
-    this.width = NaN
-    this.height = NaN
+    assignObject(this, DefaultEllipseAnnotationOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'EllipseAnnotation'
   }
 
   /**
    * The x-coordinate of the center.
    */
-  public x: number = 0
+  public x: number = DefaultEllipseAnnotationOptions.x!
 
   /**
    * The y-coordinate of the center.
    */
-  public y: number = 0
+  public y: number = DefaultEllipseAnnotationOptions.y!
 
   /**
    * The width of the ellipse.
    */
-  public width: number = 0
+  public width: number = DefaultEllipseAnnotationOptions.width!
 
   /**
    * The height of the ellipse.
    */
-  public height: number = 0
+  public height: number = DefaultEllipseAnnotationOptions.height!
 
   /**
    * Renders the ellipse annotation.
@@ -64,10 +78,10 @@ export class EllipseAnnotation extends ShapeAnnotation {
   public async render(rc: IRenderContext): Promise<void> {
     const x = PlotElementExtensions.transform(this, this.x - this.width / 2, this.y - this.height / 2)
     const y = PlotElementExtensions.transform(this, this.x + this.width / 2, this.y + this.height / 2)
-    this.screenRectangle = OxyRect.fromScreenPoints(x, y)
+    this._screenRectangle = OxyRectHelper.fromScreenPoints(x, y)
 
     await rc.drawEllipse(
-      this.screenRectangle,
+      this._screenRectangle,
       this.getSelectableFillColor(this.fill),
       this.getSelectableColor(this.stroke),
       this.strokeThickness,
@@ -75,7 +89,7 @@ export class EllipseAnnotation extends ShapeAnnotation {
     )
 
     if (this.text) {
-      const textPosition = this.getActualTextPosition(() => this.screenRectangle.center)
+      const textPosition = this.getActualTextPosition(() => OxyRectHelper.center(this._screenRectangle))
       const [ha, va] = this.getActualTextAlignment()
       await rc.drawText(
         textPosition,
@@ -95,7 +109,7 @@ export class EllipseAnnotation extends ShapeAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (this.screenRectangle.containsPoint(args.point)) {
+    if (OxyRectHelper.containsPoint(this._screenRectangle, args.point)) {
       return {
         element: this,
         nearestHitPoint: args.point,
@@ -103,5 +117,9 @@ export class EllipseAnnotation extends ShapeAnnotation {
     }
 
     return undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultEllipseAnnotationOptions
   }
 }

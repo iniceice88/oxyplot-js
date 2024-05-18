@@ -51,14 +51,14 @@ export class PlotModelUtilities {
     }
 
     for (const s of model.series) {
-      const type = s.constructor.name
+      const type = s.getElementName()
       if (!(s instanceof XYAxisSeries) || this.NonReversibleSeriesTypes.has(type)) {
         return false
       }
     }
 
     for (const a of model.annotations) {
-      const type = a.constructor.name
+      const type = a.getElementName()
       if (this.NonReversibleDataSpaceAnnotationTypes.has(type)) {
         return false
       }
@@ -84,14 +84,14 @@ export class PlotModelUtilities {
     }
 
     for (const s of model.series) {
-      const type = s.constructor.name
+      const type = s.getElementName()
       if (!isTransposablePlotElement(s) || this.NonTransposableSeriesTypes.has(type)) {
         return false
       }
     }
 
     for (const a of model.annotations) {
-      const type = a.constructor.name
+      const type = a.getElementName()
       if (!isTransposablePlotElement(a) || this.NonTransposableDataSpaceAnnotationTypes.has(type)) {
         return false
       }

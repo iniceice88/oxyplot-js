@@ -1,23 +1,32 @@
-import type { HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   type CreateTransposableAnnotationOptions,
   DataPoint_Zero,
+  ExtendedDefaultTransposableAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
   HorizontalAlignment,
+  type IRenderContext,
+  newOxyRect,
+  newPlotLength,
   newScreenPoint,
-  OxyImage,
-  OxyRect,
+  newScreenVector,
+  type OxyImage,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRect_Everything,
+  OxyRectHelper,
   PlotElementExtensions,
-  PlotLength,
+  type PlotLength,
   PlotLengthUnit,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointMinus,
   screenPointPlus,
-  ScreenVector,
+  type ScreenVector,
   TransposableAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CreateImageAnnotationOptions extends CreateTransposableAnnotationOptions {
   imageSource?: OxyImage
@@ -33,6 +42,26 @@ export interface CreateImageAnnotationOptions extends CreateTransposableAnnotati
   verticalAlignment?: VerticalAlignment
 }
 
+export const DefaultImageAnnotationOptions: CreateImageAnnotationOptions = {
+  x: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+  y: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
+  offsetX: newPlotLength(0, PlotLengthUnit.ScreenUnits),
+  offsetY: newPlotLength(0, PlotLengthUnit.ScreenUnits),
+  width: newPlotLength(NaN, PlotLengthUnit.ScreenUnits),
+  height: newPlotLength(NaN, PlotLengthUnit.ScreenUnits),
+  opacity: 1.0,
+  interpolate: true,
+  horizontalAlignment: HorizontalAlignment.Center,
+  verticalAlignment: VerticalAlignment.Middle,
+
+  imageSource: undefined,
+}
+
+export const ExtendedDefaultImageAnnotationOptions = {
+  ...ExtendedDefaultTransposableAnnotationOptions,
+  ...DefaultImageAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows an image.
  */
@@ -40,24 +69,15 @@ export class ImageAnnotation extends TransposableAnnotation {
   /**
    * The actual bounds of the rendered image.
    */
-  private actualBounds: OxyRect = OxyRect.Empty
+  private actualBounds: OxyRect = OxyRect_Empty
 
   constructor(opt?: CreateImageAnnotationOptions) {
     super(opt)
-    this.x = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea)
-    this.y = new PlotLength(0.5, PlotLengthUnit.RelativeToPlotArea)
-    this.offsetX = new PlotLength(0, PlotLengthUnit.ScreenUnits)
-    this.offsetY = new PlotLength(0, PlotLengthUnit.ScreenUnits)
-    this.width = new PlotLength(NaN, PlotLengthUnit.ScreenUnits)
-    this.height = new PlotLength(NaN, PlotLengthUnit.ScreenUnits)
-    this.opacity = 1.0
-    this.interpolate = true
-    this.horizontalAlignment = HorizontalAlignment.Center
-    this.verticalAlignment = VerticalAlignment.Middle
+    assignObject(this, DefaultImageAnnotationOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'ImageAnnotation'
   }
 
   /**
@@ -66,54 +86,54 @@ export class ImageAnnotation extends TransposableAnnotation {
   public imageSource?: OxyImage
 
   /**
-   * Gets or sets the horizontal alignment.
-   */
-  public horizontalAlignment: HorizontalAlignment
-
-  /**
    * Gets or sets the X position of the image.
    */
-  public x: PlotLength
+  public x: PlotLength = DefaultImageAnnotationOptions.x!
 
   /**
    * Gets or sets the Y position of the image.
    */
-  public y: PlotLength
+  public y: PlotLength = DefaultImageAnnotationOptions.y!
 
   /**
    * Gets or sets the X offset.
    */
-  public offsetX: PlotLength
+  public offsetX: PlotLength = DefaultImageAnnotationOptions.offsetX!
 
   /**
    * Gets or sets the Y offset.
    */
-  public offsetY: PlotLength
+  public offsetY: PlotLength = DefaultImageAnnotationOptions.offsetY!
 
   /**
    * Gets or sets the width.
    */
-  public width: PlotLength
+  public width: PlotLength = DefaultImageAnnotationOptions.width!
 
   /**
    * Gets or sets the height.
    */
-  public height: PlotLength
+  public height: PlotLength = DefaultImageAnnotationOptions.height!
 
   /**
    * Gets or sets the opacity (0-1).
    */
-  public opacity: number
+  public opacity: number = DefaultImageAnnotationOptions.opacity!
 
   /**
    * Gets or sets a value indicating whether to apply smooth interpolation to the image.
    */
-  public interpolate: boolean
+  public interpolate: boolean = DefaultImageAnnotationOptions.interpolate!
+
+  /**
+   * Gets or sets the horizontal alignment.
+   */
+  public horizontalAlignment: HorizontalAlignment = DefaultImageAnnotationOptions.horizontalAlignment!
 
   /**
    * Gets or sets the vertical alignment.
    */
-  public verticalAlignment: VerticalAlignment
+  public verticalAlignment: VerticalAlignment = DefaultImageAnnotationOptions.verticalAlignment!
 
   public async render(rc: IRenderContext): Promise<void> {
     if (!this.imageSource) {
@@ -163,7 +183,7 @@ export class ImageAnnotation extends TransposableAnnotation {
       y -= height
     }
 
-    this.actualBounds = new OxyRect(x, y, width, height)
+    this.actualBounds = newOxyRect(x, y, width, height)
 
     await RenderingExtensions.drawImage(rc, this.imageSource, x, y, width, height, this.opacity, this.interpolate)
   }
@@ -173,7 +193,7 @@ export class ImageAnnotation extends TransposableAnnotation {
    * @param args The hit test arguments.
    */
   public hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (this.actualBounds.containsPoint(args.point)) {
+    if (OxyRectHelper.containsPoint(this.actualBounds, args.point)) {
       return {
         element: this,
         nearestHitPoint: args.point,
@@ -279,7 +299,7 @@ export class ImageAnnotation extends TransposableAnnotation {
         throw new Error('Invalid unit')
     }
 
-    return new ScreenVector(xd, yd)
+    return newScreenVector(xd, yd)
   }
 
   public getClippingRect(): OxyRect {
@@ -287,6 +307,10 @@ export class ImageAnnotation extends TransposableAnnotation {
       return super.getClippingRect()
     }
 
-    return OxyRect.Everything
+    return OxyRect_Everything
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultImageAnnotationOptions
   }
 }

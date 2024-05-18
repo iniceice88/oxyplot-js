@@ -1,28 +1,35 @@
-import type { CreateTextualAnnotationOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
   AnnotationTextOrientation,
+  type CreateTextualAnnotationOptions,
   DataPoint_isDefined,
+  ExtendedDefaultTextualAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
   HorizontalAlignment,
+  type IRenderContext,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   newScreenPoint,
-  OxyColor,
+  newScreenVector,
+  type OxyColor,
   OxyColors,
-  OxyRect,
-  OxyThickness,
+  OxyRectEx,
+  OxyRectHelper,
+  type OxyThickness,
+  OxyThickness_Zero,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
-  screenPointMinus,
+  screenPointMinusEx,
   screenPointPlus,
-  ScreenVector,
   TextAnnotation,
   TextualAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
+
+import { Number_MAX_VALUE, Number_MIN_VALUE, assignObject } from '@/patch'
 
 export interface CreatePathAnnotationOptions extends CreateTextualAnnotationOptions {
   minimumX?: number
@@ -44,6 +51,33 @@ export interface CreatePathAnnotationOptions extends CreateTextualAnnotationOpti
   borderStrokeThickness?: number
 }
 
+export const DefaultPathAnnotationOptions: CreatePathAnnotationOptions = {
+  minimumX: Number_MIN_VALUE,
+  maximumX: Number_MAX_VALUE,
+  minimumY: Number_MIN_VALUE,
+  maximumY: Number_MAX_VALUE,
+  color: OxyColors.Blue,
+  strokeThickness: 1,
+  lineStyle: LineStyle.Dash,
+  lineJoin: LineJoin.Miter,
+  textLinePosition: 1,
+  textOrientation: AnnotationTextOrientation.AlongLine,
+  textMargin: 12,
+  textHorizontalAlignment: HorizontalAlignment.Right,
+  textVerticalAlignment: VerticalAlignment.Top,
+  minimumSegmentLength: 2,
+  textPadding: 0,
+  borderPadding: OxyThickness_Zero,
+  borderBackground: OxyColors.Undefined,
+  borderStroke: OxyColors.Undefined,
+  borderStrokeThickness: 0,
+}
+
+export const ExtendedDefaultPathAnnotationOptions = {
+  ...ExtendedDefaultTextualAnnotationOptions,
+  ...DefaultPathAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows a function rendered as a path.
  */
@@ -51,132 +85,118 @@ export abstract class PathAnnotation extends TextualAnnotation {
   /**
    * The points of the line, transformed to screen coordinates.
    */
-  private screenPoints?: ScreenPoint[]
+  private _screenPoints?: ScreenPoint[]
 
   /**
    * Initializes a new instance of the PathAnnotation class.
    */
   protected constructor(opt?: CreatePathAnnotationOptions) {
     super(opt)
-    this.minimumX = Number_MIN_VALUE
-    this.maximumX = Number_MAX_VALUE
-    this.minimumY = Number_MIN_VALUE
-    this.maximumY = Number_MAX_VALUE
-    this.color = OxyColors.Blue
-    this.strokeThickness = 1
-    this.lineStyle = LineStyle.Dash
-    this.lineJoin = LineJoin.Miter
-
-    this.textLinePosition = 1
-    this.textOrientation = AnnotationTextOrientation.AlongLine
-    this.textMargin = 12
-    this.textHorizontalAlignment = HorizontalAlignment.Right
-    this.textVerticalAlignment = VerticalAlignment.Top
-    this.minimumSegmentLength = 2
+    assignObject(this, DefaultPathAnnotationOptions, opt)
   }
 
   /**
    * The color of the line.
    */
-  public color: OxyColor
+  public color: OxyColor = DefaultPathAnnotationOptions.color!
 
   /**
    * The line join.
    */
-  public lineJoin: LineJoin
+  public lineJoin: LineJoin = DefaultPathAnnotationOptions.lineJoin!
 
   /**
    * The line style.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultPathAnnotationOptions.lineStyle!
 
   /**
    * The maximum X coordinate for the line.
    */
-  public maximumX: number
+  public maximumX: number = DefaultPathAnnotationOptions.maximumX!
 
   /**
    * The maximum Y coordinate for the line.
    */
-  public maximumY: number
+  public maximumY: number = DefaultPathAnnotationOptions.maximumY!
 
   /**
    * The minimum X coordinate for the line.
    */
-  public minimumX: number
+  public minimumX: number = DefaultPathAnnotationOptions.minimumX!
 
   /**
    * The minimum Y coordinate for the line.
    */
-  public minimumY: number
+  public minimumY: number = DefaultPathAnnotationOptions.minimumY!
 
   /**
    * The stroke thickness.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultPathAnnotationOptions.strokeThickness!
 
   /**
    * The text margin (along the line).
    */
-  public textMargin: number
+  public textMargin: number = DefaultPathAnnotationOptions.textMargin!
 
   /**
    * The text padding (in the direction of the text).
    */
-  public textPadding: number = 0
+  public textPadding: number = DefaultPathAnnotationOptions.textPadding!
 
   /**
    * The padding of the border rectangle.
    */
-  public borderPadding: OxyThickness = OxyThickness.Zero
+  public borderPadding: OxyThickness = DefaultPathAnnotationOptions.borderPadding!
 
   /**
    * The fill color of the border rectangle.
    */
-  public borderBackground: OxyColor = OxyColors.Undefined
+  public borderBackground: OxyColor = DefaultPathAnnotationOptions.borderBackground!
 
   /**
    * The stroke color of the border rectangle.
    */
-  public borderStroke: OxyColor = OxyColors.Undefined
+  public borderStroke: OxyColor = DefaultPathAnnotationOptions.borderStroke!
 
   /**
    * The stroke thickness of the border rectangle.
    */
-  public borderStrokeThickness: number = 0
+  public borderStrokeThickness: number = DefaultPathAnnotationOptions.borderStrokeThickness!
 
   /**
    * The text orientation.
    */
-  public textOrientation: AnnotationTextOrientation
+  public textOrientation: AnnotationTextOrientation = DefaultPathAnnotationOptions.textOrientation!
 
   /**
    * The text position relative to the line.
    */
-  public textLinePosition: number
+  public textLinePosition: number = DefaultPathAnnotationOptions.textLinePosition!
 
   /**
    * The minimum length of the segment.
    */
-  public minimumSegmentLength: number
+  public minimumSegmentLength: number = DefaultPathAnnotationOptions.minimumSegmentLength!
 
   /**
-   * The actual minimum value on the x axis.
+   * The actual minimum value on the x-axis.
    */
   protected actualMinimumX: number = NaN
 
   /**
-   * The actual minimum value on the y axis.
+   * The actual minimum value on the y-axis.
    */
   protected actualMinimumY: number = NaN
 
   /**
-   * The actual maximum value on the x axis.
+   * The actual maximum value on the x-axis.
    */
   protected actualMaximumX: number = NaN
 
   /**
-   * The actual maximum value on the y axis.
+   * The actual maximum value on the y-axis.
    */
   protected actualMaximumY: number = NaN
 
@@ -190,7 +210,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
       return
     }
 
-    this.screenPoints = this.getScreenPoints()
+    this._screenPoints = this.getScreenPoints()
 
     const clippedPoints: ScreenPoint[] = []
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
@@ -198,7 +218,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
     if (this.strokeThickness > 0 && this.lineStyle !== LineStyle.None) {
       await RenderingExtensions.drawReducedLine(
         rc,
-        this.screenPoints,
+        this._screenPoints,
         this.minimumSegmentLength * this.minimumSegmentLength,
         this.getSelectableColor(this.color),
         this.strokeThickness,
@@ -264,10 +284,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
 
     position = screenPointPlus(
       position,
-      new ScreenVector(
-        f * this.textPadding * Math.cos(angleInRadians),
-        f * this.textPadding * Math.sin(angleInRadians),
-      ),
+      newScreenVector(f * this.textPadding * Math.cos(angleInRadians), f * this.textPadding * Math.sin(angleInRadians)),
     )
 
     if (this.text) {
@@ -282,7 +299,7 @@ export abstract class PathAnnotation extends TextualAnnotation {
       const textBounds = TextAnnotation.getTextBounds(position, textSize, this.borderPadding, angle, ha, va)
 
       if (angle % 90 == 0) {
-        const actualRect = OxyRect.fromScreenPoints(textBounds[0], textBounds[2])
+        const actualRect = OxyRectHelper.fromScreenPoints(textBounds[0], textBounds[2])
         await rc.drawRectangle(
           actualRect,
           this.borderBackground,
@@ -318,12 +335,12 @@ export abstract class PathAnnotation extends TextualAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (!this.screenPoints) {
+    if (!this._screenPoints) {
       return undefined
     }
 
-    const nearestPoint = ScreenPointHelper.findNearestPointOnPolyline(args.point, this.screenPoints)
-    const dist = screenPointMinus(args.point, nearestPoint).length
+    const nearestPoint = ScreenPointHelper.findNearestPointOnPolyline(args.point, this._screenPoints)
+    const dist = screenPointMinusEx(args.point, nearestPoint).length
     if (dist < args.tolerance) {
       return {
         element: this,
@@ -355,8 +372,9 @@ export abstract class PathAnnotation extends TextualAnnotation {
     this.actualMinimumY = Math.max(this.minimumY, this.yAxis.clipMinimum)
     this.actualMaximumY = Math.min(this.maximumY, this.yAxis.clipMaximum)
 
-    const topLeft = this.inverseTransform(this.plotModel.plotArea.topLeft)
-    const bottomRight = this.inverseTransform(this.plotModel.plotArea.bottomRight)
+    const plotAreaEx = new OxyRectEx(this.plotModel.plotArea)
+    const topLeft = this.inverseTransform(plotAreaEx.topLeft)
+    const bottomRight = this.inverseTransform(plotAreaEx.bottomRight)
 
     if (!this.clipByXAxis) {
       this.actualMaximumX = Math.max(topLeft.x, bottomRight.x)
@@ -383,14 +401,14 @@ export abstract class PathAnnotation extends TextualAnnotation {
 
     let length = 0
     for (let i = 1; i < pts.length; i++) {
-      length += screenPointMinus(pts[i], pts[i - 1]).length
+      length += screenPointMinusEx(pts[i], pts[i - 1]).length
     }
 
     const l = length * p + margin
     const eps = 1e-8
     length = 0
     for (let i = 1; i < pts.length; i++) {
-      const dl = screenPointMinus(pts[i], pts[i - 1]).length
+      const dl = screenPointMinusEx(pts[i], pts[i - 1]).length
       if (l >= length - eps && l <= length + dl + eps) {
         const f = (l - length) / dl
         const x = pts[i].x * f + pts[i - 1].x * (1 - f)
@@ -406,5 +424,9 @@ export abstract class PathAnnotation extends TextualAnnotation {
     }
 
     return undefined
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPathAnnotationOptions
   }
 }

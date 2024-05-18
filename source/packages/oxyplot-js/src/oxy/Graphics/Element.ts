@@ -1,33 +1,72 @@
-﻿import type {
-  HitTestArguments,
-  HitTestResult,
-  KeyDownEventType,
-  MouseDownEventType,
-  MouseMoveEventType,
-  MouseUpEventType,
-  OxyKeyEventArgs,
-  OxyMouseDownEventArgs,
-  OxyMouseEventArgs,
-  OxyTouchEventArgs,
-  TouchCompletedEventType,
-  TouchDeltaEventType,
-  TouchStartedEventType,
+﻿import {
+  type HitTestArguments,
+  type HitTestResult,
+  type KeyDownEventType,
+  Model,
+  type MouseDownEventType,
+  type MouseMoveEventType,
+  type MouseUpEventType,
+  type OxyColor,
+  OxyColorEx,
+  OxyColorHelper,
+  OxyColors,
+  type OxyKeyEventArgs,
+  type OxyMouseDownEventArgs,
+  type OxyMouseEventArgs,
+  type OxyTouchEventArgs,
+  type PlotModelSerializeOptions,
+  Selection,
+  SelectionMode,
+  type TouchCompletedEventType,
+  type TouchDeltaEventType,
+  type TouchStartedEventType,
 } from '@/oxyplot'
-import { Model, OxyColor, OxyColors, Selection, SelectionMode } from '@/oxyplot'
+import { assignObject, copyPlotElementProperties } from '@/patch'
 
-export interface CreateElementOptions {}
+export interface CreateElementOptions {
+  selectable?: boolean
+  selectionMode?: SelectionMode
+}
+
+export const DefaultElementOptions: CreateElementOptions = {
+  selectable: true,
+  selectionMode: SelectionMode.All,
+}
+
+export const ExtendedDefaultElementOptions = DefaultElementOptions
 
 /**
  * Provides an abstract base class for graphical elements.
  */
 export abstract class Element {
-  protected constructor(opt?: CreateElementOptions) {}
+  protected constructor(opt?: CreateElementOptions) {
+    assignObject(this, DefaultElementOptions, opt)
+    if (this.getElementName) {
+      this.__oxy_element_name__ = this.getElementName()
+    }
+    if (!this.__oxy_element_name__) {
+      console.warn('The element name is not set. Please implement the getElementName method.')
+    }
+  }
+
+  // for deserialization
+  abstract getElementName(): string
+
+  protected __oxy_element_name__?: string
 
   /**
    * Gets the parent model of the element.
    * @internal
    */
-  parent?: Model
+  private _parent?: Model
+
+  set parent(value: Model | undefined) {
+    this._parent = value
+  }
+
+  get parent(): Model | undefined {
+    return this._parent
+  }
 
   /**
    * Tests if the plot element is hit by the specified point.
@@ -159,7 +198,7 @@ export abstract class Element {
   /**
    * The selection
    */
-  private selection?: Selection
+  private _selection?: Selection
   /**
    * Occurs when the selected items is changed.
    * @deprecated May be removed in v4.0 (#111)
@@ -169,20 +208,20 @@ export abstract class Element {
   /**
    * A value indicating whether this element can be selected. The default is true.
    */
-  public selectable: boolean = true
+  public selectable: boolean = DefaultElementOptions.selectable!
 
   /**
    * The selection mode of items in this element. The default is SelectionMode.All.
    * This is only used by the select/unselect functionality, not by the rendering.
    */
-  public selectionMode: SelectionMode = SelectionMode.All
+  public selectionMode: SelectionMode = DefaultElementOptions.selectionMode!
 
   /**
    * Gets the actual selection color.
    */
   protected get actualSelectedColor(): OxyColor {
     if (this.parent) {
-      return this.parent.selectionColor.getActualColor(Model.DefaultSelectionColor)
+      return OxyColorHelper.getActualColor(this.parent.selectionColor, Model.DefaultSelectionColor)
     }
 
     return Model.DefaultSelectionColor
@@ -192,7 +231,7 @@ export abstract class Element {
    * Determines whether any part of this element is selected.
    */
   public isSelected(): boolean {
-    return !!this.selection
+    return !!this._selection
   }
 
   /**
@@ -200,14 +239,14 @@ export abstract class Element {
    */
   public getSelectedItems(): number[] {
     this.ensureSelection()
-    return this.selection!.getSelectedItems()
+    return this._selection!.getSelectedItems()
   }
 
   /**
    * Clears the selection.
    */
   public clearSelection(): void {
-    this.selection = undefined
+    this._selection = undefined
     this.onSelectionChanged()
   }
 
@@ -215,7 +254,7 @@ export abstract class Element {
    * Unselects all items in this element.
    */
   public unselect(): void {
-    this.selection = undefined
+    this._selection = undefined
     this.onSelectionChanged()
   }
 
@@ -224,22 +263,22 @@ export abstract class Element {
    * @param index The index of the item.
    */
   public isItemSelected(index: number): boolean {
-    if (!this.selection) {
+    if (!this._selection) {
       return false
     }
 
     if (index === -1) {
-      return this.selection.isEverythingSelected()
+      return this._selection.isEverythingSelected()
     }
 
-    return this.selection.isItemSelected(index)
+    return this._selection.isItemSelected(index)
   }
 
   /**
    * Selects all items in this element.
    */
   public select(): void {
-    this.selection = Selection.Everything
+    this._selection = Selection.Everything
     this.onSelectionChanged()
   }
 
@@ -254,10 +293,10 @@ export abstract class Element {
 
     this.ensureSelection()
     if (this.selectionMode === SelectionMode.Single) {
-      this.selection!.clear()
+      this._selection!.clear()
     }
 
-    this.selection!.select(index)
+    this._selection!.select(index)
     this.onSelectionChanged()
   }
 
@@ -271,7 +310,7 @@ export abstract class Element {
     }
 
     this.ensureSelection()
-    this.selection!.unselect(index)
+    this._selection!.unselect(index)
     this.onSelectionChanged()
   }
 
@@ -280,8 +319,8 @@ export abstract class Element {
    * @param originalColor The unselected color of the element.
    * @param index The index of the item to check (use -1 for all items).
    */
-  protected getSelectableColor(originalColor: OxyColor, index: number = -1): OxyColor {
-    if (originalColor.isUndefined()) {
+  protected getSelectableColor(originalColor: OxyColor | OxyColorEx, index: number = -1): OxyColor {
+    if (OxyColorHelper.isUndefined(originalColor)) {
       return OxyColors.Undefined
     }
 
@@ -289,7 +328,7 @@ export abstract class Element {
       return this.actualSelectedColor
     }
 
-    return originalColor
+    return OxyColorEx.fromOxyColor(originalColor).hex
   }
 
   /**
@@ -306,7 +345,7 @@ export abstract class Element {
    * Ensures that the selection field is not undefined.
    */
   private ensureSelection(): void {
-    this.selection = this.selection || new Selection()
+    this._selection = this._selection || new Selection()
   }
 
   /**
@@ -314,5 +353,22 @@ export abstract class Element {
    */
   private onSelectionChanged(args?: any): void {
     this.selectionChanged && this.selectionChanged(this, args)
+  }
+
+  protected getJsonIgnoreProperties(): string[] {
+    return []
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultElementOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions) {
+    const excludeKeys = this.getJsonIgnoreProperties()
+    const defVal = this.getElementDefaultValues()
+    return copyPlotElementProperties(this, defVal, {
+      excludeKeys,
+      excludeDefault: opt?.excludeDefault,
+    })
   }
 }

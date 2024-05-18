@@ -1,4 +1,4 @@
-import { OxyRect, OxySize, PlotModel, ScreenPoint_LeftTop } from 'oxyplot-js'
+import { newOxySize, type OxyRect, OxyRect_Empty, OxyRectHelper, PlotModel, ScreenPoint_LeftTop } from 'oxyplot-js'
 import { PdfRenderContext } from './PdfRenderContext'
 import { jsPDF } from 'jspdf'
 import { WebPlotViewBase } from './WebPlotViewBase'
@@ -29,12 +29,12 @@ export class PdfPlotView extends WebPlotViewBase {
       unit: 'px',
       orientation: this.orientation,
     })
-    const pdfPageSize = new OxySize(pdf.internal.pageSize.width, pdf.internal.pageSize.height)
+    const pdfPageSize = newOxySize(pdf.internal.pageSize.width, pdf.internal.pageSize.height)
     pdf.close()
-    this._clientArea = OxyRect.fromScreenPointAndSize(ScreenPoint_LeftTop, pdfPageSize)
+    this._clientArea = OxyRectHelper.fromScreenPointAndSize(ScreenPoint_LeftTop, pdfPageSize)
   }
 
-  private _clientArea: OxyRect = OxyRect.Empty
+  private _clientArea: OxyRect = OxyRect_Empty
   get clientArea(): OxyRect {
     return this._clientArea
   }

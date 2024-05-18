@@ -1,24 +1,25 @@
-import type {
-  AxisLabelFormatType,
-  CreateItemsSeriesOptions,
-  IRenderContext,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
 import {
   Axis,
+  type AxisLabelFormatType,
+  type CreateItemsSeriesOptions,
+  ExtendedDefaultItemsSeriesOptions,
   HorizontalAlignment,
+  type IRenderContext,
   ItemsSeries,
   LineJoin,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
+  type ScreenPoint,
   ScreenPointHelper,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
   VerticalAlignment,
 } from '@/oxyplot'
-import { getOrDefault, removeUndef, round, toPercent } from '@/patch'
+import { assignMethod, assignObject, getOrDefault, round, toPercent } from '@/patch'
 
 /**
  * Represents a slice of a `PieSeries`.
@@ -60,7 +61,7 @@ export interface PieSeriesTrackerStringFormatterArgs extends TrackerStringFormat
 export type PieSeriesTrackerStringFormatterType = (args: PieSeriesTrackerStringFormatterArgs) => string | undefined
 
 function getActualFillColor(slice: InternalPieSlice): OxyColor {
-  return slice.fill!.getActualColor(slice.defaultFillColor!)
+  return OxyColorHelper.getActualColor(slice.fill!, slice.defaultFillColor!)
 }
 
 export interface CreatePieSeriesOptions extends CreateItemsSeriesOptions {
@@ -89,6 +90,38 @@ export interface CreatePieSeriesOptions extends CreateItemsSeriesOptions {
   trackerStringFormatter?: PieSeriesTrackerStringFormatterType
 }
 
+export const DefaultPieSeriesOptions: CreatePieSeriesOptions = {
+  angleIncrement: 1.0,
+  angleSpan: 360.0,
+  areInsideLabelsAngled: false,
+  diameter: 1.0,
+  explodedDistance: 0.0,
+  innerDiameter: 0.0,
+  insideLabelColor: OxyColors.Automatic,
+  insideLabelPosition: 0.5,
+  startAngle: 0.0,
+  stroke: OxyColors.White,
+  strokeThickness: 1.0,
+  tickDistance: 0,
+  tickHorizontalLength: 8,
+  tickLabelDistance: 4,
+  tickRadialLength: 6,
+  fontSize: 12,
+
+  colorField: undefined,
+  insideLabelFormatter: undefined,
+  isExplodedField: undefined,
+  labelField: undefined,
+  outsideLabelFormatter: undefined,
+  slices: undefined,
+  valueField: undefined,
+}
+
+export const ExtendedDefaultPieSeriesOptions = {
+  ...ExtendedDefaultItemsSeriesOptions,
+  ...DefaultPieSeriesOptions,
+}
+
 export type PieLabelFormatType = (slice: PieSlice, percent: number) => string
 
 /** Represents a series for pie/circle/doughnut charts. */
@@ -96,47 +129,49 @@ export class PieSeries extends ItemsSeries {
   /**
    * The default tracker formatter
    */
-  public static DefaultTrackerStringFormatter: PieSeriesTrackerStringFormatterType = (args) =>
-    `${args.xTitle}: ${round(args.xValue!, 3)} (${toPercent((args.percent || 0) / 100)})`
+  public static DefaultTrackerStringFormatter: PieSeriesTrackerStringFormatterType = function (args) {
+    return `${args.xTitle}: ${round(args.xValue!, 3)} (${toPercent((args.percent || 0) / 100)})`
+  }
+
+  public static DefaultOutsideLabelFormatter = function (slice: PieSlice, percent: number) {
+    return `${round(percent, 0)} %`
+  }
+
+  public static DefaultInsideLabelFormatter = function (slice: PieSlice, percent: number) {
+    return slice.label
+  }
 
   /** The actual points of the slices. */
-  private slicePoints: ScreenPoint[][] = []
+  private _slicePoints: ScreenPoint[][] = []
 
   /** The total value of all the pie slices. */
-  private total: number = 0
+  private _total: number = 0
 
   /** Initializes a new instance of the PieSeries class. */
   constructor(opt?: CreatePieSeriesOptions) {
     super(opt)
 
-    this.stroke = OxyColors.White
-    this.strokeThickness = 1.0
-    this.diameter = 1.0
-    this.innerDiameter = 0.0
-    this.startAngle = 0.0
-    this.angleSpan = 360.0
-    this.angleIncrement = 1.0
-    this.outsideLabelFormatter = (slice: PieSlice, percent: number) => `${round(percent, 0)} %`
-    this.insideLabelColor = OxyColors.Automatic
-    this.insideLabelFormatter = (slice: PieSlice, percent: number) => slice.label
-    this.tickDistance = 0
-    this.tickRadialLength = 6
-    this.tickHorizontalLength = 8
-    this.tickLabelDistance = 4
-    this.insideLabelPosition = 0.5
-    this.fontSize = 12
+    this.outsideLabelFormatter = PieSeries.DefaultOutsideLabelFormatter
+    assignMethod(this, 'outsideLabelFormatter', opt)
+    this.insideLabelFormatter = PieSeries.DefaultInsideLabelFormatter
+    assignMethod(this, 'insideLabelFormatter', opt)
     this.trackerStringFormatter = PieSeries.DefaultTrackerStringFormatter
+    assignMethod(this, 'trackerStringFormatter', opt)
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultPieSeriesOptions, opt, {
+      exclude: ['outsideLabelFormatter', 'insideLabelFormatter', 'trackerStringFormatter'],
+    })
+  }
+
+  getElementName() {
+    return 'PieSeries'
   }
 
   /** Gets or sets the angle increment. */
-  public angleIncrement: number
+  public angleIncrement: number = DefaultPieSeriesOptions.angleIncrement!
 
   /** Gets or sets the angle span. */
-  public angleSpan: number
+  public angleSpan: number = DefaultPieSeriesOptions.angleSpan!
 
   /** Gets or sets a value indicating whether inside labels are angled. */
   public areInsideLabelsAngled: boolean = false
@@ -145,22 +180,22 @@ export class PieSeries extends ItemsSeries {
   public colorField?: string
 
   /** Gets or sets the diameter. */
-  public diameter: number
+  public diameter: number = DefaultPieSeriesOptions.diameter!
 
   /** Gets or sets the exploded distance. */
-  public explodedDistance: number = 0
+  public explodedDistance: number = DefaultPieSeriesOptions.explodedDistance!
 
   /** Gets or sets the inner diameter. */
-  public innerDiameter: number
+  public innerDiameter: number = DefaultPieSeriesOptions.innerDiameter!
 
   /** Gets or sets the color of the inside labels. */
-  public insideLabelColor: OxyColor
+  public insideLabelColor: OxyColor = DefaultPieSeriesOptions.insideLabelColor!
 
   /** Gets or sets the inside label format. */
   public insideLabelFormatter?: PieLabelFormatType
 
   /** Gets or sets the inside label position. */
-  public insideLabelPosition: number
+  public insideLabelPosition: number = DefaultPieSeriesOptions.insideLabelPosition!
 
   /** Gets or sets the is exploded field. */
   public isExplodedField?: string
@@ -175,25 +210,25 @@ export class PieSeries extends ItemsSeries {
   public slices: PieSlice[] = []
 
   /** Gets or sets the start angle. */
-  public startAngle: number
+  public startAngle: number = DefaultPieSeriesOptions.startAngle!
 
   /** Gets or sets the stroke color. */
-  public stroke: OxyColor
+  public stroke: OxyColor = DefaultPieSeriesOptions.stroke!
 
   /** Gets or sets the stroke thickness. */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultPieSeriesOptions.strokeThickness!
 
   /** Gets or sets the distance from the edge of the pie slice to the tick line. */
-  public tickDistance: number
+  public tickDistance: number = DefaultPieSeriesOptions.tickDistance!
 
   /** Gets or sets the length of the horizontal part of the tick. */
-  public tickHorizontalLength: number
+  public tickHorizontalLength: number = DefaultPieSeriesOptions.tickHorizontalLength!
 
   /** Gets or sets the distance from the tick line to the outside label. */
-  public tickLabelDistance: number
+  public tickLabelDistance: number = DefaultPieSeriesOptions.tickLabelDistance!
 
   /** Gets or sets the length of the radial part of the tick line. */
-  public tickRadialLength: number
+  public tickRadialLength: number = DefaultPieSeriesOptions.tickRadialLength!
 
   /** Gets or sets the name of the property containing the value. */
   public valueField?: string
@@ -205,11 +240,11 @@ export class PieSeries extends ItemsSeries {
   public trackerStringFormatter?: PieSeriesTrackerStringFormatterType
 
   /** Gets the point on the series that is nearest the specified point. */
-  public getNearestPoint(point: ScreenPoint, interpolate: boolean): TrackerHitResult | undefined {
+  public getNearestPoint(point: ScreenPoint, _interpolate: boolean): TrackerHitResult | undefined {
     const trackerStringFormatter = this.trackerStringFormatter
 
-    for (let i = 0; i < this.slicePoints.length; i++) {
-      if (ScreenPointHelper.isPointInPolygon(point, this.slicePoints[i])) {
+    for (let i = 0; i < this._slicePoints.length; i++) {
+      if (ScreenPointHelper.isPointInPolygon(point, this._slicePoints[i])) {
         const slice = this.slices[i]
         const item = this.getItem(i)
 
@@ -219,7 +254,7 @@ export class PieSeries extends ItemsSeries {
               title: this.title,
               xTitle: slice.label,
               xValue: slice.value,
-              percent: (slice.value / this.total) * 100,
+              percent: (slice.value / this._total) * 100,
             })
           : undefined
 
@@ -237,14 +272,14 @@ export class PieSeries extends ItemsSeries {
 
   /** Renders the series on the specified render context. */
   public async render(rc: IRenderContext): Promise<void> {
-    this.slicePoints = []
+    this._slicePoints = []
 
     if (this.slices.length === 0) {
       return
     }
 
-    this.total = this.slices.reduce((sum, slice) => sum + slice.value, 0)
-    if (Math.abs(this.total) <= 0) {
+    this._total = this.slices.reduce((sum, slice) => sum + slice.value, 0)
+    if (Math.abs(this._total) <= 0) {
       return
     }
 
@@ -255,16 +290,18 @@ export class PieSeries extends ItemsSeries {
     const innerRadius = radius * this.innerDiameter
 
     let angle = this.startAngle
+    const right = OxyRectHelper.right(this.plotModel.plotArea)
+    const bottom = OxyRectHelper.bottom(this.plotModel.plotArea)
     const midPoint = newScreenPoint(
-      (this.plotModel.plotArea.left + this.plotModel.plotArea.right) * 0.5,
-      (this.plotModel.plotArea.top + this.plotModel.plotArea.bottom) * 0.5,
+      (this.plotModel.plotArea.left + right) * 0.5,
+      (this.plotModel.plotArea.top + bottom) * 0.5,
     )
 
     for (const slice of this.slices) {
       const outerPoints: ScreenPoint[] = []
       const innerPoints: ScreenPoint[] = []
 
-      const sliceAngle = (slice.value / this.total) * this.angleSpan
+      const sliceAngle = (slice.value / this._total) * this.angleSpan
       const endAngle = angle + sliceAngle
       const explodedRadius = slice.isExploded ? this.explodedDistance * radius : 0
 
@@ -288,10 +325,7 @@ export class PieSeries extends ItemsSeries {
         const op = newScreenPoint(mp.x + outerRadius * Math.cos(a), mp.y + outerRadius * Math.sin(a))
         outerPoints.push(op)
         const ip = newScreenPoint(mp.x + innerRadius * Math.cos(a), mp.y + innerRadius * Math.sin(a))
-        debugger
-        console.log(innerRadius + explodedRadius > 0)
         if (innerRadius + explodedRadius > 0) {
-          debugger
           innerPoints.push(ip)
         }
 
@@ -322,11 +356,11 @@ export class PieSeries extends ItemsSeries {
       )
 
       // keep the point for hit testing
-      this.slicePoints.push(points)
+      this._slicePoints.push(points)
 
       // Render label outside the slice
       if (this.outsideLabelFormatter) {
-        const label = this.outsideLabelFormatter(slice, (slice.value / this.total) * 100)
+        const label = this.outsideLabelFormatter(slice, (slice.value / this._total) * 100)
         const sign = Math.sign(Math.cos(midAngleRadians))
 
         // tick points
@@ -359,8 +393,8 @@ export class PieSeries extends ItemsSeries {
       }
 
       // Render a label inside the slice
-      if (this.insideLabelFormatter && !this.insideLabelColor.isUndefined()) {
-        const label = this.insideLabelFormatter(slice, (slice.value / this.total) * 100)
+      if (this.insideLabelFormatter && !OxyColorHelper.isUndefined(this.insideLabelColor)) {
+        const label = this.insideLabelFormatter(slice, (slice.value / this._total) * 100)
 
         const r = innerRadius * (1 - this.insideLabelPosition) + outerRadius * this.insideLabelPosition
         const labelPosition = newScreenPoint(mp.x + r * Math.cos(midAngleRadians), mp.y + r * Math.sin(midAngleRadians))
@@ -372,7 +406,7 @@ export class PieSeries extends ItemsSeries {
           }
         }
 
-        const actualInsideLabelColor = this.insideLabelColor.isAutomatic()
+        const actualInsideLabelColor = OxyColorHelper.isAutomatic(this.insideLabelColor)
           ? this.actualTextColor
           : this.insideLabelColor
 
@@ -423,7 +457,7 @@ export class PieSeries extends ItemsSeries {
   setDefaultValues(): void {
     for (const slice of this.slices) {
       slice.fill = slice.fill || OxyColors.Automatic
-      if (slice.fill.isAutomatic()) {
+      if (OxyColorHelper.isAutomatic(slice.fill)) {
         ;(slice as InternalPieSlice).defaultFillColor = this.plotModel.getDefaultColor()
       }
     }
@@ -465,4 +499,8 @@ export class PieSeries extends ItemsSeries {
    * @internal
    * */
   updateMaxMin(): void {}
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPieSeriesOptions
+  }
 }

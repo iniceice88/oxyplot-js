@@ -1,13 +1,13 @@
 import {
   AxisPosition,
   CategoryAxis,
-  ErrorBarItem,
   ErrorBarSeries,
   Legend,
   LegendOrientation,
   LegendPlacement,
   LegendPosition,
   LinearAxis,
+  newErrorBarItem,
   OxyColors,
   PlotModel,
 } from 'oxyplot-js'
@@ -31,10 +31,10 @@ function getErrorBarSeries(): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s1.items.push(new ErrorBarItem({ value: 25, error: 2 }))
-  s1.items.push(new ErrorBarItem({ value: 137, error: 25 }))
-  s1.items.push(new ErrorBarItem({ value: 18, error: 4 }))
-  s1.items.push(new ErrorBarItem({ value: 40, error: 29 }))
+  s1.items.push(newErrorBarItem({ value: 25, error: 2 }))
+  s1.items.push(newErrorBarItem({ value: 137, error: 25 }))
+  s1.items.push(newErrorBarItem({ value: 18, error: 4 }))
+  s1.items.push(newErrorBarItem({ value: 40, error: 29 }))
 
   const s2 = new ErrorBarSeries({
     title: 'Series 2',
@@ -42,10 +42,10 @@ function getErrorBarSeries(): PlotModel {
     strokeColor: OxyColors.Black,
     strokeThickness: 1,
   })
-  s2.items.push(new ErrorBarItem({ value: 35, error: 20 }))
-  s2.items.push(new ErrorBarItem({ value: 17, error: 7 }))
-  s2.items.push(new ErrorBarItem({ value: 118, error: 44 }))
-  s2.items.push(new ErrorBarItem({ value: 49, error: 29 }))
+  s2.items.push(newErrorBarItem({ value: 35, error: 20 }))
+  s2.items.push(newErrorBarItem({ value: 17, error: 7 }))
+  s2.items.push(newErrorBarItem({ value: 118, error: 44 }))
+  s2.items.push(newErrorBarItem({ value: 49, error: 29 }))
 
   const categoryAxis = new CategoryAxis({ position: AxisPosition.Left })
   categoryAxis.labels.push('Category A')

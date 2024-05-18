@@ -1,107 +1,141 @@
 ﻿/**
  * Represents a vector defined in screen space.
  */
-export class ScreenVector {
-  /**
-   * The zero point.
-   */
-  public static readonly Zero = Object.freeze(new ScreenVector(0, 0)) as ScreenVector
-
+export interface ScreenVector {
   /**
    * The x-coordinate.
    */
-  private _x: number
-
+  x: number
   /**
    * The y-coordinate.
    */
-  private _y: number
+  y: number
+}
 
-  /**
-   * Initializes a new instance of the `ScreenVector` struct.
-   * @param x The x-coordinate.
-   * @param y The y-coordinate.
-   */
-  constructor(x: number, y: number) {
-    this._x = x
-    this._y = y
+export function newScreenVector(x: number, y: number): ScreenVector {
+  return Object.freeze({
+    x,
+    y,
+  })
+}
+
+export function newScreenVectorEx(x: number, y: number): ScreenVectorEx {
+  return ScreenVectorEx.fromXY(x, y)
+}
+
+/**
+ * The zero point.
+ */
+export const ScreenVector_Zero = Object.freeze(newScreenVector(0, 0)) as ScreenVector
+
+export class ScreenVectorEx implements ScreenVector {
+  private _v: ScreenVector
+
+  get x() {
+    return this._v.x
   }
 
+  get y() {
+    return this._v.y
+  }
+
+  get vector(): ScreenVector {
+    return this._v
+  }
+
+  constructor(v: ScreenVector) {
+    this._v = v
+  }
+
+  get length(): number {
+    return ScreenVectorHelper.length(this._v)
+  }
+
+  get lengthSquared(): number {
+    return ScreenVectorHelper.lengthSquared(this._v)
+  }
+
+  minus(d: ScreenVector): ScreenVectorEx {
+    return ScreenVectorEx.fromVector(ScreenVectorHelper.minus(this._v, d))
+  }
+
+  times(d: number): ScreenVectorEx {
+    return ScreenVectorEx.fromVector(ScreenVectorHelper.times(this._v, d))
+  }
+
+  negate(): ScreenVectorEx {
+    return ScreenVectorEx.fromVector(ScreenVectorHelper.negate(this._v))
+  }
+
+  normalize() {
+    this._v = ScreenVectorHelper.normalize(this._v)
+    return this
+  }
+
+  static fromVector(v: ScreenVector): ScreenVectorEx {
+    return new ScreenVectorEx(v)
+  }
+
+  static fromXY(x: number, y: number): ScreenVectorEx {
+    return new ScreenVectorEx(newScreenVector(x, y))
+  }
+}
+
+export class ScreenVectorHelper {
   /**
    * Gets the length of the vector.
    */
-  public get length(): number {
-    return Math.sqrt(this._x * this._x + this._y * this._y)
+  static length(v: ScreenVector): number {
+    return Math.sqrt(v.x * v.x + v.y * v.y)
   }
 
   /**
    * Gets the squared length of the vector.
    */
-  public get lengthSquared(): number {
-    return this._x * this._x + this._y * this._y
-  }
-
-  /**
-   * Gets the x-coordinate.
-   */
-  public get x(): number {
-    return this._x
-  }
-
-  /**
-   * Gets the y-coordinate.
-   */
-  public get y(): number {
-    return this._y
+  static lengthSquared(v: ScreenVector): number {
+    return v.x * v.x + v.y * v.y
   }
 
   /**
    * Normalizes the vector (makes its length 1).
    * If the vector has zero length, it remains unchanged.
    */
-  normalize(): void {
-    if (this === ScreenVector.Zero) throw new Error('Cannot normalize the zero vector')
+  static normalize(v: ScreenVector): ScreenVector {
+    if (v === ScreenVector_Zero) throw new Error('Cannot normalize the zero vector')
 
-    const length = Math.sqrt(this._x * this._x + this._y * this._y)
+    const length = Math.sqrt(v.x * v.x + v.y * v.y)
     if (length > 0) {
-      this._x /= length
-      this._y /= length
+      return {
+        x: v.x / length,
+        y: v.y / length,
+      }
     }
+    return v
   }
 
-  plus(d: ScreenVector): ScreenVector {
-    const v = this
-    return new ScreenVector(v.x + d.x, v.y + d.y)
+  static plus(v: ScreenVector, d: ScreenVector): ScreenVector {
+    return newScreenVector(v.x + d.x, v.y + d.y)
   }
 
-  minus(d: ScreenVector): ScreenVector {
-    const v = this
-    return new ScreenVector(v.x - d.x, v.y - d.y)
+  static minus(v: ScreenVector, d: ScreenVector): ScreenVector {
+    return newScreenVector(v.x - d.x, v.y - d.y)
   }
 
-  times(d: number): ScreenVector {
-    const v = this
-    return new ScreenVector(v.x * d, v.y * d)
+  static times(v: ScreenVector, d: number): ScreenVector {
+    return newScreenVector(v.x * d, v.y * d)
   }
 
-  negate(): ScreenVector {
-    const v = this
-    return new ScreenVector(-v.x, -v.y)
-  }
-
-  /**
-   * Returns a string representation of the vector.
-   */
-  toString(): string {
-    return `${this._x} ${this._y}`
+  static negate(v: ScreenVector): ScreenVector {
+    return newScreenVector(-v.x, -v.y)
   }
 
   /**
    * Determines whether this vector equals another vector.
+   * @param v
    * @param other The vector to compare to.
    * @returns True if the vectors are equal, false otherwise.
    */
-  equals(other: ScreenVector): boolean {
-    return this._x === other._x && this._y === other._y
+  static equals(v: ScreenVector, other: ScreenVector): boolean {
+    return v.x === other.x && v.y === other.y
   }
 }

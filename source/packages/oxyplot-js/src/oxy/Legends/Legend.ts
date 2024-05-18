@@ -1,9 +1,12 @@
-import type { CreateLegendBaseOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLegendBaseOptions,
   EdgeRenderingMode,
+  ExtendedDefaultLegendBaseOptions,
   FontWeights,
   HitTestArguments,
+  type HitTestResult,
   HorizontalAlignment,
+  type IRenderContext,
   LegendBase,
   LegendItemOrder,
   LegendOrientation,
@@ -11,17 +14,25 @@ import {
   LegendPosition,
   LegendSymbolPlacement,
   MathRenderingExtensions,
+  newOxyRect,
+  newOxySize,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
-  OxySize,
+  type OxyRect,
+  OxyRect_Empty,
+  OxyRectEx,
+  OxyRectHelper,
+  type OxySize,
+  OxySize_Empty,
   RenderingExtensions,
+  type ScreenPoint,
   SelectionMode,
   Series,
   VerticalAlignment,
 } from '@/oxyplot'
-import { getReversedCopy, removeUndef } from '@/patch'
+import { getReversedCopy, assignObject } from '@/patch'
 
 export interface CreateLegendOptions extends CreateLegendBaseOptions {
   groupNameFont?: string
@@ -30,69 +41,76 @@ export interface CreateLegendOptions extends CreateLegendBaseOptions {
   seriesInvisibleTextColor?: OxyColor
 }
 
+export const DefaultLegendOptions: CreateLegendOptions = {
+  isLegendVisible: true,
+  groupNameFontWeight: FontWeights.Normal,
+  groupNameFontSize: NaN,
+
+  legendTitleFontSize: NaN,
+  legendTitleFontWeight: FontWeights.Bold,
+  legendFontSize: NaN,
+  legendFontWeight: FontWeights.Normal,
+  legendSymbolLength: 16,
+  legendSymbolMargin: 4,
+  legendPadding: 8,
+  legendColumnSpacing: 8,
+  legendItemSpacing: 24,
+  legendLineSpacing: 0,
+  legendMargin: 8,
+
+  legendBackground: OxyColors.Undefined,
+  legendBorder: OxyColors.Undefined,
+  legendBorderThickness: 1,
+
+  legendTextColor: OxyColors.Automatic,
+  legendTitleColor: OxyColors.Automatic,
+
+  legendMaxWidth: NaN,
+  legendMaxHeight: NaN,
+  legendPlacement: LegendPlacement.Inside,
+  legendPosition: LegendPosition.RightTop,
+  legendOrientation: LegendOrientation.Vertical,
+  legendItemOrder: LegendItemOrder.Normal,
+  legendItemAlignment: HorizontalAlignment.Left,
+  legendSymbolPlacement: LegendSymbolPlacement.Left,
+
+  showInvisibleSeries: true,
+  seriesInvisibleTextColor: OxyColorHelper.fromAColor(64, OxyColors.Black),
+  selectable: true,
+  selectionMode: SelectionMode.Single,
+
+  groupNameFont: undefined,
+}
+
+export const ExtendedDefaultLegendOptions = {
+  ...ExtendedDefaultLegendBaseOptions,
+  ...DefaultLegendOptions,
+}
+
 /**
  * Represents a Legend.
  */
 export class Legend extends LegendBase {
-  private legendBox: OxyRect
-  private readonly seriesPosMap: Map<Series, OxyRect> = new Map()
+  private _legendBox: OxyRect = OxyRect_Empty
+  private readonly _seriesPosMap: Map<Series, OxyRect> = new Map()
   public groupNameFont?: string
-  public groupNameFontSize: number
-  public groupNameFontWeight: number
-  public seriesInvisibleTextColor: OxyColor
+  public groupNameFontSize: number = DefaultLegendOptions.groupNameFontSize!
+  public groupNameFontWeight: number = DefaultLegendOptions.groupNameFontWeight!
+  public seriesInvisibleTextColor: OxyColor = OxyColorHelper.fromAColor(64, OxyColors.Black)
 
   /**
    * Initializes a new instance of the Legend class.
    */
   constructor(opt?: CreateLegendOptions) {
     super(opt)
-    this.isLegendVisible = true
-    this.legendBox = OxyRect.Empty
-    this.key = undefined
-    this.groupNameFont = undefined
-    this.groupNameFontWeight = FontWeights.Normal
-    this.groupNameFontSize = NaN
-
-    this.legendTitleFont = undefined
-    this.legendTitleFontSize = NaN
-    this.legendTitleFontWeight = FontWeights.Bold
-    this.legendFont = undefined
-    this.legendFontSize = NaN
-    this.legendFontWeight = FontWeights.Normal
-    this.legendSymbolLength = 16
-    this.legendSymbolMargin = 4
-    this.legendPadding = 8
-    this.legendColumnSpacing = 8
-    this.legendItemSpacing = 24
-    this.legendLineSpacing = 0
-    this.legendMargin = 8
-
-    this.legendBackground = OxyColors.Undefined
-    this.legendBorder = OxyColors.Undefined
-    this.legendBorderThickness = 1
-
-    this.legendTextColor = OxyColors.Automatic
-    this.legendTitleColor = OxyColors.Automatic
-
-    this.legendMaxWidth = NaN
-    this.legendMaxHeight = NaN
-    this.legendPlacement = LegendPlacement.Inside
-    this.legendPosition = LegendPosition.RightTop
-    this.legendOrientation = LegendOrientation.Vertical
-    this.legendItemOrder = LegendItemOrder.Normal
-    this.legendItemAlignment = HorizontalAlignment.Left
-    this.legendSymbolPlacement = LegendSymbolPlacement.Left
-
-    this.showInvisibleSeries = true
-
-    this.seriesInvisibleTextColor = OxyColor.fromAColor(64, this.legendTextColor)
-
-    this.selectable = true
-    this.selectionMode = SelectionMode.Single
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
+    assignObject(this, DefaultLegendOptions, opt)
+    if (!opt?.seriesInvisibleTextColor && this.legendTextColor) {
+      this.seriesInvisibleTextColor = OxyColorHelper.fromAColor(64, this.legendTextColor)
     }
+  }
+
+  getElementName() {
+    return 'Legend'
   }
 
   /**
@@ -110,12 +128,12 @@ export class Legend extends LegendBase {
       return undefined
     }
 
-    if (!(this.seriesPosMap && this.seriesPosMap.size > 0)) {
+    if (!(this._seriesPosMap && this._seriesPosMap.size > 0)) {
       return undefined
     }
 
-    for (const [series, rect] of this.seriesPosMap) {
-      if (rect.containsPoint(point)) {
+    for (const [series, rect] of this._seriesPosMap) {
+      if (OxyRectHelper.containsPoint(rect, point)) {
         if (this.showInvisibleSeries) {
           series.isVisible = !series.isVisible
           this.plotModel.invalidatePlot(false)
@@ -133,7 +151,7 @@ export class Legend extends LegendBase {
    * @returns A value indicating whether the point is inside legend boundaries or not.
    */
   public isPointInLegend(point: ScreenPoint): boolean {
-    return this.legendBox.containsPoint(point)
+    return OxyRectHelper.containsPoint(this._legendBox, point)
   }
 
   // ===========Legend.Rendering==================
@@ -176,11 +194,11 @@ export class Legend extends LegendBase {
     // Calculate the size of the legend box
     let legendSize = await this.measureLegends(
       rc,
-      new OxySize(Math.max(0, availableLegendWidth), Math.max(0, availableLegendHeight)),
+      newOxySize(Math.max(0, availableLegendWidth), Math.max(0, availableLegendHeight)),
     )
 
     // Ensure legend size is valid
-    legendSize = new OxySize(Math.max(0, legendSize.width), Math.max(0, legendSize.height))
+    legendSize = newOxySize(Math.max(0, legendSize.width), Math.max(0, legendSize.height))
 
     return legendSize
   }
@@ -194,30 +212,33 @@ export class Legend extends LegendBase {
     let top = 0
     let left = 0
     if (this.legendPlacement === LegendPlacement.Outside) {
+      const plotAndAxisAreaEx = OxyRectEx.fromRect(this.plotModel.plotAndAxisArea)
       switch (this.legendPosition) {
         case LegendPosition.LeftTop:
         case LegendPosition.LeftMiddle:
         case LegendPosition.LeftBottom:
-          left = this.plotModel.plotAndAxisArea.left - legendSize.width - this.legendMargin
+          left = plotAndAxisAreaEx.left - legendSize.width - this.legendMargin
           break
         case LegendPosition.RightTop:
         case LegendPosition.RightMiddle:
         case LegendPosition.RightBottom:
-          left = this.plotModel.plotAndAxisArea.right + this.legendMargin
+          left = plotAndAxisAreaEx.right + this.legendMargin
           break
         case LegendPosition.TopLeft:
         case LegendPosition.TopCenter:
         case LegendPosition.TopRight:
-          top = this.plotModel.plotAndAxisArea.top - legendSize.height - this.legendMargin
+          top = plotAndAxisAreaEx.top - legendSize.height - this.legendMargin
           break
         case LegendPosition.BottomLeft:
         case LegendPosition.BottomCenter:
         case LegendPosition.BottomRight:
-          top = this.plotModel.plotAndAxisArea.bottom + this.legendMargin
+          top = plotAndAxisAreaEx.bottom + this.legendMargin
           break
       }
 
-      const bounds = this.allowUseFullExtent ? this.plotModel.plotAndAxisArea : this.plotModel.plotArea
+      const bounds = OxyRectEx.fromRect(
+        this.allowUseFullExtent ? this.plotModel.plotAndAxisArea : this.plotModel.plotArea,
+      )
 
       switch (this.legendPosition) {
         case LegendPosition.TopLeft:
@@ -246,37 +267,38 @@ export class Legend extends LegendBase {
           break
       }
     } else {
+      const plotAreaEx = OxyRectEx.fromRect(this.plotModel.plotArea)
       switch (this.legendPosition) {
         case LegendPosition.LeftTop:
         case LegendPosition.LeftMiddle:
         case LegendPosition.LeftBottom:
-          left = this.plotModel.plotArea.left + this.legendMargin
+          left = plotAreaEx.left + this.legendMargin
           break
         case LegendPosition.RightTop:
         case LegendPosition.RightMiddle:
         case LegendPosition.RightBottom:
-          left = this.plotModel.plotArea.right - legendSize.width - this.legendMargin
+          left = plotAreaEx.right - legendSize.width - this.legendMargin
           break
         case LegendPosition.TopLeft:
         case LegendPosition.TopCenter:
         case LegendPosition.TopRight:
-          top = this.plotModel.plotArea.top + this.legendMargin
+          top = plotAreaEx.top + this.legendMargin
           break
         case LegendPosition.BottomLeft:
         case LegendPosition.BottomCenter:
         case LegendPosition.BottomRight:
-          top = this.plotModel.plotArea.bottom - legendSize.height - this.legendMargin
+          top = plotAreaEx.bottom - legendSize.height - this.legendMargin
           break
       }
 
       switch (this.legendPosition) {
         case LegendPosition.TopLeft:
         case LegendPosition.BottomLeft:
-          left = this.plotModel.plotArea.left + this.legendMargin
+          left = plotAreaEx.left + this.legendMargin
           break
         case LegendPosition.TopRight:
         case LegendPosition.BottomRight:
-          left = this.plotModel.plotArea.right - legendSize.width - this.legendMargin
+          left = plotAreaEx.right - legendSize.width - this.legendMargin
           break
         case LegendPosition.LeftTop:
         case LegendPosition.RightTop:
@@ -284,20 +306,20 @@ export class Legend extends LegendBase {
           break
         case LegendPosition.LeftBottom:
         case LegendPosition.RightBottom:
-          top = this.plotModel.plotArea.bottom - legendSize.height - this.legendMargin
+          top = plotAreaEx.bottom - legendSize.height - this.legendMargin
           break
         case LegendPosition.LeftMiddle:
         case LegendPosition.RightMiddle:
-          top = (this.plotModel.plotArea.top + this.plotModel.plotArea.bottom - legendSize.height) * 0.5
+          top = (plotAreaEx.top + plotAreaEx.bottom - legendSize.height) * 0.5
           break
         case LegendPosition.TopCenter:
         case LegendPosition.BottomCenter:
-          left = (this.plotModel.plotArea.left + this.plotModel.plotArea.right - legendSize.width) * 0.5
+          left = (plotAreaEx.left + plotAreaEx.right - legendSize.width) * 0.5
           break
       }
     }
 
-    return new OxyRect(left, top, legendSize.width, legendSize.height)
+    return newOxyRect(left, top, legendSize.width, legendSize.height)
   }
 
   /**
@@ -314,9 +336,10 @@ export class Legend extends LegendBase {
     }
 
     let x = rect.left
+    const right = OxyRectHelper.right(rect)
     switch (actualItemAlignment) {
       case HorizontalAlignment.Center:
-        x = (rect.left + rect.right) / 2
+        x = (rect.left + right) / 2
         if (this.legendSymbolPlacement === LegendSymbolPlacement.Left) {
           x -= (this.legendSymbolLength + this.legendSymbolMargin) / 2
         } else {
@@ -324,7 +347,7 @@ export class Legend extends LegendBase {
         }
         break
       case HorizontalAlignment.Right:
-        x = rect.right
+        x = right
         if (this.legendSymbolPlacement === LegendSymbolPlacement.Right) {
           x -= this.legendSymbolLength + this.legendSymbolMargin
         }
@@ -336,10 +359,7 @@ export class Legend extends LegendBase {
     }
 
     const y = rect.top
-    const maxsize = new OxySize(
-      Math.max(rect.width - this.legendSymbolLength - this.legendSymbolMargin, 0),
-      rect.height,
-    )
+    const maxsize = newOxySize(Math.max(rect.width - this.legendSymbolLength - this.legendSymbolMargin, 0), rect.height)
     const actualLegendFontSize = isNaN(this.legendFontSize) ? this.plotModel.defaultFontSize : this.legendFontSize
 
     let legendTextColor = s.isVisible ? this.legendTextColor : this.seriesInvisibleTextColor
@@ -350,7 +370,7 @@ export class Legend extends LegendBase {
       rc,
       newScreenPoint(x, y),
       s.title || '',
-      legendTextColor.getActualColor(this.plotModel.textColor),
+      OxyColorHelper.getActualColor(legendTextColor, this.plotModel.textColor),
       this.legendFont ?? this.plotModel.defaultFont,
       actualLegendFontSize,
       this.legendFontWeight,
@@ -361,7 +381,7 @@ export class Legend extends LegendBase {
       true,
     )
 
-    this.seriesPosMap.set(s, OxyRect.fromScreenPointAndSize(newScreenPoint(x, y), textSize))
+    this._seriesPosMap.set(s, OxyRectHelper.fromScreenPointAndSize(newScreenPoint(x, y), textSize))
     let x0 = x
     switch (actualItemAlignment) {
       case HorizontalAlignment.Center:
@@ -373,7 +393,7 @@ export class Legend extends LegendBase {
     }
 
     if (s.isVisible) {
-      const symbolRect = new OxyRect(
+      const symbolRect = newOxyRect(
         this.legendSymbolPlacement === LegendSymbolPlacement.Right
           ? x0 + textSize.width + this.legendSymbolMargin
           : x0 - this.legendSymbolMargin - this.legendSymbolLength,
@@ -394,7 +414,7 @@ export class Legend extends LegendBase {
    * @returns The size of the legend box.
    */
   private measureLegends(rc: IRenderContext, availableSize: OxySize): Promise<OxySize> {
-    return this.renderOrMeasureLegends(rc, new OxyRect(0, 0, availableSize.width, availableSize.height), true)
+    return this.renderOrMeasureLegends(rc, newOxyRect(0, 0, availableSize.width, availableSize.height), true)
   }
 
   /**
@@ -407,7 +427,7 @@ export class Legend extends LegendBase {
   private async renderOrMeasureLegends(rc: IRenderContext, rect: OxyRect, measureOnly = false): Promise<OxySize> {
     // Render background and border around legend
     if (!measureOnly && rect.width > 0 && rect.height > 0) {
-      this.legendBox = rect
+      this._legendBox = rect
       const actualEdgeRenderingMode = RenderingExtensions.getActualEdgeRenderingMode(
         this.edgeRenderingMode,
         EdgeRenderingMode.PreferSharpness,
@@ -427,7 +447,7 @@ export class Legend extends LegendBase {
     let x = this.legendPadding
     let top = this.legendPadding
 
-    let size = OxySize.Empty
+    let size = OxySize_Empty
 
     const actualLegendFontSize = isNaN(this.legendFontSize) ? this.plotModel.defaultFontSize : this.legendFontSize
     const actualLegendTitleFontSize = isNaN(this.legendTitleFontSize) ? actualLegendFontSize : this.legendTitleFontSize
@@ -449,7 +469,7 @@ export class Legend extends LegendBase {
           rc,
           newScreenPoint(rect.left + x, rect.top + top),
           this.legendTitle,
-          this.legendTitleColor.getActualColor(this.plotModel.textColor),
+          OxyColorHelper.getActualColor(this.legendTitleColor, this.plotModel.textColor),
           this.legendTitleFont ?? this.plotModel.defaultFont,
           actualLegendTitleFontSize,
           this.legendTitleFontWeight,
@@ -462,7 +482,7 @@ export class Legend extends LegendBase {
       }
 
       top += titleSize.height
-      size = new OxySize(x + titleSize.width + this.legendPadding, top + titleSize.height)
+      size = newOxySize(x + titleSize.width + this.legendPadding, top + titleSize.height)
     }
 
     let y = top
@@ -489,7 +509,7 @@ export class Legend extends LegendBase {
     }
 
     // Clear the series position map.
-    this.seriesPosMap.clear()
+    this._seriesPosMap.clear()
 
     const seriesToRender = new Map<Series, OxyRect>()
     const renderItems = async () => {
@@ -513,7 +533,7 @@ export class Legend extends LegendBase {
             rc,
             newScreenPoint(xpos, ypos),
             series.seriesGroupName,
-            this.legendTitleColor.getActualColor(this.plotModel.textColor),
+            OxyColorHelper.getActualColor(this.legendTitleColor, this.plotModel.textColor),
             this.groupNameFont ?? this.plotModel.defaultFont,
             actualGroupNameFontSize,
             this.groupNameFontWeight,
@@ -533,7 +553,7 @@ export class Legend extends LegendBase {
         if (rect.top + rheight + this.legendPadding > rect.top + availableHeight)
           rheight = rect.top + availableHeight - rect.top - this.legendPadding
 
-        const r = new OxyRect(itemRect.left, itemRect.top, Math.max(rwidth, 0), Math.max(rheight, 0))
+        const r = newOxyRect(itemRect.left, itemRect.top, Math.max(rwidth, 0), Math.max(rheight, 0))
 
         await this.renderLegend(rc, series, r)
       }
@@ -546,7 +566,7 @@ export class Legend extends LegendBase {
 
     for (const g of itemGroupNames) {
       const itemGroup = items.filter((i) => (i.seriesGroupName || '') === g)
-      let groupNameTextSize = OxySize.Empty
+      let groupNameTextSize = OxySize_Empty
 
       if (itemGroup.length > 0 && g) {
         groupNameTextSize = await MathRenderingExtensions.measureMathText(
@@ -606,12 +626,12 @@ export class Legend extends LegendBase {
           lineHeight = Math.max(lineHeight, textSize.height)
 
           if (!measureOnly) {
-            seriesToRender.set(s, new OxyRect(rect.left + x, rect.top + y, itemWidth, itemHeight))
+            seriesToRender.set(s, newOxyRect(rect.left + x, rect.top + y, itemWidth, itemHeight))
           }
 
           x += itemWidth
           x = Math.max(groupNameTextSize.width, x)
-          size = new OxySize(Math.max(size.width, x), Math.max(size.height, y + textSize.height))
+          size = newOxySize(Math.max(size.width, x), Math.max(size.height, y + textSize.height))
         } else {
           if (y + itemHeight > availableHeight - this.legendPadding + epsilon) {
             await renderItems()
@@ -622,12 +642,12 @@ export class Legend extends LegendBase {
           }
 
           if (!measureOnly) {
-            seriesToRender.set(s, new OxyRect(rect.left + x, rect.top + y, itemWidth, itemHeight))
+            seriesToRender.set(s, newOxyRect(rect.left + x, rect.top + y, itemWidth, itemHeight))
           }
 
           y += itemHeight + this.legendLineSpacing
           maxItemWidth = Math.max(maxItemWidth, itemWidth)
-          size = new OxySize(Math.max(size.width, x + itemWidth), Math.max(size.height, y))
+          size = newOxySize(Math.max(size.width, x + itemWidth), Math.max(size.height, y))
         }
 
         count++
@@ -641,29 +661,33 @@ export class Legend extends LegendBase {
     }
 
     if (size.width > 0) {
-      size = new OxySize(size.width + this.legendPadding, size.height)
+      size = newOxySize(size.width + this.legendPadding, size.height)
     }
 
     if (size.height > 0) {
-      size = new OxySize(size.width, size.height + this.legendPadding)
+      size = newOxySize(size.width, size.height + this.legendPadding)
     }
 
     if (size.width > availableWidth) {
-      size = new OxySize(availableWidth, size.height)
+      size = newOxySize(availableWidth, size.height)
     }
 
     if (size.height > availableHeight) {
-      size = new OxySize(size.width, availableHeight)
+      size = newOxySize(size.width, availableHeight)
     }
 
     if (!isNaN(this.legendMaxWidth) && size.width > this.legendMaxWidth) {
-      size = new OxySize(this.legendMaxWidth, size.height)
+      size = newOxySize(this.legendMaxWidth, size.height)
     }
 
     if (!isNaN(this.legendMaxHeight) && size.height > this.legendMaxHeight) {
-      size = new OxySize(size.width, this.legendMaxHeight)
+      size = newOxySize(size.width, this.legendMaxHeight)
     }
 
     return size
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultLegendOptions
   }
 }

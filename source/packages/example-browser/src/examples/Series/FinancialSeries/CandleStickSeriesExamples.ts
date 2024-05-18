@@ -35,11 +35,12 @@ function largeDataSetWide(): PlotModel {
     dataFieldOpen: 'O',
     dataFieldClose: 'C',
     //trackerFormatString: 'High: {2:0.00}\nLow: {3:0.00}\nOpen: {4:0.00}\nClose: {5:0.00}',
-    trackerStringFormatter: (args) =>
-      `High: ${args.high!.toFixed(2)}
+    trackerStringFormatter: function (args) {
+      return `High: ${args.high!.toFixed(2)}
 Low: ${args.low!.toFixed(2)}
 Open: ${args.open!.toFixed(2)}
-Close: ${args.close!.toFixed(2)}`,
+Close: ${args.close!.toFixed(2)}`
+    },
     itemsSource: items,
   })
 
@@ -79,11 +80,12 @@ function largeDataSetNarrow(): PlotModel {
     increasingColor: OxyColors.DarkGreen,
     decreasingColor: OxyColors.Red,
     //trackerFormatString: 'High: {2:0.00}\nLow: {3:0.00}\nOpen: {4:0.00}\nClose: {5:0.00}',
-    trackerStringFormatter: (args) =>
-      `High: ${args.high!.toFixed(2)}
+    trackerStringFormatter: function (args) {
+      return `High: ${args.high!.toFixed(2)}
 Low: ${args.low!.toFixed(2)}
 Open: ${args.open!.toFixed(2)}
-Close: ${args.close!.toFixed(2)}`,
+Close: ${args.close!.toFixed(2)}`
+    },
     itemsSource: items,
   })
 
@@ -129,11 +131,12 @@ function smallDataSet(): PlotModel {
     dataFieldOpen: 'Open',
     dataFieldClose: 'Close',
     //trackerFormatString: 'High: {2:0.00}\nLow: {3:0.00}\nOpen: {4:0.00}\nClose: {5:0.00}',
-    trackerStringFormatter: (args) =>
-      `High: ${args.high!.toFixed(2)}
+    trackerStringFormatter: function (args) {
+      return `High: ${args.high!.toFixed(2)}
 Low: ${args.low!.toFixed(2)}
 Open: ${args.open!.toFixed(2)}
-Close: ${args.close!.toFixed(2)}`,
+Close: ${args.close!.toFixed(2)}`
+    },
     itemsSource: items,
   })
 

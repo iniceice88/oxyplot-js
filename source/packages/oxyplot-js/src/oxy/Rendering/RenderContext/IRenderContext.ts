@@ -3,12 +3,12 @@
   HorizontalAlignment,
   LineJoin,
   OxyColor,
+  OxyImage,
   OxyRect,
   OxySize,
   ScreenPoint,
   VerticalAlignment,
 } from '@/oxyplot'
-import { OxyImage } from '@/oxyplot'
 
 export interface ITextMeasurer {
   /**

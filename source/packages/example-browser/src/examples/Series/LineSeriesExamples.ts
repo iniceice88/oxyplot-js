@@ -14,7 +14,7 @@ import {
   MarkerType,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
   PlotModelUtilities,
@@ -127,7 +127,7 @@ function trackerFormatString(): PlotModel {
 
   const lineSeries1 = createExampleLineSeries()
   //lineSeries1.trackerFormatString = 'X={2:0.0} Y={4:0.0}'
-  lineSeries1.trackerStringFormatter = (args) => {
+  lineSeries1.trackerStringFormatter = function (args) {
     return 'X=' + args.xValue!.toFixed(1) + ' Y=' + args.yValue!.toFixed(1)
   }
   model.series.push(lineSeries1)
@@ -170,7 +170,7 @@ function markerTypes(): PlotModel {
   const pm: PlotModel = createModel('LineSeries with different MarkerType', MarkerType.Custom)
 
   const l: Legend = new Legend({
-    legendBackground: OxyColor.fromAColor(220, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(220, OxyColors.White),
     legendBorder: OxyColors.Black,
     legendBorderThickness: 1.0,
   })

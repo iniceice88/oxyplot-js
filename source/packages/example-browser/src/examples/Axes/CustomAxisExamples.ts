@@ -5,7 +5,8 @@ import {
   LineStyle,
   newScreenPoint,
   OxyColors,
-  OxyThickness,
+  OxyRectHelper,
+  newOxyThickness,
   PlotModel,
   ScreenPoint,
 } from 'oxyplot-js'
@@ -13,8 +14,8 @@ import type { ExampleCategory } from '../types'
 
 function customArrowAxis(): PlotModel {
   const model = new PlotModel({
-    plotAreaBorderThickness: new OxyThickness(0),
-    plotMargins: new OxyThickness(60, 60, 60, 60),
+    plotAreaBorderThickness: newOxyThickness(0),
+    plotMargins: newOxyThickness(60, 60, 60, 60),
   })
   model.axes.push(new ArrowAxis({ position: AxisPosition.Bottom, axislineStyle: LineStyle.Solid }))
   model.axes.push(new ArrowAxis({ position: AxisPosition.Left, axislineStyle: LineStyle.Solid }))
@@ -26,10 +27,11 @@ export class ArrowAxis extends LinearAxis {
     await super.render(rc, pass)
     const points: ScreenPoint[] = []
     if (this.isHorizontal()) {
+      const bottom = OxyRectHelper.bottom(this.plotModel.plotArea)
       const xmax = this.transform(this.actualMaximum)
-      points.push(newScreenPoint(xmax + 4, this.plotModel.plotArea.bottom - 4))
-      points.push(newScreenPoint(xmax + 18, this.plotModel.plotArea.bottom))
-      points.push(newScreenPoint(xmax + 4, this.plotModel.plotArea.bottom + 4))
+      points.push(newScreenPoint(xmax + 4, bottom - 4))
+      points.push(newScreenPoint(xmax + 18, bottom))
+      points.push(newScreenPoint(xmax + 4, bottom + 4))
       // etc.
     } else {
       const ymax = this.transform(this.actualMaximum)

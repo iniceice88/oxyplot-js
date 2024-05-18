@@ -5,6 +5,7 @@ import {
   OxyColor,
   OxyColors,
   OxyRect,
+  OxyRectHelper,
   RenderingExtensions,
   ScreenPoint,
   XYAxisSeries,
@@ -72,6 +73,10 @@ export class ErrorSeries extends XYAxisSeries {
     super()
     this.color = OxyColors.Black
     this.strokeThickness = 1
+  }
+
+  getElementName() {
+    return 'ErrorSeries'
   }
 
   /**
@@ -162,22 +167,24 @@ export class ErrorSeries extends XYAxisSeries {
    * @param legendBox The legend rectangle.
    */
   public async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
     const pts: ScreenPoint[] = [
       newScreenPoint(legendBox.left, ymid),
-      newScreenPoint(legendBox.right, ymid),
+      newScreenPoint(right, ymid),
       newScreenPoint(legendBox.left, ymid - 2),
       newScreenPoint(legendBox.left, ymid + 3),
-      newScreenPoint(legendBox.right, ymid - 2),
-      newScreenPoint(legendBox.right, ymid + 3),
+      newScreenPoint(right, ymid - 2),
+      newScreenPoint(right, ymid + 3),
 
       newScreenPoint(xmid, legendBox.top),
-      newScreenPoint(xmid, legendBox.bottom),
+      newScreenPoint(xmid, bottom),
       newScreenPoint(xmid - 2, legendBox.top),
       newScreenPoint(xmid + 3, legendBox.top),
-      newScreenPoint(xmid - 2, legendBox.bottom),
-      newScreenPoint(xmid + 3, legendBox.bottom),
+      newScreenPoint(xmid - 2, bottom),
+      newScreenPoint(xmid + 3, bottom),
     ]
     await rc.drawLineSegments(
       pts,

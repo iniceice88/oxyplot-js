@@ -7,7 +7,7 @@ import {
   LinearAxis,
   LineSeries,
   MarkerType,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
   TimeSpan,
@@ -53,8 +53,8 @@ function timeSpanAxisPlotModel(stringFormatter?: AxisStringFormatterType): PlotM
   const linearAxis1 = new LinearAxis({ position: AxisPosition.Left })
   plotModel1.axes.push(linearAxis1)
   const lineSeries1 = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
     markerStroke: OxyColors.ForestGreen,
     markerType: MarkerType.Plus,
     strokeThickness: 1,

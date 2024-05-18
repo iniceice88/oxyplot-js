@@ -1,14 +1,27 @@
-import type { CreateAnnotationOptions, DataPoint, ITransposablePlotElement, ScreenPoint } from '@/oxyplot'
 import {
   Annotation,
+  type CreateAnnotationOptions,
+  type DataPoint,
+  ExtendedDefaultAnnotationOptions,
+  type ITransposablePlotElement,
   newScreenPoint,
-  OxyRect,
+  type OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
   PlotElementExtensions,
   PlotElementUtilities,
+  type ScreenPoint,
   setTransposablePlotElement,
 } from '@/oxyplot'
 
 export type CreateTransposableAnnotationOptions = CreateAnnotationOptions
+
+export const DefaultTransposableAnnotationOptions: CreateTransposableAnnotationOptions = {}
+
+export const ExtendedDefaultTransposableAnnotationOptions = {
+  ...ExtendedDefaultAnnotationOptions,
+  ...DefaultTransposableAnnotationOptions,
+}
 
 /**
  * Provides an abstract base class for transposable annotations.
@@ -24,7 +37,7 @@ export abstract class TransposableAnnotation extends Annotation implements ITran
    */
   public getClippingRect(): OxyRect {
     const rect = this.plotModel.plotArea
-    const axisRect = PlotElementUtilities.getClippingRect(this)
+    const axisRect = OxyRectEx.fromRect(PlotElementUtilities.getClippingRect(this))
 
     let minX = 0
     let maxX = Number.POSITIVE_INFINITY
@@ -44,8 +57,8 @@ export abstract class TransposableAnnotation extends Annotation implements ITran
     const minPoint = PlotElementExtensions.orientate(this, newScreenPoint(minX, minY))
     const maxPoint = PlotElementExtensions.orientate(this, newScreenPoint(maxX, maxY))
 
-    const axisClipRect = OxyRect.fromScreenPoints(minPoint, maxPoint)
-    return rect.clip(axisClipRect)
+    const axisClipRect = OxyRectHelper.fromScreenPoints(minPoint, maxPoint)
+    return OxyRectHelper.clip(rect, axisClipRect)
   }
 
   /**

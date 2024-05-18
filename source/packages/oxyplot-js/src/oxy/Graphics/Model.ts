@@ -1,23 +1,34 @@
-﻿import type {
-  HitTestResult,
-  IMouseSupport,
-  ITouchSupport,
-  KeyDownEventType,
-  MouseDownEventType,
-  MouseEnterEventType,
-  MouseLeaveEventType,
-  MouseMoveEventType,
-  MouseUpEventType,
-  OxyColor,
-  OxyKeyEventArgs,
-  OxyMouseDownEventArgs,
-  OxyMouseEventArgs,
-  OxyTouchEventArgs,
-  TouchCompletedEventType,
-  TouchDeltaEventType,
-  TouchStartedEventType,
+﻿import {
+  HitTestArguments,
+  type HitTestResult,
+  type IMouseSupport,
+  type ITouchSupport,
+  type KeyDownEventType,
+  type MouseDownEventType,
+  type MouseEnterEventType,
+  type MouseLeaveEventType,
+  type MouseMoveEventType,
+  type MouseUpEventType,
+  type OxyColor,
+  OxyColors,
+  type OxyKeyEventArgs,
+  type OxyMouseDownEventArgs,
+  type OxyMouseEventArgs,
+  type OxyTouchEventArgs,
+  PlotElement,
+  type TouchCompletedEventType,
+  type TouchDeltaEventType,
+  type TouchStartedEventType,
 } from '@/oxyplot'
-import { HitTestArguments, OxyColors, PlotElement } from '@/oxyplot'
+import { assignObject } from '@/patch'
+
+export interface CreateModelOptions {
+  selectionColor?: OxyColor
+}
+
+export const DefaultCreateModelOptions: CreateModelOptions = {
+  selectionColor: OxyColors.Yellow,
+}
 
 /**
  * An abstract base class for graphics models.
@@ -31,14 +42,15 @@ export abstract class Model {
   /**
    * Initializes a new instance of the `Model` class.
    */
-  protected constructor() {
+  protected constructor(opt?: CreateModelOptions) {
     this.selectionColor = OxyColors.Yellow
+    assignObject(this, DefaultCreateModelOptions, opt)
   }
 
   /**
    * Gets or sets the color of the selection.
    */
-  public selectionColor: OxyColor
+  public selectionColor: OxyColor = DefaultCreateModelOptions.selectionColor!
 
   /**
    * Returns the elements that are hit at the specified position.

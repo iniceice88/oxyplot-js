@@ -1,29 +1,31 @@
-import type {
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IColorAxis,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
 import {
   Axis,
   ColorAxisExtensions,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
   DataPoint_isUnDefined,
   EdgeRenderingMode,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
-  OxyColor,
+  type IColorAxis,
+  type IRenderContext,
+  type LabelStringFormatterType,
+  newOxyRect,
+  type OxyColor,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   RenderingExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
   toColorAxis,
   TrackerHitResult,
+  type TrackerStringFormatterType,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
-import { isInfinity, maxValueOfArray, minValueOfArray, removeUndef } from '@/patch'
+
+import { assignMethod, assignObject, isInfinity, maxValueOfArray, minValueOfArray } from '@/patch'
 
 export interface PolygonItem {
   outlines: DataPoint[][]
@@ -37,10 +39,24 @@ export interface CreatePolygonSeriesOptions extends CreateXYAxisSeriesOptions {
   items?: PolygonItem[]
   mapping?: (item: any) => PolygonItem
   colorAxisKey?: string
-  minValue?: number
-  maxValue?: number
   labelFontSize?: number
   labelStringFormatter?: LabelStringFormatterType
+}
+
+export const DefaultPolygonSeriesOptions: CreatePolygonSeriesOptions = {
+  stroke: OxyColors.Undefined,
+  strokeThickness: 2,
+  labelFontSize: 0,
+
+  items: undefined,
+  mapping: undefined,
+  colorAxisKey: undefined,
+  labelStringFormatter: undefined,
+}
+
+export const ExtendedDefaultPolygonSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultPolygonSeriesOptions,
 }
 
 /**
@@ -50,11 +66,12 @@ export class PolygonSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  private static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = (args) =>
-    `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.item.value}`
+  private static readonly defaultTrackerStringFormatter: TrackerStringFormatterType = function (args) {
+    return `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.colorAxisTitle}: ${args.item.value}`
+  }
 
   /** The default color-axis title */
-  private static readonly defaultColorAxisTitle = 'Value'
+  private static readonly _defaultColorAxisTitle = 'Value'
 
   /**
    * The items originating from the items source.
@@ -69,15 +86,29 @@ export class PolygonSeries extends XYAxisSeries {
   /**
    * Gets the minimum value of the dataset.
    */
-  public minValue: number = 0
+  get minValue() {
+    return this._minValue
+  }
+
+  private _minValue = 0
+
   /**
    * Gets the maximum value of the dataset.
    */
-  public maxValue: number = 0
+  get maxValue() {
+    return this._maxValue
+  }
+
+  private _maxValue = 0
+
+  private _colorAxis?: IColorAxis
   /**
-   * Gets or sets the color axis.
+   * Gets the color axis.
    */
-  public colorAxis?: IColorAxis
+  get colorAxis() {
+    return this._colorAxis
+  }
+
   /**
    * Gets or sets the color axis key.
    */
@@ -93,7 +124,7 @@ export class PolygonSeries extends XYAxisSeries {
    *
    * The font size is relative to the cell height.
    */
-  public labelFontSize: number = 0
+  public labelFontSize: number = DefaultPolygonSeriesOptions.labelFontSize!
   /**
    * Gets or sets the delegate used to map from `ItemsSource` to `PolygonItem`. The default is `null`.
    */
@@ -107,19 +138,27 @@ export class PolygonSeries extends XYAxisSeries {
   /**
    * Gets or sets the stroke. The default is `OxyColors.Undefined`.
    */
-  public stroke: OxyColor = OxyColors.Undefined
+  public stroke: OxyColor = DefaultPolygonSeriesOptions.stroke!
   /**
    * Gets or sets the stroke thickness. The default is 2.
    */
-  public strokeThickness: number = 2
+  public strokeThickness: number = DefaultPolygonSeriesOptions.strokeThickness!
 
   constructor(opt?: CreatePolygonSeriesOptions) {
     super(opt)
+
     this.trackerStringFormatter = PolygonSeries.defaultTrackerStringFormatter
-    this.strokeThickness = 2
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignMethod(this, 'trackerStringFormatter', opt)
+
+    assignMethod(this, 'labelStringFormatter', opt)
+
+    assignObject(this, DefaultPolygonSeriesOptions, opt, {
+      exclude: ['trackerStringFormatter', 'labelStringFormatter'],
+    })
+  }
+
+  getElementName() {
+    return 'PolygonSeries'
   }
 
   /**
@@ -234,7 +273,7 @@ export class PolygonSeries extends XYAxisSeries {
     }
 
     const colorAxis = this.colorAxis as unknown as Axis
-    const colorAxisTitle = colorAxis?.title ?? PolygonSeries.defaultColorAxisTitle
+    const colorAxisTitle = colorAxis?.title ?? PolygonSeries._defaultColorAxisTitle
 
     const screenPointOutline: ScreenPoint[] = []
 
@@ -246,7 +285,7 @@ export class PolygonSeries extends XYAxisSeries {
     for (const item of actualItems) {
       for (let i = 0; i < item.outlines.length; i++) {
         const bounds = item.bounds[i]
-        if (!bounds.contains(p.x, p.y)) {
+        if (!OxyRectHelper.contains(bounds, p.x, p.y)) {
           continue
         }
 
@@ -279,7 +318,7 @@ export class PolygonSeries extends XYAxisSeries {
   public ensureAxes(): void {
     super.ensureAxes()
 
-    this.colorAxis = this.colorAxisKey
+    this._colorAxis = this.colorAxisKey
       ? toColorAxis(this.plotModel.getAxis(this.colorAxisKey))
       : toColorAxis(this.plotModel.defaultColorAxis)
   }
@@ -295,8 +334,8 @@ export class PolygonSeries extends XYAxisSeries {
     const actualItems = this.actualItems
 
     if (actualItems && actualItems.length > 0) {
-      this.minValue = minValueOfArray(actualItems.map((r) => r.value))
-      this.maxValue = maxValueOfArray(actualItems.map((r) => r.value))
+      this._minValue = minValueOfArray(actualItems.map((r) => r.value))
+      this._maxValue = maxValueOfArray(actualItems.map((r) => r.value))
     }
   }
 
@@ -322,9 +361,9 @@ export class PolygonSeries extends XYAxisSeries {
     if (actualItems && actualItems.length > 0) {
       const bounds = actualItems.flatMap((p) => p.bounds)
       this.minX = minValueOfArray(bounds.map((b) => b.left))
-      this.maxX = maxValueOfArray(bounds.map((b) => b.right))
+      this.maxX = maxValueOfArray(bounds.map((b) => OxyRectHelper.right(b)))
       this.minY = minValueOfArray(bounds.map((b) => b.top))
-      this.maxY = maxValueOfArray(bounds.map((b) => b.bottom))
+      this.maxY = maxValueOfArray(bounds.map((b) => OxyRectHelper.bottom(b)))
     }
   }
 
@@ -335,6 +374,10 @@ export class PolygonSeries extends XYAxisSeries {
     this.updateMaxMinXY()
 
     return p.x >= this.minX && p.x <= this.maxX && p.y >= this.minY && p.y <= this.maxY
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultPolygonSeriesOptions
   }
 }
 
@@ -379,7 +422,7 @@ function computeBounds(outline: DataPoint[]): OxyRect {
     maxy = Math.max(maxy, outline[i].y)
   }
 
-  return new OxyRect(minx, miny, maxx - minx, maxy - miny)
+  return newOxyRect(minx, miny, maxx - minx, maxy - miny)
 }
 
 function isPolygonItem(obj: any): obj is PolygonItem {

@@ -23,7 +23,9 @@ function twoColorAreaSeries(): PlotModel {
   const s1 = new TwoColorAreaSeries({
     title: 'Temperature at Eidesmoen, December 1986.',
     //trackerFormatString: 'December {2:0}: {4:0.0} °C',
-    trackerStringFormatter: (args) => `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`,
+    trackerStringFormatter: function (args) {
+      return `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`
+    },
     color: OxyColors.Tomato,
     color2: OxyColors.LightBlue,
     markerFill: OxyColors.Tomato,
@@ -67,7 +69,9 @@ function twoColorAreaSeries2(): PlotModel {
   const s1 = new TwoColorAreaSeries({
     title: 'Temperature at Eidesmoen, December 1986.',
     //trackerFormatString: 'December {2:0}: {4:0.0} °C',
-    trackerStringFormatter: (args) => `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`,
+    trackerStringFormatter: function (args) {
+      return `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`
+    },
     color: OxyColors.Black,
     color2: OxyColors.Brown,
     markerFill: OxyColors.Red,
@@ -119,7 +123,9 @@ function twoColorAreaSeries3(): PlotModel {
   const s1 = new TwoColorAreaSeries({
     title: 'Temperature at Eidesmoen, December 1986.',
     //trackerFormatString: 'December {2:0}: {4:0.0} °C',
-    trackerStringFormatter: (args) => `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`,
+    trackerStringFormatter: function (args) {
+      return `December ${round(args.xValue, 0)}: ${args.yValue.toFixed(1)} °C`
+    },
     color: OxyColors.Black,
     color2: OxyColors.Brown,
     markerFill: OxyColors.Red,

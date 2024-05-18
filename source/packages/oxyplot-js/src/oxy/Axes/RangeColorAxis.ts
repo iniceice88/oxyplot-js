@@ -1,14 +1,16 @@
 import {
   AxisPosition,
   type CreateLinearAxisOptions,
+  ExtendedDefaultLinearAxisOptions,
   type IColorAxis,
   type IRenderContext,
   LinearAxis,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
   RangeColorAxisRenderer,
 } from '@/oxyplot'
-import { Number_MIN_VALUE } from '@/patch'
+import { assignObject, Number_MIN_VALUE } from '@/patch'
 
 export interface CreateRangeColorAxisOptions extends CreateLinearAxisOptions {
   /** The color of values above the maximum value. */
@@ -21,6 +23,22 @@ export interface CreateRangeColorAxisOptions extends CreateLinearAxisOptions {
   invalidNumberColor?: OxyColor
 }
 
+export const DefaultRangeColorAxisOptions: CreateRangeColorAxisOptions = {
+  highColor: OxyColors.Undefined,
+  lowColor: OxyColors.Undefined,
+  invalidNumberColor: OxyColors.Gray,
+
+  position: AxisPosition.None,
+  axisDistance: 20,
+  isPanEnabled: false,
+  isZoomEnabled: false,
+} as const
+
+export const ExtendedDefaultRangeColorAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultRangeColorAxisOptions,
+}
+
 /** Represents a color axis that contains colors for specified ranges. */
 export class RangeColorAxis extends LinearAxis implements IColorAxis {
   /** The ranges */
@@ -31,29 +49,21 @@ export class RangeColorAxis extends LinearAxis implements IColorAxis {
   }
 
   /** The invalid category color. */
-  public invalidNumberColor: OxyColor
+  public invalidNumberColor: OxyColor = DefaultRangeColorAxisOptions.invalidNumberColor!
 
   /** The color of values above the maximum value. */
-  public highColor: OxyColor
+  public highColor: OxyColor = DefaultRangeColorAxisOptions.highColor!
 
   /** The color of values below the minimum value. */
-  public lowColor: OxyColor
+  public lowColor: OxyColor = DefaultRangeColorAxisOptions.lowColor!
 
   constructor(opt?: CreateRangeColorAxisOptions) {
     super(opt)
-    this.position = AxisPosition.None
-    this.axisDistance = 20
+    assignObject(this, DefaultRangeColorAxisOptions, opt)
+  }
 
-    this.lowColor = OxyColors.Undefined
-    this.highColor = OxyColors.Undefined
-    this.invalidNumberColor = OxyColors.Gray
-
-    this.isPanEnabled = false
-    this.isZoomEnabled = false
-
-    if (opt) {
-      Object.assign(this, opt)
-    }
+  getElementName() {
+    return 'RangeColorAxis'
   }
 
   /** Adds a range. */
@@ -68,15 +78,15 @@ export class RangeColorAxis extends LinearAxis implements IColorAxis {
 
   /** Gets the palette index of the specified value. */
   public getPaletteIndex(value: number): number {
-    if (!this.lowColor.isUndefined() && value < this._ranges[0].lowerBound) {
+    if (!OxyColorHelper.isUndefined(this.lowColor) && value < this._ranges[0].lowerBound) {
       return -1
     }
 
-    if (!this.highColor.isUndefined() && value > this._ranges[this._ranges.length - 1].upperBound) {
+    if (!OxyColorHelper.isUndefined(this.highColor) && value > this._ranges[this._ranges.length - 1].upperBound) {
       return this._ranges.length
     }
 
-    // TODO: change to binary search?
+    // fixme: change to binary search?
     for (let i = 0; i < this._ranges.length; i++) {
       const range = this._ranges[i]
       if (range.lowerBound <= value && range.upperBound > value) {
@@ -107,6 +117,10 @@ export class RangeColorAxis extends LinearAxis implements IColorAxis {
   public async render(rc: IRenderContext, pass: number): Promise<void> {
     const renderer = new RangeColorAxisRenderer(rc, this.plotModel)
     return renderer.render(this, pass)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultRangeColorAxisOptions
   }
 }
 

@@ -1,5 +1,5 @@
-﻿import type { IPlotController } from '@/oxyplot'
-import { CursorType, OxyRect, PlotModel, TrackerHitResult } from '@/oxyplot'
+﻿import type { IPlotController, OxyRect } from '@/oxyplot'
+import { CursorType, PlotModel, TrackerHitResult } from '@/oxyplot'
 
 /**
  * Specifies functionality for the plot views.

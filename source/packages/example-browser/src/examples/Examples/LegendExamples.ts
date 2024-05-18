@@ -4,10 +4,9 @@ import {
   LegendPlacement,
   LegendPosition,
   LineSeries,
-  newDataPoint,
-  OxyColor,
+  newDataPoint, newOxyThickness,
+  OxyColorHelper,
   OxyColors,
-  OxyThickness,
   PlotModel,
 } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
@@ -18,7 +17,7 @@ const legendRightTopInside = (): PlotModel => {
   const l = new Legend({
     legendPlacement: LegendPlacement.Inside,
     legendPosition: LegendPosition.RightTop,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -33,7 +32,7 @@ const legendRightTopOutside = (): PlotModel => {
   const l = new Legend({
     legendPlacement: LegendPlacement.Outside,
     legendPosition: LegendPosition.RightTop,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -49,7 +48,7 @@ const legendBottomLeftHorizontal = (): PlotModel => {
     legendPlacement: LegendPlacement.Outside,
     legendPosition: LegendPosition.BottomLeft,
     legendOrientation: LegendOrientation.Horizontal,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -65,7 +64,7 @@ const legendTopLeftVertical = (): PlotModel => {
     legendPlacement: LegendPlacement.Outside,
     legendPosition: LegendPosition.TopLeft,
     legendOrientation: LegendOrientation.Vertical,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -90,7 +89,7 @@ const legendItemSpacing = (): PlotModel => {
     legendItemSpacing: 100,
     legendPosition: LegendPosition.BottomLeft,
     legendOrientation: LegendOrientation.Horizontal,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -106,7 +105,7 @@ const legendLineSpacingVertical = (): PlotModel => {
     legendLineSpacing: 30,
     legendPosition: LegendPosition.TopLeft,
     legendOrientation: LegendOrientation.Vertical,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -122,7 +121,7 @@ const legendLineSpacingHorizontal = (): PlotModel => {
     legendLineSpacing: 30,
     legendPosition: LegendPosition.TopLeft,
     legendOrientation: LegendOrientation.Horizontal,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -138,7 +137,7 @@ const legendColumnSpacing = (): PlotModel => {
     legendColumnSpacing: 100,
     legendPosition: LegendPosition.TopRight,
     legendOrientation: LegendOrientation.Vertical,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -151,7 +150,7 @@ const legendHidden = (): PlotModel => {
   const model = createModel()
 
   const l = new Legend({
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -167,7 +166,7 @@ const legendGrayscale = (): PlotModel => {
 
   const l = new Legend({
     legendSymbolLength: 32,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -184,7 +183,7 @@ const clippedLegends = (): PlotModel => {
   const l = new Legend({
     legendPlacement: LegendPlacement.Inside,
     legendPosition: LegendPosition.RightTop,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -234,7 +233,7 @@ const legendBottomCenterOutsideWithMaxHeight = (): PlotModel => {
     legendPosition: LegendPosition.BottomCenter,
     legendOrientation: LegendOrientation.Vertical,
     legendMaxHeight: 75.0,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -247,7 +246,7 @@ const legendDefaultFontSize = (): PlotModel => {
   const l = new Legend({
     legendFontSize: NaN,
     legendTitle: 'Title in DefaultFontSize',
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -265,7 +264,7 @@ const singleLegendWithSeriesGroupsHorizontal = (): PlotModel => {
   const l = new Legend({
     legendFontSize: NaN,
     legendTitle: 'Legend with groups of Series',
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
     groupNameFont: 'Segoe UI Black',
     legendPosition: LegendPosition.TopLeft,
@@ -285,7 +284,7 @@ const singleLegendWithSeriesGroups = (): PlotModel => {
   const l = new Legend({
     legendFontSize: NaN,
     legendTitle: 'Legend with groups of Series',
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -302,7 +301,7 @@ const singleLegendWithSeriesGroupsMaxHeight = (): PlotModel => {
   const l = new Legend({
     legendFontSize: NaN,
     legendTitle: 'Legend with groups of Series',
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
     legendMaxHeight: 275.0,
   })
@@ -331,7 +330,7 @@ const multipleLegendsWithSeriesGroups = (): PlotModel => {
     legendFontSize: NaN,
     legendTitle: 'Legend 1 Series',
     legendPlacement: LegendPlacement.Inside,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -340,7 +339,7 @@ const multipleLegendsWithSeriesGroups = (): PlotModel => {
     legendFontSize: NaN,
     legendTitle: 'Legend 2 Series',
     legendPlacement: LegendPlacement.Outside,
-    legendBackground: OxyColor.fromAColor(200, OxyColors.White),
+    legendBackground: OxyColorHelper.fromAColor(200, OxyColors.White),
     legendBorder: OxyColors.Black,
   })
 
@@ -366,7 +365,7 @@ const legendFullWidth = (): PlotModel => {
     allowUseFullExtent: true,
   })
 
-  model.plotMargins = new OxyThickness(50)
+  model.plotMargins = newOxyThickness(50)
 
   model.legends.push(l1)
   model.legends.push(l2)

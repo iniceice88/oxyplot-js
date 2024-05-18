@@ -1,5 +1,15 @@
-import type { DataPoint, IPlotView, OxyInputEventArgs, ScreenPoint } from '@/oxyplot'
-import { Axis, AxisPreference, DataPoint_Zero, ManipulatorBase, newDataPoint } from '@/oxyplot'
+import {
+  Axis,
+  AxisPreference,
+  type DataPoint,
+  DataPoint_Zero,
+  type IPlotView,
+  ManipulatorBase,
+  newDataPoint,
+  type OxyInputEventArgs,
+  OxyRectHelper,
+  type ScreenPoint,
+} from '@/oxyplot'
 
 /**
  * Provides an abstract base class for plot manipulators.
@@ -62,7 +72,10 @@ export abstract class PlotManipulator<T extends OxyInputEventArgs> extends Manip
     if (this.plotView.actualModel) {
       ;[xaxis, yaxis] = this.plotView.actualModel.getAxesFromPoint(position)
 
-      if (this.axisPreference !== AxisPreference.None && this.plotView.actualModel.plotArea.containsPoint(position)) {
+      if (
+        this.axisPreference !== AxisPreference.None &&
+        OxyRectHelper.containsPoint(this.plotView.actualModel.plotArea, position)
+      ) {
         if (this.axisPreference === AxisPreference.X) {
           if (xaxis) yaxis = undefined
         } else if (this.axisPreference === AxisPreference.Y) {

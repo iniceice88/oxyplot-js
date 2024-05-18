@@ -33,5 +33,10 @@ for (const ec of allExampleCats) {
 }
 
 finalExamples = sortArray(finalExamples, [['category', 'ASC']])
+for (const ec of finalExamples) {
+  for (const exp of ec.examples) {
+    exp.category = ec.category
+  }
+}
 
 export default finalExamples

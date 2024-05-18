@@ -1,16 +1,22 @@
-﻿import type { CreateLinearAxisOptions, DataPoint, IRenderContext, ScreenPoint, TickValuesType } from '@/oxyplot'
-import {
+﻿import {
   AngleAxisRenderer,
   Axis,
   AxisPosition,
   AxisUtilities,
+  type CreateLinearAxisOptions,
+  type DataPoint,
+  ExtendedDefaultLinearAxisOptions,
+  type IRenderContext,
   LinearAxis,
   LineStyle,
   newScreenPoint,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
+  type ScreenPoint,
   TickStyle,
+  type TickValuesType,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CreateAngleAxisOptions extends CreateLinearAxisOptions {
   /**
@@ -24,6 +30,22 @@ export interface CreateAngleAxisOptions extends CreateLinearAxisOptions {
   endAngle?: number
 }
 
+export const DefaultAngleAxisOptions: CreateAngleAxisOptions = {
+  position: AxisPosition.All,
+  tickStyle: TickStyle.None,
+  isPanEnabled: false,
+  isZoomEnabled: false,
+  majorGridlineStyle: LineStyle.Solid,
+  minorGridlineStyle: LineStyle.Solid,
+  startAngle: 0,
+  endAngle: 360,
+} as const
+
+export const ExtendedDefaultAngleAxisOptions = {
+  ...ExtendedDefaultLinearAxisOptions,
+  ...DefaultAngleAxisOptions,
+}
+
 /**
  * Represents an angular axis for polar plots.
  */
@@ -31,30 +53,23 @@ export class AngleAxis extends LinearAxis {
   /**
    * The start angle (degrees).
    */
-  public startAngle: number
+  public startAngle: number = DefaultAngleAxisOptions.startAngle!
 
   /**
    * The end angle (degrees).
    */
-  public endAngle: number
+  public endAngle: number = DefaultAngleAxisOptions.endAngle!
 
   /**
    * Initializes a new instance of the AngleAxis class.
    */
   constructor(opt?: CreateAngleAxisOptions) {
     super(opt)
-    this.position = AxisPosition.All
-    this.tickStyle = TickStyle.None
-    this.isPanEnabled = false
-    this.isZoomEnabled = false
-    this.majorGridlineStyle = LineStyle.Solid
-    this.minorGridlineStyle = LineStyle.Solid
-    this.startAngle = 0
-    this.endAngle = 360
+    assignObject(this, DefaultAngleAxisOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'AngleAxis'
   }
 
   /**
@@ -111,8 +126,8 @@ export class AngleAxis extends LinearAxis {
    */
   updateTransform(bounds: OxyRect): void {
     const x0 = bounds.left
-    const x1 = bounds.right
-    const y0 = bounds.bottom
+    const x1 = OxyRectHelper.right(bounds)
+    const y0 = OxyRectHelper.bottom(bounds)
     const y1 = bounds.top
 
     this.screenMin = newScreenPoint(x0, y1)
@@ -124,5 +139,9 @@ export class AngleAxis extends LinearAxis {
 
     this.clipMinimum = this.actualMinimum
     this.clipMaximum = this.actualMaximum
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultAngleAxisOptions
   }
 }

@@ -1,11 +1,44 @@
-import type { CreatePathAnnotationOptions, DataPoint, ScreenPoint } from '@/oxyplot'
-import { newDataPoint, PathAnnotation } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import {
+  type CreatePathAnnotationOptions,
+  type DataPoint,
+  ExtendedDefaultPathAnnotationOptions,
+  newDataPoint,
+  PathAnnotation,
+  type PlotModelSerializeOptions,
+  type ScreenPoint,
+} from '@/oxyplot'
+import { assignObject } from '@/patch'
+
+/**
+ * Defines the definition of function in a FunctionAnnotation.
+ */
+export enum FunctionAnnotationType {
+  /**
+   * Curve equation x=f(y) given by the Equation property
+   */
+  EquationX,
+  /**
+   * Curve equation y=f(x) given by the Equation property
+   */
+  EquationY,
+}
 
 export interface CreateFunctionAnnotationOptions extends CreatePathAnnotationOptions {
   equation?: (arg: number) => number
   resolution?: number
   type?: FunctionAnnotationType
+}
+
+export const DefaultFunctionAnnotationOptions: CreateFunctionAnnotationOptions = {
+  resolution: 400,
+  type: FunctionAnnotationType.EquationX,
+
+  equation: undefined,
+}
+
+export const ExtendedDefaultFunctionAnnotationOptions = {
+  ...ExtendedDefaultPathAnnotationOptions,
+  ...DefaultFunctionAnnotationOptions,
 }
 
 /**
@@ -17,17 +50,17 @@ export class FunctionAnnotation extends PathAnnotation {
    */
   constructor(opt?: CreateFunctionAnnotationOptions) {
     super(opt)
-    this.resolution = 400
-    this.type = FunctionAnnotationType.EquationX
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultFunctionAnnotationOptions, opt)
+  }
+
+  getElementName() {
+    return 'FunctionAnnotation'
   }
 
   /**
    * The type of function. Can be either f(x) or f(y).
    */
-  public type: FunctionAnnotationType
+  public type: FunctionAnnotationType = DefaultFunctionAnnotationOptions.type!
 
   /**
    * The y=f(x) equation when type is Equation.
@@ -37,7 +70,7 @@ export class FunctionAnnotation extends PathAnnotation {
   /**
    * The resolution.
    */
-  public resolution: number
+  public resolution: number = DefaultFunctionAnnotationOptions.resolution!
 
   /**
    * Gets the screen points.
@@ -60,7 +93,7 @@ export class FunctionAnnotation extends PathAnnotation {
     if (fx) {
       let x = this.actualMinimumX
 
-      // todo: the step size should be adaptive
+      // the step size should be adaptive
       const dx = (this.actualMaximumX - this.actualMinimumX) / this.resolution
       // eslint-disable-next-line no-constant-condition
       while (true) {
@@ -89,18 +122,14 @@ export class FunctionAnnotation extends PathAnnotation {
 
     return points.map((p) => this.transform(p))
   }
-}
 
-/**
- * Defines the definition of function in a FunctionAnnotation.
- */
-export enum FunctionAnnotationType {
-  /**
-   * Curve equation x=f(y) given by the Equation property
-   */
-  EquationX,
-  /**
-   * Curve equation y=f(x) given by the Equation property
-   */
-  EquationY,
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultFunctionAnnotationOptions
+  }
+
+  toJSON(opt?: PlotModelSerializeOptions): any {
+    const json = super.toJSON(opt)
+    json.equation = this.equation?.toString()
+    return json
+  }
 }

@@ -1,31 +1,43 @@
-﻿import type {
-  CreateItemsSeriesOptions,
-  DataPoint,
-  IRenderContext,
-  ITransposablePlotElement,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-  TrackerStringFormatterType,
-} from '@/oxyplot'
-import {
+﻿import {
   Axis,
+  type CreateItemsSeriesOptions,
+  type DataPoint,
   DataPoint_Zero,
+  ExtendedDefaultItemsSeriesOptions,
+  type IRenderContext,
   ItemsSeries,
-  OxyRect,
+  type ITransposablePlotElement,
+  type OxyRect,
   PlotElementExtensions,
   PlotElementUtilities,
+  type ScreenPoint,
   ScreenPoint_isUndefined,
   ScreenPoint_LeftTop,
   ScreenPointHelper,
-  screenPointMinus,
+  screenPointMinusEx,
   setTransposablePlotElement,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
+  type TrackerStringFormatterType,
 } from '@/oxyplot'
-import { Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
+
+import { assignMethod, assignObject, Number_MAX_VALUE, Number_MIN_VALUE } from '@/patch'
 
 export interface CreateXYAxisSeriesOptions extends CreateItemsSeriesOptions {
   xAxisKey?: string
   yAxisKey?: string
+}
+
+export const DefaultXYAxisSeriesOptions: CreateXYAxisSeriesOptions = {
+  trackerStringFormatter: undefined,
+
+  xAxisKey: undefined,
+  yAxisKey: undefined,
+}
+
+export const ExtendedDefaultXYAxisSeriesOptions = {
+  ...ExtendedDefaultItemsSeriesOptions,
+  DefaultXYAxisSeriesOptions,
 }
 
 /**
@@ -35,7 +47,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
   /**
    * The default tracker formatter
    */
-  public static readonly DefaultTrackerFormatter: TrackerStringFormatterType = (args) => {
+  public static readonly DefaultTrackerFormatter: TrackerStringFormatterType = function (args) {
     return `${args.title || ''}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}`
   }
 
@@ -60,8 +72,12 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
    */
   protected constructor(opt?: CreateXYAxisSeriesOptions) {
     super(opt)
+
     this.trackerStringFormatter = XYAxisSeries.DefaultTrackerFormatter
+    assignMethod(this, 'trackerStringFormatter', opt)
+
     setTransposablePlotElement(this)
+    assignObject(this, DefaultXYAxisSeriesOptions, opt, { exclude: ['trackerStringFormatter'] })
   }
 
   private _maxX: number = 0
@@ -208,7 +224,6 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
    */
   ensureAxes(): void {
     this._xAxis = this.xAxisKey ? this.plotModel.getAxis(this.xAxisKey) : this.plotModel.defaultXAxis
-
     this._yAxis = this.yAxisKey ? this.plotModel.getAxis(this.yAxisKey) : this.plotModel.defaultYAxis
   }
 
@@ -296,11 +311,11 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
         continue
       }
 
-      const l2 = screenPointMinus(point, spl).lengthSquared
+      const l2 = screenPointMinusEx(point, spl).lengthSquared
 
       if (l2 < minimumDistance) {
-        const segmentLength = screenPointMinus(sp2, sp1).length
-        const u = segmentLength > 0 ? screenPointMinus(spl, sp1).length / segmentLength : 0
+        const segmentLength = screenPointMinusEx(sp2, sp1).length
+        const u = segmentLength > 0 ? screenPointMinusEx(spl, sp1).length / segmentLength : 0
         dpn = this.inverseTransform(spl)
         spn = spl
         minimumDistance = l2
@@ -348,7 +363,7 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
       }
 
       const sp = PlotElementExtensions.transform(this, p.x, p.y)
-      const d2 = screenPointMinus(sp, point).lengthSquared
+      const d2 = screenPointMinusEx(sp, point).lengthSquared
 
       if (d2 < minimumDistance) {
         dpn = p
@@ -694,5 +709,13 @@ export abstract class XYAxisSeries extends ItemsSeries implements ITransposableP
     if (addOtherArgs) addOtherArgs(args)
 
     return this.trackerStringFormatter(args)
+  }
+
+  protected getJsonIgnoreProperties() {
+    return [...super.getJsonIgnoreProperties(), 'isXMonotonic', 'windowStartIndex']
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultXYAxisSeriesOptions
   }
 }

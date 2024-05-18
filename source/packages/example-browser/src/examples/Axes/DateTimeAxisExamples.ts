@@ -12,7 +12,7 @@ import {
   LineStyle,
   MarkerType,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
   TimeSpan,
@@ -116,8 +116,8 @@ function dateTimeAxisPlotModel(): PlotModel {
   plotModel.axes.push(linearAxis1)
 
   const lineSeries1 = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
     markerStroke: OxyColors.ForestGreen,
     markerType: MarkerType.Plus,
     strokeThickness: 1,
@@ -166,7 +166,7 @@ function sunriseAndSunsetInOslo(): PlotModel {
     dataFieldY: 'Sunrise',
     dataFieldX2: 'Day',
     dataFieldY2: 'Sunset',
-    fill: OxyColor.fromArgb(128, 255, 255, 0),
+    fill: OxyColorHelper.fromArgb(128, 255, 255, 0),
     color: OxyColors.Black,
   })
   plotModel1.series.push(areaSeries1)
@@ -179,7 +179,9 @@ function labelFormatter(): PlotModel {
   const model = new PlotModel({ title: 'Using LabelFormatter to format labels by day of week' })
   model.axes.push(
     new DateTimeAxis({
-      labelFormatter: (x) => DateTimeAxis.toDateTime(x).getDay().toString().substring(0, 3),
+      labelFormatter: function (x) {
+        return DateTimeAxis.toDateTime(x).getDay().toString().substring(0, 3)
+      },
     }),
   )
   const series = new LineSeries()

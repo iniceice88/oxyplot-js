@@ -1,116 +1,77 @@
-import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLineSeriesOptions,
+  DefaultLineSeriesOptions,
+  ExtendedDefaultLineSeriesOptions,
+  type IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
 } from '@/oxyplot'
+import { assignObject, isNaNOrUndef } from '@/patch'
+
+export interface DataRange {
+  minimum: number
+  maximum: number
+}
+
+export function newDataRange(min: number, max: number): DataRange {
+  if (isNaN(min) || isNaN(max)) {
+    throw new Error('NaN values are not permitted')
+  }
+
+  if (max < min) {
+    throw new Error('max must be larger or equal min')
+  }
+  return Object.freeze({ minimum: min, maximum: max })
+}
 
 /**
  * Represents an interval defined by two numbers.
  */
-export class DataRange {
-  private readonly _minimum: number
-  private readonly _maximum: number
-  private readonly _isDefined: boolean
-
-  /**
-   * Initializes a new instance of the DataRange class.
-   * @param min The inclusive lower bound.
-   * @param max The inclusive upper bound.
-   */
-  constructor(min: number, max: number) {
-    if (isNaN(min) || isNaN(max)) {
-      throw new Error('NaN values are not permitted')
-    }
-
-    if (max < min) {
-      throw new Error('max must be larger or equal min')
-    }
-
-    this._minimum = min
-    this._maximum = max
-
-    this._isDefined = true
-  }
-
-  /**
-   * Gets the lower bound of the data range.
-   */
-  public get minimum(): number {
-    return this._minimum
-  }
-
-  /**
-   * Gets the upper bound of the data range.
-   */
-  public get maximum(): number {
-    return this._maximum
-  }
-
+export class DataRangeHelper {
   /**
    * Gets the difference between maximum and minimum.
    */
-  public get range(): number {
-    return this.maximum - this.minimum
-  }
-
-  /**
-   * Determines whether this data range is defined.
-   * @returns true if this instance is defined, otherwise false.
-   */
-  public isDefined(): boolean {
-    return this._isDefined
+  static range(dr: DataRange): number {
+    return dr.maximum - dr.minimum
   }
 
   /**
    * Determines whether the specified value lies
    * within the closed interval of the data range.
+   * @param dr
    * @param value The value to be checked.
    * @returns true if value in range, otherwise false.
    */
-  public contains(value: number): boolean {
-    return value >= this.minimum && value <= this.maximum
+  static contains(dr: DataRange, value: number): boolean {
+    return value >= dr.minimum && value <= dr.maximum
   }
 
   /**
    * Determines whether the specified data range
    * intersects with this instance.
+   * @param dr
    * @param other the other interval to be checked.
    * @returns true if intersects, otherwise false.
    */
-  public intersectsWith(other: DataRange): boolean {
+  static intersectsWith(dr: DataRange, other: DataRange): boolean {
     return (
-      this.isDefined() &&
-      other.isDefined() &&
-      (this.contains(other.minimum) ||
-        this.contains(other.maximum) ||
-        other.contains(this.minimum) ||
-        other.contains(this.maximum))
+      this.contains(dr, other.minimum) ||
+      this.contains(dr, other.maximum) ||
+      this.contains(other, dr.minimum) ||
+      this.contains(other, dr.maximum)
     )
   }
-
-  /**
-   * Returns a string that represents this instance.
-   * @returns A string that represents this instance.
-   */
-  public toString(): string {
-    return `[${this.minimum}, ${this.maximum}]`
-  }
 }
-
-/**
- * The undefined data range.
- */
-const DataRange_Undefined = new DataRange(0, 0)
-;(DataRange_Undefined as any)._isDefined = false
-Object.freeze(DataRange_Undefined)
-export { DataRange_Undefined }
 
 export interface CreateExtrapolationLineSeriesOptions extends CreateLineSeriesOptions {
   extrapolationColor?: OxyColor
@@ -120,36 +81,49 @@ export interface CreateExtrapolationLineSeriesOptions extends CreateLineSeriesOp
   intervals?: DataRange[]
 }
 
+export const DefaultExtrapolationLineSeriesOptions: CreateExtrapolationLineSeriesOptions = {
+  extrapolationColor: OxyColors.Black,
+  extrapolationLineStyle: LineStyle.Dash,
+  ignoreExtraplotationForScaling: false,
+  lineStyle: LineStyle.Dot,
+  extrapolationDashes: undefined,
+  intervals: undefined,
+}
+
+export const ExtendedDefaultExtrapolationLineSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
+  ...DefaultLineSeriesOptions,
+}
+
 /** Represents a series where the line can be rendered using a different style
  * or color in defined intervals of X. The style specified in the LineStyle
  * property determines how the line is rendered in these intervals. Outside
  * the intervals the style is always solid.
  */
 export class ExtrapolationLineSeries extends LineSeries {
-  /** Default color for the extrapolated parts of the curve. Currently hard-coded. */
-  private readonly defaultExtrapolationColor: OxyColor = OxyColors.Black
+  /** Default color for the extrapolated parts of the curve. Currently, hard-coded. */
+  private readonly _defaultExtrapolationColor: OxyColor = OxyColors.Black
 
-  /** Default line style for the extrapolated parts of the curve. Currently hard-coded. */
-  private readonly defaultExtrapolationLineStyle: LineStyle = LineStyle.Dash
+  /** Default line style for the extrapolated parts of the curve. Currently, hard-coded. */
+  private readonly _defaultExtrapolationLineStyle: LineStyle = LineStyle.Dash
 
-  private orderedIntervals: DataRange[] = []
+  private _orderedIntervals: DataRange[] = []
 
   constructor(opt?: CreateExtrapolationLineSeriesOptions) {
     super(opt)
-    this.extrapolationColor = OxyColors.Black
-    this.lineStyle = LineStyle.Dot
+    assignObject(this, DefaultExtrapolationLineSeriesOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, opt)
-    }
+  getElementName() {
+    return 'ExtrapolationLineSeries'
   }
 
   /** Gets or sets the color for the part of the line that is inside an interval. */
-  extrapolationColor: OxyColor
+  extrapolationColor: OxyColor = DefaultExtrapolationLineSeriesOptions.extrapolationColor!
 
   /** Gets the actual extrapolation color. */
   get actualExtrapolationColor(): OxyColor {
-    return this.extrapolationColor.getActualColor(this.defaultExtrapolationColor)
+    return OxyColorHelper.getActualColor(this.extrapolationColor, this._defaultExtrapolationColor)
   }
 
   /** Gets or sets the dash array for the extrapolated intervals of the rendered line
@@ -158,20 +132,20 @@ export class ExtrapolationLineSeries extends LineSeries {
   extrapolationDashes?: number[]
 
   /** Gets or sets the style for the extrapolated parts of the line. */
-  extrapolationLineStyle: LineStyle = LineStyle.Solid
+  extrapolationLineStyle: LineStyle = DefaultExtrapolationLineSeriesOptions.extrapolationLineStyle!
 
   /** Gets the actual extrapolation line style. */
   get actualExtrapolationLineStyle(): LineStyle {
     return this.extrapolationLineStyle !== LineStyle.Automatic
       ? this.extrapolationLineStyle
-      : this.defaultExtrapolationLineStyle
+      : this._defaultExtrapolationLineStyle
   }
 
   /** Gets or sets a value indicating whether the extrapolated regions of the series will
    * be taken into account when calculating the minima and maxima of the dataset.
    * These regions will hence also be ignored when auto-scaling the axes.
    */
-  ignoreExtraplotationForScaling: boolean = false
+  ignoreExtraplotationForScaling: boolean = DefaultExtrapolationLineSeriesOptions.ignoreExtraplotationForScaling!
 
   /** Gets the list of X intervals within which the line is rendered using the second color and style. */
   intervals: DataRange[] = []
@@ -186,8 +160,10 @@ export class ExtrapolationLineSeries extends LineSeries {
    * are displayed.
    */
   async renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
 
     let pts = [newScreenPoint(legendBox.left, ymid), newScreenPoint(xmid, ymid)]
 
@@ -199,7 +175,7 @@ export class ExtrapolationLineSeries extends LineSeries {
       this.actualDashArray,
     )
 
-    pts = [newScreenPoint(xmid, ymid), newScreenPoint(legendBox.right, ymid)]
+    pts = [newScreenPoint(xmid, ymid), newScreenPoint(right, ymid)]
 
     await rc.drawLine(
       pts,
@@ -230,7 +206,7 @@ export class ExtrapolationLineSeries extends LineSeries {
    * */
   updateData(): void {
     super.updateData()
-    this.orderedIntervals = this.mergeOverlaps(this.intervals)
+    this._orderedIntervals = this.mergeOverlaps(this.intervals)
   }
 
   /**
@@ -238,29 +214,29 @@ export class ExtrapolationLineSeries extends LineSeries {
    * @internal
    * */
   updateMaxMin(): void {
-    if (this.ignoreExtraplotationForScaling && this.orderedIntervals.length > 0) {
+    if (this.ignoreExtraplotationForScaling && this._orderedIntervals.length > 0) {
       this.minX = this.points
         .filter((p) => !this.inAnyInterval(p.x))
         .map((p) => p.x)
-        .filter((x) => !isNaN(x))
+        .filter((x) => !isNaNOrUndef(x))
         .reduce((a, b) => Math.min(a, b), Number.NaN)
 
       this.minY = this.points
         .filter((p) => !this.inAnyInterval(p.x))
         .map((p) => p.y)
-        .filter((y) => !isNaN(y))
+        .filter((y) => !isNaNOrUndef(y))
         .reduce((a, b) => Math.min(a, b), Number.NaN)
 
       this.maxX = this.points
         .filter((p) => !this.inAnyInterval(p.x))
         .map((p) => p.x)
-        .filter((x) => !isNaN(x))
+        .filter((x) => !isNaNOrUndef(x))
         .reduce((a, b) => Math.max(a, b), Number.NaN)
 
       this.maxY = this.points
         .filter((p) => !this.inAnyInterval(p.x))
         .map((p) => p.y)
-        .filter((y) => !isNaN(y))
+        .filter((y) => !isNaNOrUndef(y))
         .reduce((a, b) => Math.max(a, b), Number.NaN)
     } else {
       super.updateMaxMin()
@@ -279,8 +255,8 @@ export class ExtrapolationLineSeries extends LineSeries {
 
     const clippingRect = this.getClippingRect()
 
-    const p1 = this.inverseTransform(clippingRect.bottomLeft)
-    const p2 = this.inverseTransform(clippingRect.topRight)
+    const p1 = this.inverseTransform(OxyRectHelper.bottomLeft(clippingRect))
+    const p2 = this.inverseTransform(OxyRectHelper.topRight(clippingRect))
 
     const minX = Math.min(p1.x, p2.x)
     const maxX = Math.max(p1.x, p2.x)
@@ -291,9 +267,10 @@ export class ExtrapolationLineSeries extends LineSeries {
     const clippingRectangles = this.createClippingRectangles(clippingRect, minX, maxX, minY, maxY)
 
     for (const rect of clippingRectangles) {
-      const centerX = this.inverseTransform(rect.center).x
+      const centerX = this.inverseTransform(OxyRectHelper.center(rect)).x
 
-      const isInterval = this.orderedIntervals && this.orderedIntervals.some((i) => i.contains(centerX))
+      const isInterval =
+        this._orderedIntervals && this._orderedIntervals.some((i) => DataRangeHelper.contains(i, centerX))
 
       const autoResetClipDisp = RenderingExtensions.autoResetClip(rc, rect)
       await this.renderLinePart(rc, pointsToRender, isInterval)
@@ -315,20 +292,19 @@ export class ExtrapolationLineSeries extends LineSeries {
     const rectangles: OxyRect[] = []
     let previous = minX
     const transform = PlotElementExtensions.transform
-    if (this.orderedIntervals && this.orderedIntervals.length > 0) {
-      const flatLimits = this.flatten(this.orderedIntervals).filter((l) => l >= minX && l <= maxX)
+    if (this._orderedIntervals && this._orderedIntervals.length > 0) {
+      const flatLimits = this.flatten(this._orderedIntervals).filter((l) => l >= minX && l <= maxX)
 
       for (const limiter of flatLimits) {
-        const rect = OxyRect.fromScreenPoints(transform(this, previous, minY), transform(this, limiter, maxY))
-        rectangles.push(rect.clip(clippingRect))
+        const rect = OxyRectHelper.fromScreenPoints(transform(this, previous, minY), transform(this, limiter, maxY))
+        rectangles.push(OxyRectHelper.clip(rect, clippingRect))
 
         previous = limiter
       }
     }
 
-    rectangles.push(
-      OxyRect.fromScreenPoints(transform(this, previous, minY), transform(this, maxX, maxY)).clip(clippingRect),
-    )
+    const rect = OxyRectHelper.fromScreenPoints(transform(this, previous, minY), transform(this, maxX, maxY))
+    rectangles.push(OxyRectHelper.clip(rect, clippingRect))
 
     return rectangles
   }
@@ -376,9 +352,10 @@ export class ExtrapolationLineSeries extends LineSeries {
     if (intervals) {
       const ordered = intervals.sort((a, b) => a.minimum - b.minimum)
       for (const current of ordered) {
-        const previous = orderedList[orderedList.length - 1] || DataRange_Undefined
-        if (current.intersectsWith(previous)) {
-          orderedList[orderedList.length - 1] = new DataRange(
+        // previous is undefined if orderedList is empty
+        const previous = orderedList[orderedList.length - 1]
+        if (previous && DataRangeHelper.intersectsWith(current, previous)) {
+          orderedList[orderedList.length - 1] = newDataRange(
             previous.minimum,
             Math.max(previous.maximum, current.maximum),
           )
@@ -399,11 +376,11 @@ export class ExtrapolationLineSeries extends LineSeries {
    */
   private inAnyInterval(x: number): boolean {
     let min = 0
-    let max = this.orderedIntervals.length - 1
+    let max = this._orderedIntervals.length - 1
 
     while (min <= max) {
       const mid = Math.floor((min + max) / 2)
-      const comparison = this.compare(this.orderedIntervals[mid], x)
+      const comparison = this.compare(this._orderedIntervals[mid], x)
 
       if (comparison === 0) {
         return true
@@ -433,5 +410,9 @@ export class ExtrapolationLineSeries extends LineSeries {
     }
 
     return 0
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultExtrapolationLineSeriesOptions
   }
 }

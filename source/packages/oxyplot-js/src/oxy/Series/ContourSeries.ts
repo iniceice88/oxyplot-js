@@ -1,36 +1,36 @@
-import type {
-  ConrecRendererDelegate,
-  CreateXYAxisSeriesOptions,
-  DataPoint,
-  IRenderContext,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
 import {
   ArrayBuilder,
   Conrec,
+  type ConrecRendererDelegate,
+  type CreateXYAxisSeriesOptions,
+  type DataPoint,
+  ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
+  type IRenderContext,
+  type LabelStringFormatterType,
   LineJoin,
   LineStyle,
   LineStyleHelper,
   newDataPoint,
   newScreenPoint,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
   RenderingExtensions,
+  type ScreenPoint,
   screenPointDistanceToSquared,
-  screenPointMinus,
+  screenPointMinusEx,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
   VerticalAlignment,
   XYAxisSeries,
 } from '@/oxyplot'
 
-import { groupBy, Number_MAX_VALUE, removeUndef } from '@/patch'
+import { groupBy, Number_MAX_VALUE, assignObject, isNaNOrUndef } from '@/patch'
 
 export interface CreateContourSeriesOptions extends CreateXYAxisSeriesOptions {
-  columnCoordinates: number[]
-  rowCoordinates: number[]
+  columnCoordinates?: number[]
+  rowCoordinates?: number[]
   contourLevelStep?: number
   contourLevels?: number[]
   contourColors?: OxyColor[]
@@ -45,6 +45,31 @@ export interface CreateContourSeriesOptions extends CreateXYAxisSeriesOptions {
   strokeThickness?: number
   color?: OxyColor
   trackerStringFormatter?: ContourSeriesTrackerStringFormatterType
+}
+
+export const DefaultContourSeriesOptions: CreateContourSeriesOptions = {
+  contourLevelStep: NaN,
+  labelStep: 1,
+  multiLabel: false,
+  labelSpacing: 150,
+  labelBackground: OxyColorHelper.fromAColor(220, OxyColors.White),
+  color: OxyColors.Automatic,
+  strokeThickness: 1.0,
+  lineStyle: LineStyle.Solid,
+  minimumSegmentLength: 2,
+
+  columnCoordinates: [],
+  rowCoordinates: [],
+
+  contourLevels: undefined,
+  contourColors: undefined,
+  data: undefined,
+  labelStringFormatter: undefined,
+}
+
+export const ExtendedDefaultContourSeriesOptions = {
+  ...ExtendedDefaultXYAxisSeriesOptions,
+  ...DefaultContourSeriesOptions,
 }
 
 export interface ContourSeriesTrackerStringFormatterArgs extends TrackerStringFormatterArgs {
@@ -63,29 +88,33 @@ export class ContourSeries extends XYAxisSeries {
   /**
    * The default tracker formatter
    */
-  public static readonly DefaultTrackerFormatString: ContourSeriesTrackerStringFormatterType = (args) => {
+  public static readonly DefaultTrackerFormatString: ContourSeriesTrackerStringFormatterType = function (args) {
     return `${args.title}\n${args.xTitle}: ${args.xValue}\n${args.yTitle}: ${args.yValue}\n${args.zTitle}: ${args.contourLevel}`
+  }
+
+  getElementName() {
+    return 'ContourSeries'
   }
 
   /**
    * The contour collection.
    */
-  private contours?: Contour[]
+  private _contours?: Contour[]
 
   /**
    * The temporary segment collection.
    */
-  private segments: ContourSegment[] = []
+  private _segments: ContourSegment[] = []
 
   /**
    * The default color.
    */
-  private defaultColor: OxyColor = OxyColors.Undefined
+  private _defaultColor: OxyColor = OxyColors.Undefined
 
   /**
    * The color.
    */
-  public color: OxyColor
+  public color: OxyColor = DefaultContourSeriesOptions.color!
 
   /**
    * The column coordinates.
@@ -95,7 +124,7 @@ export class ContourSeries extends XYAxisSeries {
   /**
    * The contour level step size.
    */
-  public contourLevelStep: number
+  public contourLevelStep: number = DefaultContourSeriesOptions.contourLevelStep!
 
   /**
    * The contour levels.
@@ -115,7 +144,7 @@ export class ContourSeries extends XYAxisSeries {
   /**
    * The text background color.
    */
-  public labelBackground: OxyColor
+  public labelBackground: OxyColor = DefaultContourSeriesOptions.labelBackground!
 
   /**
    * The formatter for contour values.
@@ -131,22 +160,22 @@ export class ContourSeries extends XYAxisSeries {
   /**
    * The label spacing.
    */
-  public labelSpacing: number
+  public labelSpacing: number = DefaultContourSeriesOptions.labelSpacing!
 
   /**
    * Multiple labels should be displayed per Contour.
    */
-  public multiLabel: boolean
+  public multiLabel: boolean = DefaultContourSeriesOptions.multiLabel!
 
   /**
    * The interval between labeled contours.
    */
-  public labelStep: number
+  public labelStep: number = DefaultContourSeriesOptions.labelStep!
 
   /**
    * The line style.
    */
-  public lineStyle: LineStyle
+  public lineStyle: LineStyle = DefaultContourSeriesOptions.lineStyle!
 
   /**
    * The row coordinates.
@@ -156,36 +185,24 @@ export class ContourSeries extends XYAxisSeries {
   /**
    * The stroke thickness.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultContourSeriesOptions.strokeThickness!
 
   /**
    * The minimum length of the segment.
    */
-  public minimumSegmentLength: number
+  public minimumSegmentLength: number = DefaultContourSeriesOptions.minimumSegmentLength!
 
   constructor(opt?: CreateContourSeriesOptions) {
     super(opt)
-    this.contourLevelStep = NaN
-    this.labelStep = 1
-    this.multiLabel = false
-    this.labelSpacing = 150
-    this.labelBackground = OxyColor.fromAColor(220, OxyColors.White)
-    this.color = OxyColors.Automatic
-    this.strokeThickness = 1.0
-    this.lineStyle = LineStyle.Solid
-    this.minimumSegmentLength = 2
     this.trackerStringFormatter = ContourSeries.DefaultTrackerFormatString
-
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+    assignObject(this, DefaultContourSeriesOptions, opt)
   }
 
   /**
    * Gets the actual color.
    */
   public get actualColor(): OxyColor {
-    return this.color.getActualColor(this.defaultColor)
+    return OxyColorHelper.getActualColor(this.color, this._defaultColor)
   }
 
   /**
@@ -198,7 +215,7 @@ export class ContourSeries extends XYAxisSeries {
 
     let actualContourLevels = this.contourLevels
 
-    this.segments = []
+    this._segments = []
     const renderer: ConrecRendererDelegate = (
       startX: number,
       startY: number,
@@ -206,7 +223,7 @@ export class ContourSeries extends XYAxisSeries {
       endY: number,
       contourLevel: number,
     ) => {
-      this.segments.push({
+      this._segments.push({
         startPoint: newDataPoint(startX, startY),
         endPoint: newDataPoint(endX, endY),
         contourLevel,
@@ -224,7 +241,7 @@ export class ContourSeries extends XYAxisSeries {
       }
 
       let actualStep = this.contourLevelStep
-      if (isNaN(actualStep)) {
+      if (isNaNOrUndef(actualStep)) {
         const range = max - min
         const step = range / 20
         const stepExp = Math.round(Math.log(Math.abs(step)) / Math.LN10)
@@ -243,7 +260,7 @@ export class ContourSeries extends XYAxisSeries {
     this.joinContourSegments()
 
     if (this.contourColors && this.contourColors.length > 0) {
-      for (const c of this.contours!) {
+      for (const c of this._contours!) {
         // get the index of the contour's level
         let index = ContourSeries.indexOf(actualContourLevels, c.contourLevel)
         if (index >= 0) {
@@ -263,7 +280,7 @@ export class ContourSeries extends XYAxisSeries {
 
     const zaxisTitle = 'Z'
 
-    for (const c of this.contours!) {
+    for (const c of this._contours!) {
       const r = interpolate
         ? this.getNearestInterpolatedPointInternal(c.points, 0, point)
         : this.getNearestPointInternal(c.points, 0, point)
@@ -291,11 +308,11 @@ export class ContourSeries extends XYAxisSeries {
    * @param rc The rendering context.
    */
   public async render(rc: IRenderContext): Promise<void> {
-    if (!this.contours) {
+    if (!this._contours) {
       this.calculateContours()
     }
 
-    if (this.contours!.length === 0) {
+    if (this._contours!.length === 0) {
       return
     }
 
@@ -304,14 +321,14 @@ export class ContourSeries extends XYAxisSeries {
     const contourLabels: ContourLabel[] = []
     const dashArray = LineStyleHelper.getDashArray(this.lineStyle)
 
-    for (const contour of this.contours!) {
+    for (const contour of this._contours!) {
       if (this.strokeThickness <= 0 || this.lineStyle === LineStyle.None) {
         continue
       }
 
       const transformedPoints = contour.points.map((x) => this.transform(x))
 
-      const strokeColor = contour.color.getActualColor(this.actualColor)
+      const strokeColor = OxyColorHelper.getActualColor(contour.color, this.actualColor)
 
       await RenderingExtensions.drawReducedLine(
         rc,
@@ -327,7 +344,7 @@ export class ContourSeries extends XYAxisSeries {
       // measure total contour length
       let contourLength = 0.0
       for (let i = 1; i < transformedPoints.length; i++) {
-        contourLength += screenPointMinus(transformedPoints[i], transformedPoints[i - 1]).length
+        contourLength += screenPointMinusEx(transformedPoints[i], transformedPoints[i - 1]).length
       }
 
       // don't add label to contours, if ContourLevel is not close to LabelStep
@@ -366,7 +383,7 @@ export class ContourSeries extends XYAxisSeries {
 
         // find index of contour points where next label should be positioned
         for (let k = intervalIndex; k < transformedPoints.length; k++) {
-          contourPartLength += screenPointMinus(transformedPoints[k], transformedPoints[k - 1]).length
+          contourPartLength += screenPointMinusEx(transformedPoints[k], transformedPoints[k - 1]).length
 
           if (contourPartLength > contourPartLengthTarget) {
             labelIndex =
@@ -396,9 +413,9 @@ export class ContourSeries extends XYAxisSeries {
    * @internal
    */
   setDefaultValues(): void {
-    if (this.color.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.color)) {
       this.lineStyle = this.plotModel.getDefaultLineStyle()
-      this.defaultColor = this.plotModel.getDefaultColor()
+      this._defaultColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -483,7 +500,7 @@ export class ContourSeries extends XYAxisSeries {
    * @param epsFactor The tolerance for segment ends to connect (maximum allowed [length of distance vector] / [length of position vector]).
    */
   private joinContourSegments(epsFactor: number = 1e-10): void {
-    this.contours = new Array<Contour>()
+    this._contours = new Array<Contour>()
 
     const getPoints = (segment: ContourSegment): Array<SegmentPoint> => {
       const p1 = new SegmentPoint(segment.startPoint)
@@ -493,7 +510,7 @@ export class ContourSeries extends XYAxisSeries {
       return [p1, p2]
     }
 
-    const groups = groupBy(this.segments, 'contourLevel')
+    const groups = groupBy(this._segments, 'contourLevel')
 
     for (const group of groups) {
       const level = group[0]
@@ -584,7 +601,7 @@ export class ContourSeries extends XYAxisSeries {
         }
 
         const contour = new Contour(dataPoints, level)
-        this.contours.push(contour)
+        this._contours.push(contour)
       }
     }
   }
@@ -616,7 +633,7 @@ export class ContourSeries extends XYAxisSeries {
    * @param cl The contour label.
    */
   private async renderLabelBackground(rc: IRenderContext, cl: ContourLabel): Promise<void> {
-    if (this.labelBackground.isInvisible()) {
+    if (OxyColorHelper.isInvisible(this.labelBackground)) {
       return
     }
 
@@ -640,6 +657,10 @@ export class ContourSeries extends XYAxisSeries {
       newScreenPoint(x - size.width * ux + size.height * vx, y - size.width * uy + size.height * vy),
     ]
     await rc.drawPolygon(bpts, this.labelBackground, OxyColors.Undefined, 0, this.edgeRenderingMode)
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultContourSeriesOptions
   }
 }
 

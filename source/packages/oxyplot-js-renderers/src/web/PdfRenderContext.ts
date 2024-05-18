@@ -6,10 +6,12 @@ import {
   isNullOrUndef,
   type ITextMeasurer,
   LineJoin,
-  OxyColor,
-  OxyImage,
-  OxyRect,
-  OxySize,
+  type OxyColor,
+  OxyColorEx,
+  OxyColorHelper,
+  type OxyImage,
+  type OxyRect,
+  type OxySize,
   type ScreenPoint,
   StringHelper,
   VerticalAlignment,
@@ -67,7 +69,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     const height = (source.height / srcHeight) * destHeight
 
     this.clearStyles()
-    this._pdf.addImage(source.data, 'PNG', x, y, width, height)
+    this._pdf.addImage(Uint8Array.from(source.data), 'PNG', x, y, width, height)
   }
 
   /**
@@ -87,7 +89,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
+    if (points.length < 2 || OxyColorHelper.isInvisible(stroke) || thickness == 0) return
     this.clearStyles()
 
     const ctx = this.ctx
@@ -112,7 +114,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if (points.length < 2 || stroke.isInvisible() || thickness == 0) return
+    if (points.length < 2 || OxyColorHelper.isInvisible(stroke) || thickness == 0) return
 
     this.clearStyles()
     const ctx = this.ctx
@@ -143,18 +145,24 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ): Promise<void> {
-    if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || points.length < 2) return
+    if (
+      (OxyColorHelper.isInvisible(fill) && !(OxyColorHelper.isVisible(stroke) || thickness <= 0)) ||
+      points.length < 2
+    )
+      return
     this.clearStyles()
+    const f = OxyColorEx.fromOxyColor(fill)
+    const s = OxyColorEx.fromOxyColor(stroke)
     const ctx = this.ctx
-    if (fill.a < 255 || stroke.a < 255) {
+    if (f.a < 255 || s.a < 255) {
       this._pdf.saveGraphicsState()
       let opacity = 1,
         strokeOpacity = 1
-      if (fill.a < 255) {
-        opacity = fill.a / 255
+      if (f.a < 255) {
+        opacity = f.a / 255
       }
-      if (stroke.a < 255) {
-        strokeOpacity = stroke.a / 255
+      if (s.a < 255) {
+        strokeOpacity = s.a / 255
       }
       this._pdf.setGState(this._pdf.GState({ opacity, 'stroke-opacity': strokeOpacity }))
     }
@@ -165,15 +173,15 @@ export class PdfRenderContext extends ClippingRenderContext {
 
     ctx.closePath()
 
-    if (fill.isVisible()) {
+    if (OxyColorHelper.isVisible(fill)) {
       ctx.fill()
     }
 
-    if (stroke.isVisible() && thickness > 0) {
+    if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
       ctx.stroke()
     }
 
-    if (fill.a < 255 || stroke.a < 255) {
+    if (f.a < 255 || s.a < 255) {
       this._pdf.restoreGraphicsState()
     }
   }
@@ -197,7 +205,11 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray: number[] | undefined,
     lineJoin: LineJoin,
   ): Promise<void> {
-    if ((fill.isInvisible() && !(stroke.isVisible() || thickness <= 0)) || polygons.length === 0) return
+    if (
+      (OxyColorHelper.isInvisible(fill) && !(OxyColorHelper.isVisible(stroke) || thickness <= 0)) ||
+      polygons.length === 0
+    )
+      return
 
     this.clearStyles()
 
@@ -213,11 +225,11 @@ export class PdfRenderContext extends ClippingRenderContext {
 
       ctx.closePath()
 
-      if (fill.isVisible()) {
+      if (OxyColorHelper.isVisible(fill)) {
         ctx.fill()
       }
 
-      if (stroke.isVisible() && thickness > 0) {
+      if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
         ctx.stroke()
       }
     }
@@ -248,7 +260,7 @@ export class PdfRenderContext extends ClippingRenderContext {
     verticalAlignment?: VerticalAlignment,
     maxSize?: OxySize,
   ): Promise<void> {
-    if (!text || fill.isInvisible()) return
+    if (!text || OxyColorHelper.isInvisible(fill)) return
     this.clearStyles()
 
     if (isNullOrUndef(horizontalAlignment)) horizontalAlignment = HorizontalAlignment.Left
@@ -349,10 +361,10 @@ export class PdfRenderContext extends ClippingRenderContext {
     dashArray?: number[],
     lineJoin?: LineJoin,
   ) {
-    if (stroke.isVisible() && thickness > 0) {
+    if (OxyColorHelper.isVisible(stroke) && thickness > 0) {
       this.applyLineStyle(stroke, thickness, edgeRenderingMode, dashArray, lineJoin)
     }
-    if (fill.isVisible()) {
+    if (OxyColorHelper.isVisible(fill)) {
       this.ctx.fillStyle = this.styleConverter.convertStrokeOrFillStyle(fill)
     }
   }

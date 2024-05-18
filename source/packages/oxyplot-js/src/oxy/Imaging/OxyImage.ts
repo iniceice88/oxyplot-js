@@ -1,54 +1,116 @@
-﻿import type { ImageEncoderOptions } from '@/oxyplot'
-import { ImageFormat, OxyColor } from '@/oxyplot'
+﻿import type { ImageEncoderOptions, OxyColor } from '@/oxyplot'
+import { ImageFormat } from '@/oxyplot'
 import { type EncodeImageOptions, getImageService, hashCode, type TwoDimensionalArray } from '@/patch'
 
 /**
  * Represents an image.
  */
-export class OxyImage {
+export interface OxyImage {
+  /**
+   * Gets or sets the URI of the image.
+   * Not implemented.
+   */
+  uri?: string
+  /**
+   * the image format.
+   */
+  format: ImageFormat
+  /**
+   * the width of the image.
+   */
+  width: number
+  /**
+   * the height of the image.
+   */
+  height: number
+  /**
+   *  the number of bits per pixel.
+   */
+  bitsPerPixel: number
+  /**
+   * the horizontal resolution of the image.
+   */
+  dpiX: number
+  /**
+   * the vertical resolution of the image.
+   */
+  dpiY: number
   /**
    * The image data.
    */
-  private readonly _data: Uint8Array
+  data: number[]
+}
 
-  /**
-   * Initializes a new instance of the OxyImage class from the specified stream.
-   * @param s the image data.
-   */
-  constructor(s: Uint8Array) {
-    this._data = s
+/**
+ * Represents an image.
+ */
+export class OxyImageEx implements OxyImage {
+  private _image: OxyImage
+
+  constructor(image: OxyImage) {
+    this._image = image
+  }
+
+  static from(image: OxyImage) {
+    return new OxyImageEx(image)
   }
 
   /**
    * Gets or sets the URI of the image.
    * Not implemented.
    */
-  uri?: string
+  get uri() {
+    return this._image.uri
+  }
 
   /**
    * the image format.
    */
-  format: ImageFormat = ImageFormat.Unknown
+  get format(): ImageFormat {
+    return this._image.format
+  }
+
   /**
    * the width of the image.
    */
-  width: number = 0
+  get width(): number {
+    return this._image.width
+  }
+
   /**
    * the height of the image.
    */
-  height: number = 0
+  get height(): number {
+    return this._image.height
+  }
+
   /**
    *  the number of bits per pixel.
    */
-  bitsPerPixel: number = 0
+  get bitsPerPixel(): number {
+    return this._image.bitsPerPixel
+  }
+
   /**
    * the horizontal resolution of the image.
    */
-  dpiX: number = 96
+  get dpiX(): number {
+    return this._image.dpiX
+  }
+
   /**
    * the vertical resolution of the image.
    */
-  dpiY: number = 96
+  get dpiY(): number {
+    return this._image.dpiY
+  }
+
+  /**
+   * The image data.
+   */
+  get data() {
+    return this._image.data
+  }
 
   /**
    * Creates an image from 8-bit indexed pixels.
@@ -80,18 +142,15 @@ export class OxyImage {
       },
     } as EncodeImageOptions
     const buffer = await imgService.encode(opt)
-    const image = new OxyImage(buffer)
+    const imgInfo = await imgService.getImageInfo(buffer)
+    const image = {
+      ...imgInfo,
+      data: Array.from(buffer),
+    } as OxyImage
     image.width = width
     image.height = height
-    return image
-  }
 
-  /**
-   * Gets the image data.
-   * @returns The image data as a byte array.
-   */
-  public get data(): Uint8Array {
-    return this._data
+    return image
   }
 
   /**
@@ -119,7 +178,7 @@ export class OxyImage {
 
   public getHashCode() {
     if (this._hashCode === undefined) {
-      this._hashCode = hashCode([...this._data])
+      this._hashCode = hashCode([...this._image.data])
     }
     return this._hashCode!
   }

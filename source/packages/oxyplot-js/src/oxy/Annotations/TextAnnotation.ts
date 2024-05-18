@@ -1,21 +1,29 @@
-import type { CreateTextualAnnotationOptions, HitTestResult, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateTextualAnnotationOptions,
+  ExtendedDefaultTextualAnnotationOptions,
   HitTestArguments,
+  type HitTestResult,
   HorizontalAlignment,
+  type IRenderContext,
   MathRenderingExtensions,
-  OxyColor,
+  newOxyThickness,
+  type OxyColor,
   OxyColors,
-  OxyRect,
-  OxySize,
-  OxyThickness,
+  OxyRectHelper,
+  type OxySize,
+  type OxyThickness,
   PlotElementExtensions,
+  type ScreenPoint,
   ScreenPointHelper,
   screenPointPlus,
-  ScreenVector,
+  type ScreenVector,
+  ScreenVector_Zero,
+  ScreenVectorEx,
   TextualAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+
+import { assignObject } from '@/patch'
 
 export interface CreateTextAnnotationOptions extends CreateTextualAnnotationOptions {
   background?: OxyColor
@@ -25,6 +33,20 @@ export interface CreateTextAnnotationOptions extends CreateTextualAnnotationOpti
   strokeThickness?: number
 }
 
+export const DefaultTextAnnotationOptions: CreateTextAnnotationOptions = {
+  background: OxyColors.Undefined,
+  offset: ScreenVector_Zero,
+  padding: newOxyThickness(4),
+  stroke: OxyColors.Black,
+  strokeThickness: 1,
+  textVerticalAlignment: VerticalAlignment.Bottom,
+}
+
+export const ExtendedDefaultTextAnnotationOptions = {
+  ...ExtendedDefaultTextualAnnotationOptions,
+  ...DefaultTextAnnotationOptions,
+}
+
 /**
  * Represents an annotation that shows text.
  */
@@ -32,48 +54,44 @@ export class TextAnnotation extends TextualAnnotation {
   /**
    * The actual bounds of the text.
    */
-  private actualBounds?: ScreenPoint[]
+  private _actualBounds?: ScreenPoint[]
 
   /**
    * Initializes a new instance of the TextAnnotation class.
    */
   constructor(opt?: CreateTextAnnotationOptions) {
     super(opt)
-    this.stroke = OxyColors.Black
-    this.background = OxyColors.Undefined
-    this.strokeThickness = 1
-    this.textVerticalAlignment = VerticalAlignment.Bottom
-    this.padding = new OxyThickness(4)
+    assignObject(this, DefaultTextAnnotationOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'TextAnnotation'
   }
 
   /**
    * The fill color of the background rectangle.
    */
-  public background: OxyColor
+  public background: OxyColor = DefaultTextAnnotationOptions.background!
 
   /**
    * The position offset (screen coordinates).
    */
-  public offset: ScreenVector = ScreenVector.Zero
+  public offset: ScreenVector = DefaultTextAnnotationOptions.offset!
 
   /**
    * The padding of the background rectangle.
    */
-  public padding: OxyThickness
+  public padding: OxyThickness = DefaultTextAnnotationOptions.padding!
 
   /**
    * The stroke color of the background rectangle.
    */
-  public stroke: OxyColor
+  public stroke: OxyColor = DefaultTextAnnotationOptions.stroke!
 
   /**
    * The stroke thickness of the background rectangle.
    */
-  public strokeThickness: number
+  public strokeThickness: number = DefaultTextAnnotationOptions.strokeThickness!
 
   /**
    * Renders the text annotation.
@@ -91,14 +109,14 @@ export class TextAnnotation extends TextualAnnotation {
     const textSize = rc.measureText(this.text, this.actualFont, this.actualFontSize, this.actualFontWeight)
     const [ha, va] = this.getActualTextAlignment()
 
-    this.actualBounds = TextAnnotation.getTextBounds(position, textSize, this.padding, this.textRotation, ha, va)
+    this._actualBounds = TextAnnotation.getTextBounds(position, textSize, this.padding, this.textRotation, ha, va)
 
     if (this.textRotation % 90 === 0) {
-      const actualRect = OxyRect.fromScreenPoints(this.actualBounds[0], this.actualBounds[2])
+      const actualRect = OxyRectHelper.fromScreenPoints(this._actualBounds[0], this._actualBounds[2])
       await rc.drawRectangle(actualRect, this.background, this.stroke, this.strokeThickness, this.edgeRenderingMode)
     } else {
       await rc.drawPolygon(
-        this.actualBounds,
+        this._actualBounds,
         this.background,
         this.stroke,
         this.strokeThickness,
@@ -124,12 +142,12 @@ export class TextAnnotation extends TextualAnnotation {
    * Tests if the plot element is hit by the specified point.
    */
   protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
-    if (!this.actualBounds) {
+    if (!this._actualBounds) {
       return undefined
     }
 
-    // Todo: see if performance can be improved by checking rectangle (with rotation and alignment), not polygon
-    return ScreenPointHelper.isPointInPolygon(args.point, this.actualBounds)
+    // todo: see if performance can be improved by checking rectangle (with rotation and alignment), not polygon
+    return ScreenPointHelper.isPointInPolygon(args.point, this._actualBounds)
       ? { element: this, nearestHitPoint: args.point }
       : undefined
   }
@@ -179,8 +197,8 @@ export class TextAnnotation extends TextualAnnotation {
 
     const cost = Math.cos((rotation / 180) * Math.PI)
     const sint = Math.sin((rotation / 180) * Math.PI)
-    const u = new ScreenVector(cost, sint)
-    const v = new ScreenVector(-sint, cost)
+    const u = ScreenVectorEx.fromXY(cost, sint)
+    const v = ScreenVectorEx.fromXY(-sint, cost)
     const polygon = new Array<ScreenPoint>(4)
     polygon[0] = screenPointPlus(screenPointPlus(position, u.times(left - padding.left)), v.times(top - padding.top))
     polygon[1] = screenPointPlus(screenPointPlus(position, u.times(right + padding.right)), v.times(top - padding.top))
@@ -193,5 +211,9 @@ export class TextAnnotation extends TextualAnnotation {
       v.times(bottom + padding.bottom),
     )
     return polygon
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultTextAnnotationOptions
   }
 }

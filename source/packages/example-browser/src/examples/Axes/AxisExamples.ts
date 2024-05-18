@@ -17,10 +17,11 @@ import {
   MagnitudeAxis,
   MarkerType,
   newDataPoint,
+  newOxyThickness,
   OxyColor,
+  OxyColorHelper,
   OxyColors,
   OxyPen,
-  OxyThickness,
   PlotModel,
   PlotType,
   RenderingExtensions,
@@ -211,7 +212,7 @@ function axisPositionTopRight(): PlotModel {
  * @returns A PlotModel.
  */
 function axisAngle45(): PlotModel {
-  const plotModel1: PlotModel = new PlotModel({ plotMargins: new OxyThickness(60, 40, 60, 30) })
+  const plotModel1: PlotModel = new PlotModel({ plotMargins: newOxyThickness(60, 40, 60, 30) })
   plotModel1.axes.push(
     new LinearAxis({
       angle: 45,
@@ -239,8 +240,8 @@ function axisAngle45(): PlotModel {
 function zeroCrossing(): PlotModel {
   const plotModel1: PlotModel = new PlotModel({
     title: 'PositionAtZeroCrossing = true',
-    plotAreaBorderThickness: new OxyThickness(0),
-    plotMargins: new OxyThickness(10, 10, 10, 10),
+    plotAreaBorderThickness: newOxyThickness(0),
+    plotMargins: newOxyThickness(10, 10, 10, 10),
   })
   plotModel1.axes.push(
     new LinearAxis({
@@ -593,8 +594,8 @@ function defaultPadding(): PlotModel {
   plotModel1.axes.push(new LinearAxis())
   plotModel1.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   const lineSeries1 = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
   })
   lineSeries1.points.push(newDataPoint(10, 4))
   lineSeries1.points.push(newDataPoint(12, 7))
@@ -613,8 +614,8 @@ function noPadding(): PlotModel {
   plotModel1.axes.push(new LinearAxis({ maximumPadding: 0, minimumPadding: 0 }))
   plotModel1.axes.push(new LinearAxis({ maximumPadding: 0, minimumPadding: 0, position: AxisPosition.Bottom }))
   const lineSeries1: LineSeries = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
   })
   lineSeries1.points.push(newDataPoint(10, 4))
   lineSeries1.points.push(newDataPoint(12, 7))
@@ -639,8 +640,8 @@ function padding(): PlotModel {
     }),
   )
   const lineSeries1: LineSeries = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
   })
   lineSeries1.points.push(newDataPoint(10, 4))
   lineSeries1.points.push(newDataPoint(12, 7))
@@ -659,8 +660,8 @@ function xaxisMinimumPadding(): PlotModel {
   plotModel1.axes.push(new LinearAxis())
   plotModel1.axes.push(new LinearAxis({ minimumPadding: 0.1, position: AxisPosition.Bottom }))
   const lineSeries1: LineSeries = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
   })
   lineSeries1.points.push(newDataPoint(10, 4))
   lineSeries1.points.push(newDataPoint(12, 7))
@@ -679,8 +680,8 @@ function xaxisMaximumPadding(): PlotModel {
   plotModel1.axes.push(new LinearAxis())
   plotModel1.axes.push(new LinearAxis({ maximumPadding: 0.1, position: AxisPosition.Bottom }))
   const lineSeries1: LineSeries = new LineSeries({
-    color: OxyColor.fromArgb(255, 78, 154, 6),
-    markerFill: OxyColor.fromArgb(255, 78, 154, 6),
+    color: OxyColorHelper.fromArgb(255, 78, 154, 6),
+    markerFill: OxyColorHelper.fromArgb(255, 78, 154, 6),
   })
   lineSeries1.points.push(newDataPoint(10, 4))
   lineSeries1.points.push(newDataPoint(12, 7))
@@ -848,8 +849,8 @@ function graphPaper(): PlotModel {
       title: 'X',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   model.axes.push(
@@ -858,8 +859,8 @@ function graphPaper(): PlotModel {
       title: 'Y',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   return model
@@ -880,8 +881,8 @@ function logLogPaper(): PlotModel {
       maximum: 1000,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   model.axes.push(
@@ -892,8 +893,8 @@ function logLogPaper(): PlotModel {
       maximum: 1000,
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
     }),
   )
   return model
@@ -931,8 +932,8 @@ function onBlack(): PlotModel {
       fractionUnitSymbol: 'π',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
       ticklineColor: OxyColors.White,
     }),
   )
@@ -942,8 +943,8 @@ function onBlack(): PlotModel {
       title: 'f(x)',
       majorGridlineStyle: LineStyle.Solid,
       minorGridlineStyle: LineStyle.Solid,
-      majorGridlineColor: OxyColor.fromAColor(40, c),
-      minorGridlineColor: OxyColor.fromAColor(20, c),
+      majorGridlineColor: OxyColorHelper.fromAColor(40, c),
+      minorGridlineColor: OxyColorHelper.fromAColor(20, c),
       ticklineColor: OxyColors.White,
     }),
   )
@@ -960,7 +961,7 @@ function backgrounds(): PlotModel {
     background: OxyColors.Silver,
     plotAreaBackground: OxyColors.Gray,
     plotAreaBorderColor: OxyColors.Black,
-    plotAreaBorderThickness: new OxyThickness(3),
+    plotAreaBorderThickness: newOxyThickness(3),
   })
   model.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   model.axes.push(new LinearAxis({ position: AxisPosition.Left }))
@@ -1319,7 +1320,9 @@ function labelFormatter(): PlotModel {
       position: AxisPosition.Bottom,
       minimum: -10,
       maximum: 10,
-      labelFormatter: (x) => (Math.abs(x) < Number.EPSILON ? 'ZERO' : x.toString()),
+      labelFormatter: function (x) {
+        return Math.abs(x) < Number.EPSILON ? 'ZERO' : x.toString()
+      },
     }),
   )
   const charCodeA = 'A'.charCodeAt(0)
@@ -1332,7 +1335,9 @@ function labelFormatter(): PlotModel {
       minorStep: 1,
       maximumPadding: 0,
       minimumPadding: 0,
-      labelFormatter: (y) => String.fromCharCode(y + charCodeA),
+      labelFormatter: function (y) {
+        return String.fromCharCode(y + charCodeA)
+      },
     }),
   )
   return plotModel
@@ -1761,7 +1766,7 @@ function manualMargins(): PlotModel {
   const plotModel: PlotModel = new PlotModel({
     title: 'Manual Margins',
     subtitle: 'PlotMargins = 40',
-    plotMargins: new OxyThickness(40),
+    plotMargins: newOxyThickness(40),
   })
   plotModel.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   return plotModel
@@ -1775,7 +1780,7 @@ function manualLeftMargin(): PlotModel {
   const plotModel: PlotModel = new PlotModel({
     title: 'Manual Left Margin',
     subtitle: 'PlotMargins = 40,NaN,NaN,NaN',
-    plotMargins: new OxyThickness(40, NaN, NaN, NaN),
+    plotMargins: newOxyThickness(40, NaN, NaN, NaN),
   })
   plotModel.axes.push(new LinearAxis({ position: AxisPosition.Bottom }))
   return plotModel
@@ -1988,7 +1993,7 @@ function minimumAndMaximumMarginsPolar(): PlotModel {
   const model: PlotModel = new PlotModel({
     title: 'Spiral',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   model.axes.push(
@@ -2035,7 +2040,7 @@ function minimumAndMaximumMarginsPolar(): PlotModel {
 function axisOutMargins(): PlotModel {
   const plot: PlotModel = new PlotModel({
     title: 'YAxes are evenly distributed with a constant gap',
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   plot.axes.push(
@@ -2130,7 +2135,7 @@ function polarOuterMargins(): PlotModel {
   const model: PlotModel = new PlotModel({
     title: 'Spiral',
     plotType: PlotType.Polar,
-    plotAreaBorderThickness: new OxyThickness(0),
+    plotAreaBorderThickness: newOxyThickness(0),
   })
 
   model.axes.push(

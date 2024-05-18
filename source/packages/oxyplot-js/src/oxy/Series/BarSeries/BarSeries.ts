@@ -1,30 +1,35 @@
-﻿import type {
-  CreateBarSeriesBaseOptions,
-  IRenderContext,
-  IStackableSeries,
-  LabelStringFormatterType,
-  ScreenPoint,
-  TrackerStringFormatterArgs,
-} from '@/oxyplot'
-import {
-  BarItem,
+﻿import {
+  type BarItem,
   BarSeriesBase,
+  type CreateBarSeriesBaseOptions,
   EdgeRenderingMode,
+  ExtendedDefaultBarSeriesBaseOptions,
+  getBarItemCategoryIndex,
+  type IRenderContext,
+  type IStackableSeries,
+  type LabelStringFormatterType,
+  newBarItem,
   newDataPoint,
-  OxyColor,
+  newOxyRect,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  type OxyRect,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
   TrackerHitResult,
+  type TrackerStringFormatterArgs,
 } from '@/oxyplot'
 import {
+  assignMethod,
+  assignObject, isNaNOrUndef,
   isNullOrUndef,
   maxValueOfArray,
   minValueOfArray,
   Number_MAX_VALUE,
   Number_MIN_VALUE,
-  removeUndef,
 } from '@/patch'
 
 export interface CreateBarSeriesOptions extends CreateBarSeriesBaseOptions {
@@ -45,6 +50,35 @@ export interface BarSeriesTrackerStringFormatterArgs extends TrackerStringFormat
   readonly value?: number
 }
 
+/**
+ * The default tracker formatter
+ */
+export const DefaultBarSeriesTrackerFormatter: BarSeriesTrackerStringFormatterType = function (args) {
+  return `${args.title || ''}\n${args.category}: ${args.value}`
+}
+
+export const DefaultBarSeriesOptions: CreateBarSeriesOptions = {
+  fillColor: OxyColors.Automatic,
+  negativeFillColor: OxyColors.Undefined,
+  labelMargin: 2,
+  labelAngle: 0,
+  stackGroup: '',
+  strokeThickness: 0,
+  baseValue: 0,
+  baseLine: NaN,
+  isStacked: false,
+  overlapsStack: false,
+  trackerStringFormatter: DefaultBarSeriesTrackerFormatter,
+  colorField: undefined,
+  labelStringFormatter: undefined,
+  valueField: undefined,
+}
+
+export const ExtendedDefaultBarSeriesOptions = {
+  ...ExtendedDefaultBarSeriesBaseOptions,
+  ...DefaultBarSeriesOptions,
+}
+
 export type BarSeriesTrackerStringFormatterType = (args: BarSeriesTrackerStringFormatterArgs) => string | undefined
 
 /**
@@ -52,16 +86,9 @@ export type BarSeriesTrackerStringFormatterType = (args: BarSeriesTrackerStringF
  */
 export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSeries {
   /**
-   * The default tracker formatter
-   */
-  public static readonly DefaultTrackerFormatter: BarSeriesTrackerStringFormatterType = (args) => {
-    return `${args.title || ''}\n${args.category}: ${args.value}`
-  }
-
-  /**
    * The default fill color.
    */
-  private defaultFillColor: OxyColor = OxyColors.Undefined
+  private _defaultFillColor: OxyColor = OxyColors.Undefined
 
   /**
    * A format function used for the tracker. The default depends on the series.
@@ -74,42 +101,41 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
    */
   constructor(opt?: CreateBarSeriesOptions) {
     super(opt)
-    this.fillColor = OxyColors.Automatic
-    this.negativeFillColor = OxyColors.Undefined
-    this.trackerStringFormatter = BarSeries.DefaultTrackerFormatter
-    this.labelMargin = 2
-    this.labelAngle = 0
-    this.stackGroup = ''
-    this.strokeThickness = 0
-    this.baseValue = 0
-    this.baseLine = NaN
-    this.actualBaseLine = NaN
+    assignMethod(this, 'labelStringFormatter', opt)
+    assignObject(this, DefaultBarSeriesOptions, opt, { exclude: ['labelStringFormatter'] })
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'BarSeries'
   }
 
   /**
    * Gets or sets the base value. Default value is 0.
    */
-  public baseValue: number
+  public baseValue: number = DefaultBarSeriesOptions.baseValue!
 
   /**
    * Gets or sets the base value.
    */
-  public baseLine: number
+  public baseLine: number = DefaultBarSeriesOptions.baseLine!
 
+  private _actualBaseLine: number = NaN
   /**
-   * Gets or sets the actual base line.
+   * Gets or sets the actual baseline.
    */
-  public actualBaseLine: number
+  public get actualBaseLine() {
+    return this._actualBaseLine
+  }
+
+  protected set actualBaseLine(value: number) {
+    this._actualBaseLine = value
+  }
 
   /**
    * Gets the actual fill color.
    */
   public get actualFillColor(): OxyColor {
-    return this.fillColor.getActualColor(this.defaultFillColor)
+    return OxyColorHelper.getActualColor(this.fillColor, this._defaultFillColor)
   }
 
   /**
@@ -120,17 +146,17 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
   /**
    * Gets or sets the color of the interior of the bars.
    */
-  public fillColor: OxyColor
+  public fillColor: OxyColor = DefaultBarSeriesOptions.fillColor!
 
   /**
    * Gets or sets a value indicating whether the series is stacked.
    */
-  isStacked: boolean = false
+  isStacked: boolean = DefaultBarSeriesOptions.isStacked!
 
   /**
    *  Gets a value indicating whether this series should overlap its stack when IsStacked is true.
    */
-  overlapsStack: boolean = false
+  overlapsStack: boolean = DefaultBarSeriesOptions.overlapsStack!
 
   /**
    * Gets or sets the label formatter.
@@ -140,12 +166,12 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
   /**
    * Gets or sets the color of the interior of the bars when the value is negative.
    */
-  public negativeFillColor: OxyColor
+  public negativeFillColor: OxyColor = DefaultBarSeriesOptions.negativeFillColor!
 
   /**
    * Gets or sets the stack group
    */
-  stackGroup: string
+  stackGroup: string = DefaultBarSeriesOptions.stackGroup!
 
   /**
    * Gets or sets the value field.
@@ -167,10 +193,10 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
 
     let i = 0
     for (const rectangle of this.actualBarRectangles) {
-      if (rectangle.containsPoint(point)) {
+      if (OxyRectHelper.containsPoint(rectangle, point)) {
         // get the item corresponding to this bar/column rectangle
         const item = this.validItems[i]
-        const categoryIndex = item.getCategoryIndex(i)
+        const categoryIndex = getBarItemCategoryIndex(item, i)
         const dp = newDataPoint(categoryIndex, this.validItems[i].value)
 
         // get the item that the bar/column is bound to, or the item from the Items collection
@@ -195,12 +221,14 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
    * Renders the legend.
    */
   public renderLegend(rc: IRenderContext, legendBox: OxyRect): Promise<void> {
-    const xmid = (legendBox.left + legendBox.right) / 2
-    const ymid = (legendBox.top + legendBox.bottom) / 2
-    const height = (legendBox.bottom - legendBox.top) * 0.8
+    const right = OxyRectHelper.right(legendBox)
+    const bottom = OxyRectHelper.bottom(legendBox)
+    const xmid = (legendBox.left + right) / 2
+    const ymid = (legendBox.top + bottom) / 2
+    const height = (bottom - legendBox.top) * 0.8
     const width = height
     return rc.drawRectangle(
-      new OxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
+      newOxyRect(xmid - 0.5 * width, ymid - 0.5 * height, width, height),
       this.getSelectableColor(this.actualFillColor),
       this.strokeColor,
       this.strokeThickness,
@@ -213,8 +241,8 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
    * @internal
    */
   setDefaultValues(): void {
-    if (this.fillColor.isAutomatic()) {
-      this.defaultFillColor = this.plotModel.getDefaultColor()
+    if (OxyColorHelper.isAutomatic(this.fillColor)) {
+      this._defaultFillColor = this.plotModel.getDefaultColor()
     }
   }
 
@@ -233,7 +261,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
    * Computes the actual base value.
    */
   protected computeActualBaseLine(): void {
-    if (isNaN(this.baseLine)) {
+    if (isNaNOrUndef(this.baseLine)) {
       if (this.xAxis!.isLogarithmic()) {
         const actualValues = (this.actualItems || []).map((item) => item.value)
         const lowestPositiveValue = minValueOfArray(
@@ -270,7 +298,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
       for (let i = 0; i < labels.length; i++) {
         let j = 0
         const values = this.validItems
-          .filter((item) => item.getCategoryIndex(j++) === i)
+          .filter((item) => getBarItemCategoryIndex(item, j++) === i)
           .map((item) => item.value)
           .concat([0])
         let minTemp = values.filter((v) => v <= 0).reduce((a, b) => a + b, 0)
@@ -348,9 +376,9 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
   ): Promise<void> {
     // Get the color of the item
     let actualFillColor = item.color
-    if (actualFillColor.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(actualFillColor)) {
       actualFillColor = this.actualFillColor
-      if (item.value < 0 && !this.negativeFillColor.isUndefined()) {
+      if (item.value < 0 && !OxyColorHelper.isUndefined(this.negativeFillColor)) {
         actualFillColor = this.negativeFillColor
       }
     }
@@ -385,7 +413,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
     const stackIndex = this.isStacked ? manager.getStackIndex(this.stackGroup) : 0
     for (let i = 0; i < this.validItems.length; i++) {
       const item = this.validItems[i]
-      const categoryIndex = item.getCategoryIndex(i)
+      const categoryIndex = getBarItemCategoryIndex(item, i)
 
       const value = item.value
 
@@ -395,7 +423,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
         baseValue = manager.getCurrentBaseValue(stackIndex, categoryIndex, value < 0)
       }
 
-      if (isNaN(baseValue)) {
+      if (isNaNOrUndef(baseValue)) {
         baseValue = this.baseValue
       }
 
@@ -421,7 +449,7 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
       const p1 = transform(this, clampBase ? xAxis.clipMinimum : baseValue, categoryValue)
       const p2 = transform(this, topValue, categoryValue + actualBarWidth)
 
-      const rectangle = OxyRect.fromScreenPoints(p1, p2)
+      const rectangle = OxyRectHelper.fromScreenPoints(p1, p2)
 
       this.actualBarRectangles.push(rectangle)
 
@@ -460,10 +488,10 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
     for (const item of this.itemsSource) {
       if (isNullOrUndef(item)) continue
       const value = item[this.valueField]
-      const bi = new BarItem()
+      const bi = newBarItem()
       bi.value = !isNullOrUndef(value) ? value : NaN
       let color = OxyColors.Automatic
-      if (this.colorField && item[this.colorField] && item[this.colorField] instanceof OxyColor) {
+      if (this.colorField && item[this.colorField] && OxyColorHelper.isOxyColor(item[this.colorField])) {
         color = item[this.colorField]
       }
       bi.color = color
@@ -471,5 +499,9 @@ export class BarSeries extends BarSeriesBase<BarItem> implements IStackableSerie
     }
 
     return true
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultBarSeriesOptions
   }
 }

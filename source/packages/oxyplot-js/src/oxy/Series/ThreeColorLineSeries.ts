@@ -1,15 +1,20 @@
-import type { CreateLineSeriesOptions, IRenderContext, ScreenPoint } from '@/oxyplot'
 import {
+  type CreateLineSeriesOptions,
+  ExtendedDefaultLineSeriesOptions,
+  type IRenderContext,
   LineSeries,
   LineStyle,
   LineStyleHelper,
-  OxyColor,
+  type OxyColor,
+  OxyColorHelper,
   OxyColors,
-  OxyRect,
+  OxyRectEx,
+  OxyRectHelper,
   PlotElementExtensions,
   RenderingExtensions,
+  type ScreenPoint,
 } from '@/oxyplot'
-import { removeUndef } from '@/patch'
+import { assignObject } from '@/patch'
 
 export interface CrateThreeColorLineSeriesOptions extends CreateLineSeriesOptions {
   colorLo?: OxyColor
@@ -20,6 +25,23 @@ export interface CrateThreeColorLineSeriesOptions extends CreateLineSeriesOption
   dashesHi?: number[]
   lineStyleLo?: LineStyle
   lineStyleHi?: LineStyle
+}
+
+export const DefaultThreeColorLineSeriesOptions: CrateThreeColorLineSeriesOptions = {
+  colorLo: OxyColorHelper.fromRgb(0, 0, 255), // Blue
+  colorHi: OxyColorHelper.fromRgb(255, 0, 0), // Red
+  limitLo: -5.0,
+  limitHi: 5.0,
+  lineStyleLo: LineStyle.Solid,
+  lineStyleHi: LineStyle.Solid,
+
+  dashesLo: undefined,
+  dashesHi: undefined,
+}
+
+export const ExtendedDefaultThreeColorLineSeriesOptions = {
+  ...ExtendedDefaultLineSeriesOptions,
+  ...DefaultThreeColorLineSeriesOptions,
 }
 
 /**
@@ -41,51 +63,46 @@ export class ThreeColorLineSeries extends LineSeries {
    */
   constructor(opt?: CrateThreeColorLineSeriesOptions) {
     super(opt)
-    this.limitLo = -5.0
-    this.colorLo = OxyColor.fromRgb(0, 0, 255) // Blue
-    this.lineStyleLo = LineStyle.Solid
-    this.limitHi = 5.0
-    this.colorHi = OxyColor.fromRgb(255, 0, 0) // Red
-    this.lineStyleHi = LineStyle.Solid
+    assignObject(this, DefaultThreeColorLineSeriesOptions, opt)
+  }
 
-    if (opt) {
-      Object.assign(this, removeUndef(opt))
-    }
+  getElementName() {
+    return 'ThreeColorLineSeries'
   }
 
   /**
    * Gets or sets the color for the part of the line that is below the limit.
    */
-  colorLo: OxyColor
+  colorLo: OxyColor = DefaultThreeColorLineSeriesOptions.colorLo!
 
   /**
    * Gets or sets the color for the part of the line that is above the limit.
    */
-  colorHi: OxyColor
+  colorHi: OxyColor = DefaultThreeColorLineSeriesOptions.colorHi!
 
   /**
    * Gets the actual low color.
    */
   get actualColorLo(): OxyColor {
-    return this.colorLo.getActualColor(this.defaultColorLo)
+    return OxyColorHelper.getActualColor(this.colorLo, this.defaultColorLo)
   }
 
   /**
    * Gets the actual hi color.
    */
   get actualColorHi(): OxyColor {
-    return this.colorHi.getActualColor(this.defaultColorHi)
+    return OxyColorHelper.getActualColor(this.colorHi, this.defaultColorHi)
   }
 
   /**
    * Gets or sets the high limit.
    */
-  limitHi: number
+  limitHi: number = DefaultThreeColorLineSeriesOptions.limitHi!
 
   /**
    * Gets or sets the low limit.
    */
-  limitLo: number
+  limitLo: number = DefaultThreeColorLineSeriesOptions.limitLo!
 
   /**
    * Gets or sets the dash array for the rendered line that is above the limit (overrides LineStyle).
@@ -100,12 +117,12 @@ export class ThreeColorLineSeries extends LineSeries {
   /**
    * Gets or sets the line style for the part of the line that is above the limit.
    */
-  lineStyleHi: LineStyle
+  lineStyleHi: LineStyle = DefaultThreeColorLineSeriesOptions.lineStyleHi!
 
   /**
    * Gets or sets the line style for the part of the line that is below the limit.
    */
-  lineStyleLo: LineStyle
+  lineStyleLo: LineStyle = DefaultThreeColorLineSeriesOptions.lineStyleLo!
 
   /**
    * Gets the actual line style for the part of the line that is above the limit.
@@ -142,7 +159,7 @@ export class ThreeColorLineSeries extends LineSeries {
   setDefaultValues(): void {
     super.setDefaultValues()
 
-    if (this.colorLo.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.colorLo)) {
       this.defaultColorLo = this.plotModel.getDefaultColor()
     }
 
@@ -150,7 +167,7 @@ export class ThreeColorLineSeries extends LineSeries {
       this.lineStyleLo = this.plotModel.getDefaultLineStyle()
     }
 
-    if (this.colorHi.isAutomatic()) {
+    if (OxyColorHelper.isAutomatic(this.colorHi)) {
       this.defaultColorHi = this.plotModel.getDefaultColor()
     }
 
@@ -166,22 +183,22 @@ export class ThreeColorLineSeries extends LineSeries {
    */
   protected async renderLine(rc: IRenderContext, pointsToRender: ScreenPoint[]): Promise<void> {
     const clippingRect = this.getClippingRect()
-    const p1 = this.inverseTransform(clippingRect.bottomLeft)
-    const p2 = this.inverseTransform(clippingRect.topRight)
+    const p1 = this.inverseTransform(OxyRectHelper.bottomLeft(clippingRect))
+    const p2 = this.inverseTransform(OxyRectHelper.topRight(clippingRect))
 
     const transform = PlotElementExtensions.transform
 
     let sp1 = transform(this, p1.x, Math.min(p1.y, p2.y))
     let sp2 = transform(this, p2.x, this.limitLo)
-    const clippingRectLo = OxyRect.fromScreenPoints(sp1, sp2).clip(clippingRect)
+    const clippingRectLo = OxyRectEx.fromScreenPoints(sp1, sp2).clip(clippingRect).rect
 
     sp1 = transform(this, p1.x, this.limitLo)
     sp2 = transform(this, p2.x, this.limitHi)
-    const clippingRectMid = OxyRect.fromScreenPoints(sp1, sp2).clip(clippingRect)
+    const clippingRectMid = OxyRectEx.fromScreenPoints(sp1, sp2).clip(clippingRect).rect
 
     sp1 = transform(this, p1.x, Math.max(p1.y, p2.y))
     sp2 = transform(this, p2.x, this.limitHi)
-    const clippingRectHi = OxyRect.fromScreenPoints(sp1, sp2).clip(clippingRect)
+    const clippingRectHi = OxyRectEx.fromScreenPoints(sp1, sp2).clip(clippingRect).rect
 
     if (this.strokeThickness <= 0 || this.actualLineStyle === LineStyle.None) {
       return
@@ -211,5 +228,9 @@ export class ThreeColorLineSeries extends LineSeries {
     autoResetClipDisp = RenderingExtensions.autoResetClip(rc, clippingRectHi)
     await renderLine(this.actualColorHi)
     autoResetClipDisp.dispose()
+  }
+
+  protected getElementDefaultValues(): any {
+    return ExtendedDefaultThreeColorLineSeriesOptions
   }
 }

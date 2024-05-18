@@ -1,4 +1,4 @@
-import { OxyPalettes, PlotModel } from 'oxyplot-js'
+import { OxyPaletteHelper, OxyPalettes, PlotModel } from 'oxyplot-js'
 import type { ExampleCategory } from '../types'
 import { HeatMapSeriesExamples } from '../Series/HeatMapSeriesExamples'
 
@@ -29,7 +29,7 @@ function hueDistinct200(): PlotModel {
 
 /** HueDistinctReverse200 */
 function hueDistinctReverse200(): PlotModel {
-  return HeatMapSeriesExamples.createPeaks(OxyPalettes.hueDistinct(200).reverse(), false)
+  return HeatMapSeriesExamples.createPeaks(OxyPaletteHelper.reverse(OxyPalettes.hueDistinct(200)), false)
 }
 
 /** Hot200 */

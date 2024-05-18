@@ -1,5 +1,15 @@
-﻿import type { IRenderContext, ScreenPoint } from '@/oxyplot'
-import { HorizontalAlignment, newScreenPoint, OxyColor, OxyColors, OxySize, VerticalAlignment } from '@/oxyplot'
+﻿import {
+  HorizontalAlignment,
+  type IRenderContext,
+  newOxySize,
+  newScreenPoint,
+  type OxyColor,
+  OxyColors,
+  type OxySize,
+  OxySize_Empty,
+  type ScreenPoint,
+  VerticalAlignment,
+} from '@/oxyplot'
 import { indexOfAny, round, substring } from '@/patch'
 
 /**
@@ -57,7 +67,7 @@ export class MathRenderingExtensions {
     measure: boolean = false,
   ): Promise<OxySize> {
     if (!text) {
-      return OxySize.Empty
+      return OxySize_Empty
     }
     if (text.includes('^{') || text.includes('_{')) {
       const x = pt.x
@@ -101,7 +111,7 @@ export class MathRenderingExtensions {
       }
 
       await this.internalDrawMathText(rc, x, y, dx, dy, text, textColor, fontFamily, fontSize, fontWeight, false, angle)
-      return measure ? size : OxySize.Empty
+      return measure ? size : OxySize_Empty
     }
 
     await rc.drawText(pt, text, textColor, fontFamily, fontSize, fontWeight, angle, ha, va, maxSize)
@@ -109,7 +119,7 @@ export class MathRenderingExtensions {
       return rc.measureText(text, fontFamily, fontSize, fontWeight)
     }
 
-    return OxySize.Empty
+    return OxySize_Empty
   }
 
   /**
@@ -204,7 +214,7 @@ export class MathRenderingExtensions {
       }
 
       const flatSize = rc.measureText(text, fontFamily, fSize, fontWeight)
-      return new OxySize(flatSize.width, flatSize.height)
+      return newOxySize(flatSize.width, flatSize.height)
     }
 
     while (i < s.length) {
@@ -261,6 +271,6 @@ export class MathRenderingExtensions {
       currentX = maximumX
     }
 
-    return new OxySize(maximumX - minimumX, maximumY - minimumY)
+    return newOxySize(maximumX - minimumX, maximumY - minimumY)
   }
 }

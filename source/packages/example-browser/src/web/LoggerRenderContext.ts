@@ -3,6 +3,7 @@ import {
   EdgeRenderingMode,
   HorizontalAlignment,
   LineJoin,
+  newOxySize,
   OxyColor,
   OxyImage,
   OxyRect,
@@ -145,7 +146,7 @@ export class LoggerRenderContext extends ClippingRenderContext {
    */
   public measureText(text: string, fontFamily: string | undefined, fontSize: number, fontWeight: number): OxySize {
     log(`${++this._no} measureText '${text}' ${fontFamily} ${fontSize} ${fontWeight}`)
-    return new OxySize(0, 0)
+    return newOxySize(0, 0)
   }
 
   /**

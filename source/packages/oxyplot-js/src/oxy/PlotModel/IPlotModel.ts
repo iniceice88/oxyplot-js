@@ -1,5 +1,4 @@
-﻿import type { IPlotView } from '@/oxyplot'
-import { type IRenderContext, OxyColor, OxyRect } from '@/oxyplot'
+﻿import type { IPlotView, IRenderContext, OxyColor, OxyRect } from '@/oxyplot'
 
 /**
  * Specifies functionality for the plot model.

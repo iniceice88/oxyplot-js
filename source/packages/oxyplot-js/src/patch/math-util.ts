@@ -4,12 +4,13 @@ import { isNullOrUndef } from './object-util'
 export const Number_MIN_VALUE = -1.7976931348623157e308
 export const Number_MAX_VALUE = Number.MAX_VALUE
 
-export function round(number: number, precision: number) {
-  if (precision < 0) {
-    const factor = Math.pow(10, precision)
-    return Math.round(number * factor) / factor
+export function round(number: number, precision: number): number {
+  if (isNaN(number) || !isFinite(number)) {
+    return NaN
   }
-  return +(Math.round(Number(number + 'e+' + precision)) + 'e-' + precision)
+
+  const factor = Math.pow(10, precision)
+  return Math.round((number + Number.EPSILON) * factor) / factor
 }
 
 export function isInfinity(number: number) {
@@ -74,4 +75,8 @@ export function assertInteger(n: number, filedName?: string) {
   if (Math.round(n) !== n) {
     throw new Error(`${filedName || 'number'} must be an integer.`)
   }
+}
+
+export function isNaNOrUndef(n: number) {
+  return isNaN(n) || isNullOrUndef(n)
 }

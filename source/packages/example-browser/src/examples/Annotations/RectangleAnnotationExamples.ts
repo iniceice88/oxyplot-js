@@ -4,7 +4,7 @@ import {
   LineJoin,
   LineSeries,
   newDataPoint,
-  OxyColor,
+  OxyColorHelper,
   OxyColors,
   PlotModel,
   RectangleAnnotation,
@@ -23,7 +23,7 @@ function rectangleAnnotation(): PlotModel {
       maximumY: 40,
       textRotation: 10,
       text: 'RectangleAnnotation',
-      fill: OxyColor.fromAColor(99, OxyColors.Blue),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Blue),
       stroke: OxyColors.Black,
       strokeThickness: 2,
     }),
@@ -39,7 +39,7 @@ function rectangleAnnotationVerticalLimit(): PlotModel {
     new RectangleAnnotation({
       maximumY: 89.5,
       text: 'Valid area',
-      fill: OxyColor.fromAColor(99, OxyColors.Black),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Black),
     }),
   )
   return model
@@ -62,21 +62,21 @@ function rectangleAnnotationHorizontals(): PlotModel {
       minimumY: 89.5,
       maximumY: 90.8,
       text: 'Invalid',
-      fill: OxyColor.fromAColor(99, OxyColors.Red),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Red),
     }),
   )
   model.annotations.push(
     new RectangleAnnotation({
       minimumY: 90.8,
       maximumY: 92.1,
-      fill: OxyColor.fromAColor(99, OxyColors.Orange),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Orange),
     }),
   )
   model.annotations.push(
     new RectangleAnnotation({
       minimumY: 92.1,
       maximumY: 94.6,
-      fill: OxyColor.fromAColor(99, OxyColors.Yellow),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Yellow),
     }),
   )
   model.annotations.push(
@@ -84,7 +84,7 @@ function rectangleAnnotationHorizontals(): PlotModel {
       minimumY: 94.6,
       maximumY: 96,
       text: 'Ok',
-      fill: OxyColor.fromAColor(99, OxyColors.Green),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Green),
     }),
   )
   const series1 = new LineSeries({ color: OxyColors.Black, strokeThickness: 6.0, lineJoin: LineJoin.Round })
@@ -120,7 +120,7 @@ function rectangleAnnotationVerticals(): PlotModel {
       maximumX: 2.8,
       textRotation: 90,
       text: 'Red',
-      fill: OxyColor.fromAColor(99, OxyColors.Red),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Red),
     }),
   )
   model.annotations.push(
@@ -129,7 +129,7 @@ function rectangleAnnotationVerticals(): PlotModel {
       maximumX: 6.1,
       textRotation: 90,
       text: 'Orange',
-      fill: OxyColor.fromAColor(99, OxyColors.Orange),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Orange),
     }),
   )
   model.annotations.push(
@@ -138,7 +138,7 @@ function rectangleAnnotationVerticals(): PlotModel {
       maximumX: 7.6,
       textRotation: 90,
       text: 'Yellow',
-      fill: OxyColor.fromAColor(99, OxyColors.Yellow),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Yellow),
     }),
   )
   model.annotations.push(
@@ -147,7 +147,7 @@ function rectangleAnnotationVerticals(): PlotModel {
       maximumX: 9.7,
       textRotation: 270,
       text: 'Green',
-      fill: OxyColor.fromAColor(99, OxyColors.Green),
+      fill: OxyColorHelper.fromAColor(99, OxyColors.Green),
     }),
   )
   const series1 = new LineSeries({
