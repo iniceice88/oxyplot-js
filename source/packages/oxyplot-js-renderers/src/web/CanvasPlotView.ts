@@ -37,6 +37,7 @@ export class CanvasPlotView extends WebPlotViewBase {
     this._tooltip.style.padding = '8px'
     this._tooltip.style.visibility = 'hidden'
     this._tooltip.style.pointerEvents = 'none'
+    this._tooltip.style.transition = 'transform 0.2s ease, top 0.2s ease, left 0.2s ease'
     document.body.appendChild(this._tooltip)
     this._renderContext = new CanvasRenderContext(this._view)
 
@@ -52,7 +53,7 @@ export class CanvasPlotView extends WebPlotViewBase {
     const rect = canvas.getBoundingClientRect()
     if (rect.width === 0 || rect.height === 0) return
 
-    // 设置 canvas 的宽高属性为 CSS 尺寸乘以设备像素比
+    // ensure the canvas is aligned with the pixel grid
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
   }
