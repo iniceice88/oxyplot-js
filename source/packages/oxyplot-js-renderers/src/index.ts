@@ -1,3 +1,4 @@
+export * from './web/WebPlotViewBase'
 export * from './web/CanvasPlotView'
 export * from './web/PdfPlotView'
 export * from './web/SvgPlotView'
