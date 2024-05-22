@@ -35,7 +35,6 @@ describe('serialization', async () => {
         console.log('testing', modelFullName)
         const jsonObj = model.toJSON({ excludeDefault: true })
         const jsonStr = safeStringify(jsonObj)
-
         const newModel = PlotModelSerializer.deserialize(jsonStr)
 
         compareModel(model, newModel, modelFullName)
@@ -44,7 +43,8 @@ describe('serialization', async () => {
   }
 })
 
-function compareModel(json1: any, m2: PlotModel, msg: string) {
+function compareModel(m1: PlotModel, m2: PlotModel, msg: string) {
+  const json1 = m1.toJSON({ excludeDefault: true })
   const json2 = m2.toJSON({ excludeDefault: true })
   const jsonObj1 = JSON.parse(safeStringify(json1))
   const jsonObj2 = JSON.parse(safeStringify(json2))

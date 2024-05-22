@@ -61,7 +61,9 @@ async function display() {
 
   const plotView = getPlotView()
   ;(plotView as any).model = model
-  ;(plotView as any).controller = ei.example.controller
+  if (ei.example.controller) {
+    ;(plotView as any).controller = ei.example.controller()
+  }
 
   const modelObj = model.toJSON({
     excludeDefault: true,
