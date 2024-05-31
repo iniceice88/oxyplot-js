@@ -13,10 +13,9 @@ import { getRenderContextImageCacheService } from 'oxyplot-js-renderers'
 
 import type { ListboxChangeEvent } from 'primevue/listbox'
 
-;
 import JsonViewer from './components/JsonViewer.vue'
 
-(window as any).oxyPlotImg = oxyPlotImg
+;(window as any).oxyPlotImg = oxyPlotImg
 
 dayjs.extend(duration)
 dayjs.extend(dayOfYear)
@@ -113,7 +112,16 @@ function generateOptionKey(ei: ExampleInfo) {
 
       <div class="overflow-x-hidden overflow-y-auto mt-4" style="max-height: calc(100vh - 120px)">
         <Accordion :multiple="false" :active-index="selectedCategoryIdx">
-          <AccordionTab :header="ec.category" v-for="ec in displayExamples" :key="ec.category">
+          <AccordionTab
+            v-for="ec in displayExamples"
+            :key="ec.category"
+            :header="ec.category"
+            :pt="{
+              headerTitle: {
+                class: selectedExample?.category === ec.category ? 'p-accordion-header-active' : '',
+              },
+            }"
+          >
             <Listbox
               v-model="selectedExampleName"
               :options="ec.examples"
@@ -158,5 +166,9 @@ function generateOptionKey(ei: ExampleInfo) {
 <style scoped>
 :deep(.custom-tab) .p-tabview .p-tabview-panels {
   @apply pt-2 pl-1;
+}
+
+:deep(.p-accordion-header-active) {
+  color: #047857;
 }
 </style>

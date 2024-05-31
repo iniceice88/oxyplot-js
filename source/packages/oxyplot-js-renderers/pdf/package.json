@@ -1,10 +1,10 @@
 {
-  "name": "oxyplot-js-renderers",
+  "name": "oxyplot-js-renderers-pdf",
   "type": "module",
-  "version": "2.1.2010",
+  "version": "2.1.2011",
   "packageManager": "pnpm@9.1.1",
   "author": "inice88",
-  "description": "renderers for oxyplot-js",
+  "description": "pdf renderers for oxyplot-js",
   "homepage": "https://github.com/iniceice88/oxyplot-js",
   "repository": {
     "type": "git",
@@ -24,20 +24,25 @@
     "build:pro": "pnpm type-check && vite build",
     "type-check": "tsc --noEmit"
   },
-  "main": "./dist/oxyplot-js-renderers.umd.cjs",
-  "module": "./dist/oxyplot-js-renderers.js",
+  "main": "./dist/oxyplot-js-renderers-pdf.umd.cjs",
+  "module": "./dist/oxyplot-js-renderers-pdf.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/oxyplot-js-renderers.js"
+        "default": "./dist/oxyplot-js-renderers-pdf.js"
       },
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/oxyplot-js-renderers.umd.cjs"
+        "default": "./dist/oxyplot-js-renderers-pdf.umd.cjs"
       }
     }
+  },
+  "dependencies": {
+    "oxyplot-js": "workspace:*",
+    "oxyplot-js-renderers": "workspace:*",
+    "jspdf": "^2.5.1"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",
@@ -48,8 +53,6 @@
     "prettier": "^3.0.3",
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
-    "vite-plugin-dts": "^3.7.3",
-    "jspdf": "^2.5.1",
-    "oxyplot-js": "workspace:*"
+    "vite-plugin-dts": "^3.7.3"
   }
 }

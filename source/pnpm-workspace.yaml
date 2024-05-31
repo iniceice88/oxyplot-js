@@ -1,2 +1,5 @@
 packages:
-  - packages/*
+  - packages/example-browser
+  - packages/oxyplot-js
+  - packages/oxyplot-js-renderers/canvas
+  - packages/oxyplot-js-renderers/pdf

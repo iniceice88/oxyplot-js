@@ -16,7 +16,7 @@ import {
   StringHelper,
   VerticalAlignment,
 } from 'oxyplot-js'
-import { canvasTextMeasurer, OxyStyleToCanvasStyleConverter } from './canvasTextMeasurer'
+import { canvasTextMeasurer, OxyStyleToCanvasStyleConverter } from 'oxyplot-js-renderers'
 import { type Context2d, jsPDF } from 'jspdf'
 
 export class PdfRenderContext extends ClippingRenderContext {

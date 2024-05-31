@@ -12,13 +12,12 @@ export default defineConfig(({ mode }) => {
         fileName: 'oxyplot-js-renderers',
       },
       rollupOptions: {
-        external: ['image-js', 'xmlbuilder2', 'oxyplot-js', 'jspdf'],
+        external: ['image-js', 'xmlbuilder2', 'oxyplot-js'],
         output: {
           globals: {
             'image-js': 'image-js',
             xmlbuilder2: 'xmlbuilder2',
-            'oxyplot-js': 'oxyplot-js',
-            jspdf: 'jspdf',
+            'oxyplot-js': 'oxyplot-js'
           },
         },
       },

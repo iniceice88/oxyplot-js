@@ -2,7 +2,9 @@
 import { IPlotView, PlotModelUtilities } from 'oxyplot-js'
 import { onMounted, ref, watch } from 'vue'
 import { safeStringify } from '../utils/safeStringify.ts'
-import { CanvasPlotView, PdfPlotView, SvgPlotView } from 'oxyplot-js-renderers'
+import { CanvasPlotView, SvgPlotView } from 'oxyplot-js-renderers'
+import { PdfPlotView } from 'oxyplot-js-renderers-pdf'
+
 import { ExampleInfo } from '../examples/types.ts'
 
 type RendererType = 'svg' | 'canvas' | 'pdf'

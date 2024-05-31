@@ -1,7 +1,7 @@
 {
   "name": "example-browser",
   "private": true,
-  "version": "2.1.2010",
+  "version": "2.1.2011",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,10 +10,9 @@
   },
   "dependencies": {
     "dayjs": "^1.11.10",
-    "image-js": "^0.35.5",
-    "jspdf": "^2.5.1",
     "oxyplot-js": "workspace:*",
     "oxyplot-js-renderers": "workspace:*",
+    "oxyplot-js-renderers-pdf": "workspace:*",
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
     "vue": "^3.3.11"
