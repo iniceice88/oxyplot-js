@@ -1,7 +1,7 @@
 {
   "name": "oxyplot-js-renderers-pdf",
   "type": "module",
-  "version": "2.1.2011",
+  "version": "2.1.2012",
   "packageManager": "pnpm@9.1.1",
   "author": "inice88",
   "description": "pdf renderers for oxyplot-js",
@@ -40,8 +40,8 @@
     }
   },
   "dependencies": {
-    "oxyplot-js": "workspace:*",
-    "oxyplot-js-renderers": "workspace:*",
+    "oxyplot-js": "^2.1.2012",
+    "oxyplot-js-renderers": "^2.1.2012",
     "jspdf": "^2.5.1"
   },
   "devDependencies": {
