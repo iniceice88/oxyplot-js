@@ -328,13 +328,13 @@ exports[`compare_to_latest > BoxPlotSeries -> Outlier type = Cross 1`] = `"f3283
 
 exports[`compare_to_latest > BoxPlotSeries -> Outlier type = Custom 1`] = `"f22b22e3"`;
 
-exports[`compare_to_latest > CandleStickSeries -> Large Data Set (narrow window) 1`] = `"72cecb52"`;
+exports[`compare_to_latest > CandleStickSeries -> Large Data Set (narrow window) 1`] = `"14e9518f"`;
 
-exports[`compare_to_latest > CandleStickSeries -> Large Data Set (wide window) 1`] = `"746e02fa"`;
+exports[`compare_to_latest > CandleStickSeries -> Large Data Set (wide window) 1`] = `"611198c8"`;
 
-exports[`compare_to_latest > CandleStickSeries -> Simple CandleStickSeries example 1`] = `"7ecb3e9e"`;
+exports[`compare_to_latest > CandleStickSeries -> Simple CandleStickSeries example 1`] = `"7f3aa8b7"`;
 
-exports[`compare_to_latest > CandleStickSeries -> Small Set 1`] = `"935c23ba"`;
+exports[`compare_to_latest > CandleStickSeries -> Small Set 1`] = `"d70d92ef"`;
 
 exports[`compare_to_latest > Cartesian axes -> AbsoluteMinimum X/Y 1`] = `"ebc8f31f"`;
 
@@ -654,7 +654,7 @@ exports[`compare_to_latest > Legends -> Multiple Legends with grouped Series 1`]
 
 exports[`compare_to_latest > LineAnnotation -> LineAnnotation - ClipByAxis property 1`] = `"be183ed8"`;
 
-exports[`compare_to_latest > LineAnnotation -> LineAnnotation on linear axes 1`] = `"3c2cfadd"`;
+exports[`compare_to_latest > LineAnnotation -> LineAnnotation on linear axes 1`] = `"1e89238f"`;
 
 exports[`compare_to_latest > LineAnnotation -> LineAnnotation on logarithmic axes 1`] = `"a9adb996"`;
 
@@ -1166,7 +1166,7 @@ exports[`compare_to_latest > Z0 Discussions -> #539104: Brewer colors (6) 1`] = 
 
 exports[`compare_to_latest > Z0 Discussions -> #539104: Medium intensity colors 1`] = `"04423655"`;
 
-exports[`compare_to_latest > Z0 Discussions -> #539104: Reduced color saturation 1`] = `"76efca26"`;
+exports[`compare_to_latest > Z0 Discussions -> #539104: Reduced color saturation 1`] = `"8dc21d99"`;
 
 exports[`compare_to_latest > Z0 Discussions -> #542701: Same color of LineSeries and axis title & labels 1`] = `"210894ac"`;
 

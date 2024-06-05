@@ -20,7 +20,6 @@ export * from './Rendering/OxyThickness'
 export * from './Foundation/PlotLength'
 
 export * from './Rendering/OxyColor'
-export * from './Rendering/OxyColors'
 export * from './Rendering/OxyPalette'
 export * from './Rendering/OxyPalettes'
 export * from './PlotModel/IPlotElement'
