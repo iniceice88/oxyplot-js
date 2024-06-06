@@ -1,12 +1,5 @@
-import {
-  type IExporter,
-  type IPlotModel,
-  type IRenderContext,
-  type ITextMeasurer,
-  newOxyRect,
-  PdfRenderContext,
-  SvgRenderContext,
-} from '@/oxyplot'
+import { type IExporter, type IPlotModel, type IRenderContext, type ITextMeasurer, newOxyRect } from 'oxyplot-js'
+import { SvgRenderContext } from './SvgRenderContext'
 
 /**
  * Provides functionality to export plots to scalable vector graphics.
@@ -64,7 +57,7 @@ export class SvgExporter implements IExporter {
     useVerticalTextAlignmentWorkaround: boolean = false,
   ): Promise<string> {
     if (!textMeasurer) {
-      textMeasurer = new PdfRenderContext(width, height, model.background)
+      throw new Error('textMeasurer is required')
     }
 
     const rc = new SvgRenderContext(

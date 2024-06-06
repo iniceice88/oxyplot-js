@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest'
 import examples from '../src/examples/AllExamples'
 import { newOxyRect, Number_MAX_VALUE } from 'oxyplot-js'
 import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
 import dayOfYear from 'dayjs/plugin/dayOfYear'
 import path from 'path'
 import { RecordRenderContext } from '../src/utils/RecordRenderContext.ts'
@@ -10,7 +9,6 @@ import { Random } from '../src/examples/Random.ts'
 import crypto from 'crypto'
 
 describe('compare_to_latest', () => {
-  dayjs.extend(duration)
   dayjs.extend(dayOfYear)
   ;(window as any).oxyPlotImg = path.resolve(__dirname, '../src/assets/OxyPlot.png')
 

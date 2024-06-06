@@ -1,6 +1,6 @@
 import { create } from 'xmlbuilder2'
 import type { XMLBuilder } from 'xmlbuilder2/lib/interfaces'
-import type { IDisposable } from '@/patch'
+import type { IDisposable } from 'oxyplot-js'
 
 const version = '1.0'
 const encoding = 'utf-8'

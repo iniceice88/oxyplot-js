@@ -16,9 +16,9 @@ import {
   screenPointMinusVector,
   screenPointPlus,
   StringHelper,
-  SvgWriter,
   VerticalAlignment,
-} from '@/oxyplot'
+} from 'oxyplot-js'
+import { SvgWriter } from './SvgWriter'
 
 /**
  * Provides a render context for scalable vector graphics output.

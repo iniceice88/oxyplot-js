@@ -1,37 +1,43 @@
-import { newOxySize, type OxyRect, OxyRect_Empty, OxyRectHelper, PlotModel, ScreenPoint_LeftTop } from 'oxyplot-js'
+import { type OxyRect, OxyRect_Empty, PlotModel } from 'oxyplot-js'
 import { PdfRenderContext } from './PdfRenderContext'
 import { jsPDF } from 'jspdf'
 import { WebPlotViewBase } from 'oxyplot-js-renderers'
+import type { CreatePdfOptions } from './PdfExporter'
+import { calculatePdfClientArea } from './utils'
+
+const defaultPdfOptions: CreatePdfOptions = {
+  unit: 'px',
+  orientation: 'l',
+}
 
 export class PdfPlotView extends WebPlotViewBase {
   private readonly _view: HTMLIFrameElement
 
-  constructor(view: HTMLIFrameElement) {
+  constructor(view: HTMLIFrameElement, opt?: CreatePdfOptions) {
     super()
+    if (opt?.unit && opt.unit !== 'px') {
+      throw new Error('pdf unit must be px, but got ' + opt.unit)
+    }
     this._view = view
+    this._pdfOptions = Object.assign({}, defaultPdfOptions, opt)
     this.calcClientArea()
   }
 
-  private _orientation: 'p' | 'portrait' | 'l' | 'landscape' = 'portrait'
+  private _pdfOptions: CreatePdfOptions
 
-  get orientation() {
-    return this._orientation
+  get pdfOptions() {
+    return this._pdfOptions
   }
 
-  set orientation(value: 'p' | 'portrait' | 'l' | 'landscape') {
-    if (value === this._orientation) return
-    this._orientation = value
+  set pdfOptions(opt: CreatePdfOptions) {
+    this._pdfOptions = opt
     this.calcClientArea()
   }
 
   private calcClientArea() {
-    const pdf = new jsPDF({
-      unit: 'px',
-      orientation: this.orientation,
-    })
-    const pdfPageSize = newOxySize(pdf.internal.pageSize.width, pdf.internal.pageSize.height)
+    const pdf = new jsPDF(this._pdfOptions)
+    this._clientArea = calculatePdfClientArea(pdf)
     pdf.close()
-    this._clientArea = OxyRectHelper.fromScreenPointAndSize(ScreenPoint_LeftTop, pdfPageSize)
   }
 
   private _clientArea: OxyRect = OxyRect_Empty
@@ -40,12 +46,9 @@ export class PdfPlotView extends WebPlotViewBase {
   }
 
   async renderOverride(model: PlotModel): Promise<void> {
-    const rc = new PdfRenderContext(this.orientation)
-    await model.render(rc, this.clientArea)
+    const rc = new PdfRenderContext(this._pdfOptions)
+    await model.render(rc, this._clientArea)
     const pdf = rc.getPdf()
-    if (pdf.internal.pages.length > 1) {
-      pdf.deletePage(1)
-    }
 
     const dataUrl = pdf.output('dataurlstring', {
       filename: model.title + '.pdf',

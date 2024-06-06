@@ -9,12 +9,12 @@ import {
   OxyRect_Empty,
   OxyRectHelper,
   PlotModel,
-  SvgRenderContext,
   TrackerHitResult,
 } from 'oxyplot-js'
 import { addPlotViewEvents, convertCursorType } from './web-events'
 import { canvasTextMeasurer } from './canvasTextMeasurer'
 import { WebPlotViewBase } from './WebPlotViewBase'
+import { SvgRenderContext } from '../Svg/SvgRenderContext'
 
 export class SvgPlotView extends WebPlotViewBase {
   private readonly _view: HTMLDivElement

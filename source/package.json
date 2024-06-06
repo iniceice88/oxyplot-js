@@ -1,6 +1,6 @@
 {
   "name": "oxyplot-example",
-  "version": "2.1.2012",
+  "version": "2.1.2013",
   "scripts": {
     "dev": "pnpm --parallel --stream -r run dev",
     "build": "pnpm --stream -r run build",

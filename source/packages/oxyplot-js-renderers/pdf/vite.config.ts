@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: mode === 'dev',
       lib: {
         entry: resolve(__dirname, './src/index.ts'),
-        name: 'oxyplot-js-renderers-pdf',
+        name: 'OxyplotRenderersPdf',
         fileName: 'oxyplot-js-renderers-pdf',
       },
       rollupOptions: {

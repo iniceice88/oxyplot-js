@@ -18,6 +18,7 @@ import {
 } from 'oxyplot-js'
 import { canvasTextMeasurer, OxyStyleToCanvasStyleConverter } from 'oxyplot-js-renderers'
 import { type Context2d, jsPDF } from 'jspdf'
+import type { CreatePdfOptions } from './PdfExporter'
 
 export class PdfRenderContext extends ClippingRenderContext {
   private readonly _pdf: jsPDF
@@ -26,12 +27,10 @@ export class PdfRenderContext extends ClippingRenderContext {
   private readonly styleConverter = new OxyStyleToCanvasStyleConverter()
   private readonly _ctxInitStyles: Record<string, any>
 
-  constructor(orientation?: 'p' | 'portrait' | 'l' | 'landscape') {
+  constructor(opt: CreatePdfOptions) {
     super()
-    this._pdf = new jsPDF({
-      unit: 'px',
-      orientation,
-    })
+    this._pdf = new jsPDF(opt)
+    //this._pdf.internal.pageSize
     const ctx = this._pdf.context2d
     this.ctx = ctx
     this._ctxInitStyles = {
@@ -40,7 +39,7 @@ export class PdfRenderContext extends ClippingRenderContext {
       lineJoin: ctx.lineJoin,
       lineWidth: ctx.lineWidth,
     }
-
+    //this._pdf.getPageInfo(1).
     this._textMeasurer = canvasTextMeasurer()
   }
 

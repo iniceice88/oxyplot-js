@@ -12,12 +12,11 @@ export default defineConfig(({ mode }) => {
         fileName: 'oxyplot-js',
       },
       rollupOptions: {
-        external: ['dayjs', 'image-js', 'xmlbuilder2'],
+        external: ['dayjs', 'image-js'],
         output: {
           globals: {
             dayjs: 'dayjs',
             'image-js': 'image-js',
-            xmlbuilder2: 'xmlbuilder2',
           },
         },
       },

@@ -1,4 +1,5 @@
 import {
+  arrayBufferToBase64,
   EdgeRenderingMode,
   FontWeights,
   HorizontalAlignment,
@@ -8,11 +9,11 @@ import {
   OxyColorHelper,
   OxyColors,
   type OxyImage,
+  round,
   type ScreenPoint,
   VerticalAlignment,
-  XmlWriterBase,
-} from '@/oxyplot'
-import { arrayBufferToBase64, round } from '@/patch'
+} from 'oxyplot-js'
+import { XmlWriterBase } from './XmlWriterBase'
 
 /**
  * Represents a writer that provides easy generation of Scalable Vector Graphics files.

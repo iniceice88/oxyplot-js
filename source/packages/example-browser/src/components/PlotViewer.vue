@@ -4,7 +4,6 @@ import { onMounted, ref, watch } from 'vue'
 import { safeStringify } from '../utils/safeStringify.ts'
 import { CanvasPlotView, SvgPlotView } from 'oxyplot-js-renderers'
 import { PdfPlotView } from 'oxyplot-js-renderers-pdf'
-
 import { ExampleInfo } from '../examples/types.ts'
 
 type RendererType = 'svg' | 'canvas' | 'pdf'
@@ -96,8 +95,10 @@ function getPlotView() {
     const key = pdfOrientation.value
     if (plotViewCache[key]) return plotViewCache[key]
 
-    const plotView = new PdfPlotView(document.getElementById('pdfPlotView')! as HTMLIFrameElement)
-    plotView.orientation = pdfOrientation.value
+    const ele = document.getElementById('pdfPlotView')! as HTMLIFrameElement
+    const plotView = new PdfPlotView(ele, {
+      orientation: pdfOrientation.value,
+    })
     plotViewCache[key] = plotView as any
     return plotView
   }

@@ -8,16 +8,15 @@ export default defineConfig(({ mode }) => {
       sourcemap: mode === 'dev',
       lib: {
         entry: resolve(__dirname, './src/index.ts'),
-        name: 'oxyplot-js-renderers',
+        name: 'OxyplotRenderers',
         fileName: 'oxyplot-js-renderers',
       },
       rollupOptions: {
-        external: ['image-js', 'xmlbuilder2', 'oxyplot-js'],
+        external: ['xmlbuilder2', 'oxyplot-js'],
         output: {
           globals: {
-            'image-js': 'image-js',
             xmlbuilder2: 'xmlbuilder2',
-            'oxyplot-js': 'oxyplot-js'
+            'oxyplot-js': 'oxyplot-js',
           },
         },
       },
