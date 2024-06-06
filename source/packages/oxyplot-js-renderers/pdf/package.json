@@ -40,8 +40,8 @@
     }
   },
   "dependencies": {
-    "oxyplot-js": "^2.1.2012",
-    "oxyplot-js-renderers": "^2.1.2012",
+    "oxyplot-js": "workspace:*",
+    "oxyplot-js-renderers": "workspace:*",
     "jspdf": "^2.5.1"
   },
   "devDependencies": {

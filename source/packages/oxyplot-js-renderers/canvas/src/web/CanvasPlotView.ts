@@ -68,6 +68,8 @@ export class CanvasPlotView extends WebPlotViewBase {
 
   hideTracker(): void {
     this._tooltip.style.visibility = 'hidden'
+    this._tooltip.style.top = 'unset'
+    this._tooltip.style.left = 'unset'
   }
 
   showTracker(trackerHitResult: TrackerHitResult): void {

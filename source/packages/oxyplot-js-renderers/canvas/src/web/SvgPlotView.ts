@@ -34,6 +34,7 @@ export class SvgPlotView extends WebPlotViewBase {
     this._tooltip.style.padding = '8px'
     this._tooltip.style.visibility = 'hidden'
     this._tooltip.style.pointerEvents = 'none'
+    this._tooltip.style.transition = 'transform 0.2s ease, top 0.2s ease, left 0.2s ease'
     document.body.appendChild(this._tooltip)
 
     addPlotViewEvents(this._view, this)
@@ -49,6 +50,8 @@ export class SvgPlotView extends WebPlotViewBase {
 
   hideTracker(): void {
     this._tooltip.style.visibility = 'hidden'
+    this._tooltip.style.top = 'unset'
+    this._tooltip.style.left = 'unset'
   }
 
   showTracker(trackerHitResult: TrackerHitResult): void {
