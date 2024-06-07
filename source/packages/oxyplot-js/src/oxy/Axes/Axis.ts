@@ -128,7 +128,7 @@ export interface CreateAxisOptions extends CreatePlotElementOptions {
   positionTierSize?: number
 }
 
-export const DefaultAxisOptions: CreateAxisOptions = {
+const DefaultAxisOptions: CreateAxisOptions = {
   position: AxisPosition.Left,
   positionTier: 0,
   isAxisVisible: true,

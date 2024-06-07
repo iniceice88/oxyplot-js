@@ -29,7 +29,7 @@ export interface CreateDateTimeAxisOptions extends CreateLinearAxisOptions {
   timeZone?: string
 }
 
-export const DefaultDateTimeAxisOptions: CreateDateTimeAxisOptions = {
+const DefaultDateTimeAxisOptions: CreateDateTimeAxisOptions = {
   firstDayOfWeek: DayOfWeek.Monday,
   intervalType: DateTimeIntervalType.Auto,
   minorIntervalType: DateTimeIntervalType.Auto,

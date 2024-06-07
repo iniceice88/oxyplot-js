@@ -75,7 +75,7 @@ export interface CreateHeatMapSeriesOptions extends CreateXYAxisSeriesOptions {
   labelFontSize?: number
 }
 
-export const DefaultHeatMapSeriesOptions: CreateHeatMapSeriesOptions = {
+const DefaultHeatMapSeriesOptions: CreateHeatMapSeriesOptions = {
   x0: 0,
   x1: 0,
   y0: 0,

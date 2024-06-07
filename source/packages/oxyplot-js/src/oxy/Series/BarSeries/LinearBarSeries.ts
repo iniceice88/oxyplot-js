@@ -36,7 +36,7 @@ export interface CreateLinearBarSeriesOptions extends CreateDataPointSeriesOptio
   baseLine?: number
 }
 
-export const DefaultLinearBarSeriesOptions: CreateLinearBarSeriesOptions = {
+const DefaultLinearBarSeriesOptions: CreateLinearBarSeriesOptions = {
   fillColor: OxyColors.Automatic,
   barWidth: 5,
   strokeColor: OxyColors.Black,

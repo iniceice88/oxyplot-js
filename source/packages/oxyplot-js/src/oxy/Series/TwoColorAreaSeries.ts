@@ -26,7 +26,7 @@ export interface CreateTwoColorAreaSeriesOptions extends CreateAreaSeriesOptions
   limit?: number
 }
 
-export const DefaultTwoColorAreaSeriesOptions: CreateTwoColorAreaSeriesOptions = {
+const DefaultTwoColorAreaSeriesOptions: CreateTwoColorAreaSeriesOptions = {
   color2: OxyColorHelper.fromRgb(0, 0, 255), // Blue
   fill2: OxyColors.Automatic,
   lineStyle2: LineStyle.Solid,

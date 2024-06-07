@@ -2,7 +2,7 @@
   Axis,
   type CreatePlotElementOptions,
   ExtendedDefaultPlotElementOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IRenderContext,
   type OxyColor,
@@ -43,7 +43,7 @@ export interface CreateSeriesOptions extends CreatePlotElementOptions {
   trackerKey?: string
 }
 
-export const DefaultSeriesOptions: CreateSeriesOptions = {
+const DefaultSeriesOptions: CreateSeriesOptions = {
   background: OxyColors.Undefined,
   isVisible: true,
   renderInLegend: true,

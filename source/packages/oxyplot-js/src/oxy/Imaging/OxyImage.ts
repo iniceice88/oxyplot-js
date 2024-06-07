@@ -1,5 +1,5 @@
-﻿import type { ImageEncoderOptions, OxyColor } from '@/oxyplot'
-import { ImageFormat } from '@/oxyplot'
+﻿import type { OxyColor } from '@/oxyplot'
+import { type ImageEncoderOptions, ImageFormat } from './types'
 import { type EncodeImageOptions, getImageService, hashCode, type TwoDimensionalArray } from '@/patch'
 
 /**

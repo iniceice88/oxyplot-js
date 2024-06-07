@@ -89,7 +89,7 @@ export interface CreateRectangleBarSeriesOptions extends CreateXYAxisSeriesOptio
   items?: RectangleBarItem[]
 }
 
-export const DefaultRectangleBarSeriesOptions: CreateRectangleBarSeriesOptions = {
+const DefaultRectangleBarSeriesOptions: CreateRectangleBarSeriesOptions = {
   fillColor: OxyColors.Automatic,
   strokeColor: OxyColors.Black,
   strokeThickness: 1,

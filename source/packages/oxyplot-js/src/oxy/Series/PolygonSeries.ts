@@ -43,7 +43,7 @@ export interface CreatePolygonSeriesOptions extends CreateXYAxisSeriesOptions {
   labelStringFormatter?: LabelStringFormatterType
 }
 
-export const DefaultPolygonSeriesOptions: CreatePolygonSeriesOptions = {
+const DefaultPolygonSeriesOptions: CreatePolygonSeriesOptions = {
   stroke: OxyColors.Undefined,
   strokeThickness: 2,
   labelFontSize: 0,

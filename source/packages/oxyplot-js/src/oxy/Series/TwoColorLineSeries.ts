@@ -20,7 +20,7 @@ export interface CreateTwoColorLineSeriesOptions extends CreateLineSeriesOptions
   limit?: number
 }
 
-export const DefaultTwoColorLineSeriesOptions: CreateTwoColorLineSeriesOptions = {
+const DefaultTwoColorLineSeriesOptions: CreateTwoColorLineSeriesOptions = {
   color2: OxyColorHelper.fromRgb(0, 0, 255), // Blue
   limit: 0.0,
 }

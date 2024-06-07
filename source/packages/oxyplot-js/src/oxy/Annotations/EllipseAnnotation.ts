@@ -1,7 +1,7 @@
 import {
   type CreateShapeAnnotationOptions,
   ExtendedDefaultShapeAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IRenderContext,
   type OxyRect,
@@ -19,7 +19,7 @@ export interface CreateEllipseAnnotationOptions extends CreateShapeAnnotationOpt
   height?: number
 }
 
-export const DefaultEllipseAnnotationOptions: CreateEllipseAnnotationOptions = {
+const DefaultEllipseAnnotationOptions: CreateEllipseAnnotationOptions = {
   x: 0,
   y: 0,
   width: NaN,

@@ -13,7 +13,7 @@ export class Conrec {
    * which draws a contour map corresponding to data on a randomly
    * spaced rectangular grid. The coordinates emitted are in the same
    * units given in the x() and y() arrays.
-   * Any number of contour levels may be specified but they must be
+   * Any number of contour levels may be specified, but they must be
    * in order of increasing value.
    */
   static contour(d: number[][], x: number[], y: number[], z: number[], renderer: ConrecRendererDelegate): void {

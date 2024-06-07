@@ -1,6 +1,5 @@
 import {
   type CreateLineSeriesOptions,
-  DefaultLineSeriesOptions,
   ExtendedDefaultLineSeriesOptions,
   type IRenderContext,
   LineSeries,
@@ -81,7 +80,7 @@ export interface CreateExtrapolationLineSeriesOptions extends CreateLineSeriesOp
   intervals?: DataRange[]
 }
 
-export const DefaultExtrapolationLineSeriesOptions: CreateExtrapolationLineSeriesOptions = {
+const DefaultExtrapolationLineSeriesOptions: CreateExtrapolationLineSeriesOptions = {
   extrapolationColor: OxyColors.Black,
   extrapolationLineStyle: LineStyle.Dash,
   ignoreExtraplotationForScaling: false,
@@ -92,7 +91,7 @@ export const DefaultExtrapolationLineSeriesOptions: CreateExtrapolationLineSerie
 
 export const ExtendedDefaultExtrapolationLineSeriesOptions = {
   ...ExtendedDefaultLineSeriesOptions,
-  ...DefaultLineSeriesOptions,
+  ...DefaultExtrapolationLineSeriesOptions,
 }
 
 /** Represents a series where the line can be rendered using a different style

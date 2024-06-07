@@ -24,7 +24,7 @@ export interface CreateMagnitudeAxisFullPlotAreaOptions extends CreateMagnitudeA
   midShiftV?: number
 }
 
-export const DefaultMagnitudeAxisFullPlotAreaOptions: CreateMagnitudeAxisFullPlotAreaOptions = {
+const DefaultMagnitudeAxisFullPlotAreaOptions: CreateMagnitudeAxisFullPlotAreaOptions = {
   midShiftH: 0,
   midShiftV: 0,
 

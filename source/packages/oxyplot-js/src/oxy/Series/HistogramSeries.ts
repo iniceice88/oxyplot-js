@@ -1,7 +1,7 @@
 import {
   type CreateXYAxisSeriesOptions,
   type DataPoint,
-  DataVector,
+  type DataVector,
   EdgeRenderingMode,
   ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
@@ -196,7 +196,7 @@ export interface CreateHistogramSeriesOptions extends CreateXYAxisSeriesOptions 
   items?: HistogramItem[]
 }
 
-export const DefaultHistogramSeriesOptions: CreateHistogramSeriesOptions = {
+const DefaultHistogramSeriesOptions: CreateHistogramSeriesOptions = {
   baseValue: 0,
   baseLine: NaN,
   fillColor: OxyColors.Automatic,

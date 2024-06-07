@@ -1,16 +1,19 @@
-import type { IRenderContext, OxyColor, OxyRect, OxySize, ScreenPoint } from '@/oxyplot'
 import {
   EdgeRenderingMode,
   HorizontalAlignment,
+  type IRenderContext,
   LineJoin,
   newScreenPoint,
+  type OxyColor,
   type OxyImage,
+  type OxyRect,
+  type OxySize,
   RenderContextBase,
+  type ScreenPoint,
   ScreenPoint_LeftTop,
-  screenPointMinus,
+  screenPointMinusEx,
   screenPointPlus,
   ScreenVectorEx,
-  ScreenVectorHelper,
   VerticalAlignment,
 } from '@/oxyplot'
 
@@ -226,11 +229,11 @@ export class XkcdRenderingDecorator extends RenderContextBase {
         continue
       }
 
-      let tangent = screenPointMinus(interpolated[i + 1], interpolated[i - 1])
-      tangent = ScreenVectorHelper.normalize(tangent)
+      let tangent = screenPointMinusEx(interpolated[i + 1], interpolated[i - 1])
+      tangent = tangent.normalize()
       const normal = ScreenVectorEx.fromXY(tangent.y, -tangent.x)
 
-      const delta = normal.times(randomNumbers[i] * d - d2).vector
+      const delta = normal.times(randomNumbers[i] * d - d2)
       result[i] = screenPointPlus(interpolated[i], delta)
     }
 
@@ -292,8 +295,8 @@ export class XkcdRenderingDecorator extends RenderContextBase {
         continue
       }
 
-      const dp = screenPointMinus(p1, p0)
-      const l1 = ScreenVectorHelper.length(dp)
+      const dp = screenPointMinusEx(p1, p0)
+      const l1 = dp.length
 
       if (l1 > 0) {
         while (nl >= l && nl <= l + l1) {

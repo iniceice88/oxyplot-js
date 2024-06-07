@@ -3,7 +3,7 @@ import {
   type CreateTextualAnnotationOptions,
   DataPoint_isDefined,
   ExtendedDefaultTextualAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
@@ -51,7 +51,7 @@ export interface CreatePathAnnotationOptions extends CreateTextualAnnotationOpti
   borderStrokeThickness?: number
 }
 
-export const DefaultPathAnnotationOptions: CreatePathAnnotationOptions = {
+const DefaultPathAnnotationOptions: CreatePathAnnotationOptions = {
   minimumX: Number_MIN_VALUE,
   maximumX: Number_MAX_VALUE,
   minimumY: Number_MIN_VALUE,

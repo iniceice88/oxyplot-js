@@ -19,7 +19,7 @@ export interface CreateDataPointSeriesOptions extends CreateXYAxisSeriesOptions 
   mapping?: (item: any) => DataPoint
 }
 
-export const DefaultDataPointSeriesOptions: CreateDataPointSeriesOptions = {
+const DefaultDataPointSeriesOptions: CreateDataPointSeriesOptions = {
   canTrackerInterpolatePoints: false,
 
   points: undefined,

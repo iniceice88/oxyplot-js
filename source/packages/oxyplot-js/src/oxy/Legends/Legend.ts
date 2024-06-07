@@ -3,16 +3,11 @@ import {
   EdgeRenderingMode,
   ExtendedDefaultLegendBaseOptions,
   FontWeights,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
   LegendBase,
-  LegendItemOrder,
-  LegendOrientation,
-  LegendPlacement,
-  LegendPosition,
-  LegendSymbolPlacement,
   MathRenderingExtensions,
   newOxyRect,
   newOxySize,
@@ -32,7 +27,8 @@ import {
   Series,
   VerticalAlignment,
 } from '@/oxyplot'
-import { getReversedCopy, assignObject } from '@/patch'
+import { assignObject, getReversedCopy } from '@/patch'
+import { LegendItemOrder, LegendOrientation, LegendPlacement, LegendPosition, LegendSymbolPlacement } from './types'
 
 export interface CreateLegendOptions extends CreateLegendBaseOptions {
   groupNameFont?: string
@@ -41,7 +37,7 @@ export interface CreateLegendOptions extends CreateLegendBaseOptions {
   seriesInvisibleTextColor?: OxyColor
 }
 
-export const DefaultLegendOptions: CreateLegendOptions = {
+const DefaultLegendOptions: CreateLegendOptions = {
   isLegendVisible: true,
   groupNameFontWeight: FontWeights.Normal,
   groupNameFontSize: NaN,

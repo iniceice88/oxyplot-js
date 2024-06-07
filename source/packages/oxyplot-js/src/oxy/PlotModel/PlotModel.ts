@@ -9,8 +9,8 @@
   BarSeriesManager,
   CategoryAxis,
   type CreateModelOptions,
-  DefaultCreateModelOptions,
   EdgeRenderingMode,
+  ExtendedModelOptions,
   FontWeights,
   HorizontalAlignment,
   type IBarSeries,
@@ -149,7 +149,7 @@ export interface CreatePlotModelOptions extends CreateModelOptions {
   titleHorizontalAlignment?: TitleHorizontalAlignment
 }
 
-export const DefaultPlotModelOptions: CreatePlotModelOptions = {
+const DefaultPlotModelOptions: CreatePlotModelOptions = {
   plotType: PlotType.XY,
   plotMargins: newOxyThickness(NaN),
   padding: newOxyThickness(8),
@@ -195,7 +195,7 @@ export const DefaultPlotModelOptions: CreatePlotModelOptions = {
 }
 
 export const ExtendedPlotModelOptions = {
-  ...DefaultCreateModelOptions,
+  ...ExtendedModelOptions,
   ...DefaultPlotModelOptions,
 }
 

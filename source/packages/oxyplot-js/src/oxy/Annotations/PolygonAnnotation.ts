@@ -2,7 +2,7 @@ import {
   type CreateShapeAnnotationOptions,
   type DataPoint,
   ExtendedDefaultShapeAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IRenderContext,
   LineJoin,
@@ -36,7 +36,7 @@ export interface CreatePolygonAnnotationOptions extends CreateShapeAnnotationOpt
   points?: DataPoint[]
 }
 
-export const DefaultPolygonAnnotationOptions: CreatePolygonAnnotationOptions = {
+const DefaultPolygonAnnotationOptions: CreatePolygonAnnotationOptions = {
   lineJoin: LineJoin.Miter,
   lineStyle: LineStyle.Solid,
   minimumSegmentLength: 2,

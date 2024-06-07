@@ -1,6 +1,5 @@
 import {
   type CreateTextualAnnotationOptions,
-  DefaultTextualAnnotationOptions,
   ExtendedDefaultTextualAnnotationOptions,
   type OxyColor,
   OxyColors,
@@ -14,7 +13,7 @@ export interface CreateShapeAnnotationOptions extends CreateTextualAnnotationOpt
   strokeThickness?: number
 }
 
-export const DefaultShapeAnnotationOptions: CreateShapeAnnotationOptions = {
+const DefaultShapeAnnotationOptions: CreateShapeAnnotationOptions = {
   fill: OxyColors.LightBlue,
   stroke: OxyColors.Black,
   strokeThickness: 0,
@@ -22,7 +21,7 @@ export const DefaultShapeAnnotationOptions: CreateShapeAnnotationOptions = {
 
 export const ExtendedDefaultShapeAnnotationOptions = {
   ...ExtendedDefaultTextualAnnotationOptions,
-  ...DefaultTextualAnnotationOptions,
+  ...DefaultShapeAnnotationOptions,
 }
 
 /**

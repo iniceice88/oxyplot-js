@@ -1,5 +1,5 @@
 ﻿import {
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IMouseSupport,
   type ITouchSupport,
@@ -9,6 +9,7 @@
   type MouseLeaveEventType,
   type MouseMoveEventType,
   type MouseUpEventType,
+  newHitTestArguments,
   type OxyColor,
   OxyColors,
   type OxyKeyEventArgs,
@@ -26,9 +27,11 @@ export interface CreateModelOptions {
   selectionColor?: OxyColor
 }
 
-export const DefaultCreateModelOptions: CreateModelOptions = {
+const DefaultCreateModelOptions: CreateModelOptions = {
   selectionColor: OxyColors.Yellow,
 }
+
+export const ExtendedModelOptions = DefaultCreateModelOptions
 
 /**
  * An abstract base class for graphics models.
@@ -145,7 +148,7 @@ export abstract class Model {
    * @deprecated Will be removed in v4.0 (#111)
    */
   public handleMouseDown(sender: object, e: OxyMouseDownEventArgs): void {
-    const args = new HitTestArguments(e.position, Model.mouseHitTolerance)
+    const args = newHitTestArguments(e.position, Model.mouseHitTolerance)
     for (const result of this.hitTest(args)) {
       e.hitTestResult = result
       const element = result.element as unknown as IMouseSupport
@@ -219,7 +222,7 @@ export abstract class Model {
    * @deprecated Will be removed in v4.0 (#111)
    */
   public handleTouchStarted(sender: object, e: OxyTouchEventArgs): void {
-    const args = new HitTestArguments(e.position, Model.mouseHitTolerance)
+    const args = newHitTestArguments(e.position, Model.mouseHitTolerance)
     for (const result of this.hitTest(args)) {
       const element = result.element as unknown as ITouchSupport
       element.onTouchStarted(e)

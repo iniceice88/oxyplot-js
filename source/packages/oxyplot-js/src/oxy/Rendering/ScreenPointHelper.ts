@@ -53,7 +53,7 @@ export class ScreenPointHelper {
   }
 
   /**
-   * Finds the point on line.
+   * Finds the point on the line.
    * @param p The point.
    * @param p1 The first point on the line.
    * @param p2 The second point on the line.
@@ -81,7 +81,7 @@ export class ScreenPointHelper {
   }
 
   /**
-   * Finds the nearest point on line.
+   * Finds the nearest point on the line.
    * @param p The point.
    * @param p1 The start point on the line.
    * @param p2 The end point on the line.

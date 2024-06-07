@@ -4,12 +4,12 @@ import {
   ControllerExtensions,
   DelegatePlotCommand,
   FunctionSeries,
-  HitTestArguments,
   type IPlotView,
   Legend,
   LinearAxis,
   LineSeries,
   newDataPoint,
+  newHitTestArguments,
   OxyColors,
   OxyModifierKeys,
   OxyModifierKeysExtensions,
@@ -143,7 +143,7 @@ function clickingOnAnAnnotation(): Example {
 
   const controller = new PlotController()
   const handleClick = new DelegatePlotCommand<OxyMouseDownEventArgs>((v, c, e) => {
-    const args = new HitTestArguments(e.position, 10)
+    const args = newHitTestArguments(e.position, 10)
     const firstHit = v.actualModel!.hitTest(args).find((x) => x.element instanceof RectangleAnnotation)
     if (firstHit) {
       e.handled = true
@@ -251,7 +251,7 @@ function showHideLegend(): Example {
 
   const controller = new PlotController()
   const handleClick = new DelegatePlotCommand<OxyMouseDownEventArgs>((v, c, e) => {
-    const args = new HitTestArguments(e.position, 10)
+    const args = newHitTestArguments(e.position, 10)
     const firstHit = v.actualModel!.hitTest(args).find((x) => x.element instanceof RectangleAnnotation)
     if (firstHit) {
       e.handled = true

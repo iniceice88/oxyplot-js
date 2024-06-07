@@ -58,7 +58,7 @@ export interface CreateAreaSeriesOptions extends CreateLineSeriesOptions {
   points2?: DataPoint[]
 }
 
-export const DefaultAreaSeriesOptions: CreateAreaSeriesOptions = {
+const DefaultAreaSeriesOptions: CreateAreaSeriesOptions = {
   constantY2: 0,
   color2: OxyColors.Automatic,
   fill: OxyColors.Automatic,

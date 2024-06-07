@@ -77,7 +77,7 @@ export interface CreateLineSeriesOptions extends CreateDataPointSeriesOptions {
   strokeThickness?: number
 }
 
-export const DefaultLineSeriesOptions: CreateLineSeriesOptions = {
+const DefaultLineSeriesOptions: CreateLineSeriesOptions = {
   color: OxyColors.Automatic,
   brokenLineColor: OxyColors.Undefined,
   brokenLineStyle: LineStyle.Solid,

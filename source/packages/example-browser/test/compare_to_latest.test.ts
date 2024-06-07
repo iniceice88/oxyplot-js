@@ -47,7 +47,7 @@ describe('compare_to_latest', () => {
         const logMd5 = calcMd5(log)
         expect(logMd5).toMatchSnapshot()
         // await expect(log).toMatchFileSnapshot(
-        //   `./__snapshots__/${sanitizeFilename(cat.category + ' -- ' + exp.title)}.test.ts.snap`,
+        //   `./__snapshots__/latest/${sanitizeFilename(cat.category + ' -- ' + exp.title)}.test.ts.snap`,
         // )
       })
     }

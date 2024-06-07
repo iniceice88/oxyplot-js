@@ -47,7 +47,7 @@ export interface CreateContourSeriesOptions extends CreateXYAxisSeriesOptions {
   trackerStringFormatter?: ContourSeriesTrackerStringFormatterType
 }
 
-export const DefaultContourSeriesOptions: CreateContourSeriesOptions = {
+const DefaultContourSeriesOptions: CreateContourSeriesOptions = {
   contourLevelStep: NaN,
   labelStep: 1,
   multiLabel: false,

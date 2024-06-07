@@ -1,12 +1,30 @@
 ﻿/**
  * Represents a vector in the data space.
  */
-export class DataVector {
+export interface DataVector {
   /**
-   * The undefined.
+   * The x-coordinate.
    */
-  public static readonly Undefined = new DataVector(NaN, NaN)
+  x: number
+  /**
+   * The y-coordinate.
+   */
+  y: number
+}
 
+/**
+ * The undefined.
+ */
+export const DataVector_Undefined: DataVector = Object.freeze({ x: NaN, y: NaN })
+
+export function newDataVector(x: number, y: number): DataVector {
+  return { x, y }
+}
+
+/**
+ * Represents a vector in the data space.
+ */
+export class DataVectorEx implements DataVector {
   /**
    * The x-coordinate.
    */
@@ -25,6 +43,10 @@ export class DataVector {
   constructor(x: number, y: number) {
     this._x = x
     this._y = y
+  }
+
+  static from(dv: DataVector) {
+    return new DataVectorEx(dv.x, dv.y)
   }
 
   /**
@@ -60,9 +82,9 @@ export class DataVector {
    * @param d The multiplication factor.
    * @returns The result of the operator.
    */
-  public times(d: number): DataVector {
+  public times(d: number): DataVectorEx {
     const v = this
-    return new DataVector(v._x * d, v._y * d)
+    return new DataVectorEx(v._x * d, v._y * d)
   }
 
   /**
@@ -70,9 +92,9 @@ export class DataVector {
    * @param d The vector to be added.
    * @returns The result of the operation.
    */
-  public plus(d: DataVector): DataVector {
+  public plus(d: DataVector): DataVectorEx {
     const v = this
-    return new DataVector(v._x + d._x, v._y + d._y)
+    return new DataVectorEx(v._x + d.x, v._y + d.y)
   }
 
   /**
@@ -80,18 +102,18 @@ export class DataVector {
    * @param d The vector to be subtracted.
    * @returns The result of operation.
    */
-  public minus(d: DataVector): DataVector {
+  public minus(d: DataVector): DataVectorEx {
     const v = this
-    return new DataVector(v._x - d._x, v._y - d._y)
+    return new DataVectorEx(v._x - d.x, v._y - d.y)
   }
 
   /**
    * Negates the specified vector.
    * @returns The result of operation.
    */
-  public negate(): DataVector {
+  public negate(): DataVectorEx {
     const v = this
-    return new DataVector(-v._x, -v._y)
+    return new DataVectorEx(-v._x, -v._y)
   }
 
   /**
@@ -100,7 +122,7 @@ export class DataVector {
    * @returns true if the value of the other parameter is the same as the value of this instance; otherwise, false.
    */
   public equals(other: DataVector): boolean {
-    return this._x === other._x && this._y === other._y
+    return this._x === other.x && this._y === other.y
   }
 
   /**
@@ -115,7 +137,7 @@ export class DataVector {
    * @returns true if this point is defined; otherwise, false.
    */
   public isDefined(): boolean {
-    // check that x and y is not NaN (the code below is faster than isNaN)
-    return this._x === this._x && this._y === this._y
+    // check that x and y is not NaN
+    return !isNaN(this._x) && !isNaN(this._y)
   }
 }

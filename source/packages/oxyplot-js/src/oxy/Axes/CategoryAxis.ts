@@ -18,7 +18,7 @@ export interface CreateCategoryAxisOptions extends CreateAxisOptions {
   labels?: string[]
 }
 
-export const DefaultCategoryAxisOptions: CreateCategoryAxisOptions = {
+const DefaultCategoryAxisOptions: CreateCategoryAxisOptions = {
   isTickCentered: false,
   tickStyle: TickStyle.Outside,
   position: AxisPosition.Bottom,

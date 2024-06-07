@@ -20,7 +20,7 @@ export interface CreateSplineOptions extends CreatePathAnnotationOptions {
   points?: DataPoint[]
 }
 
-export const DefaultPolylineOptions: CreateSplineOptions = {
+const DefaultPolylineOptions: CreateSplineOptions = {
   interpolationAlgorithm: undefined,
   points: undefined,
 }

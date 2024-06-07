@@ -40,7 +40,7 @@ export interface CreateCandleStickSeriesOptions extends CreateHighLowSeriesOptio
   candleWidth?: number
 }
 
-export const DefaultCandleStickSeriesOptions: CreateCandleStickSeriesOptions = {
+const DefaultCandleStickSeriesOptions: CreateCandleStickSeriesOptions = {
   increasingColor: OxyColors.DarkGreen,
   decreasingColor: OxyColors.Red,
   candleWidth: 0,

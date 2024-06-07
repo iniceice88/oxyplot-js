@@ -16,7 +16,7 @@ import {
 
 export type CreateTransposableAnnotationOptions = CreateAnnotationOptions
 
-export const DefaultTransposableAnnotationOptions: CreateTransposableAnnotationOptions = {}
+const DefaultTransposableAnnotationOptions: CreateTransposableAnnotationOptions = {}
 
 export const ExtendedDefaultTransposableAnnotationOptions = {
   ...ExtendedDefaultAnnotationOptions,

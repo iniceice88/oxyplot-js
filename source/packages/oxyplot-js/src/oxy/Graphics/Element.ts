@@ -28,7 +28,7 @@ export interface CreateElementOptions {
   selectionMode?: SelectionMode
 }
 
-export const DefaultElementOptions: CreateElementOptions = {
+const DefaultElementOptions: CreateElementOptions = {
   selectable: true,
   selectionMode: SelectionMode.All,
 }
@@ -79,10 +79,10 @@ export abstract class Element {
 
   /**
    * When overridden in a derived class, tests if the plot element is hit by the specified point.
-   * @param args The hit test arguments.
+   * @param _args The hit test arguments.
    * @returns The result of the hit test, or undefined if no hit is detected.
    */
-  protected hitTestOverride(args: HitTestArguments): HitTestResult | undefined {
+  protected hitTestOverride(_args: HitTestArguments): HitTestResult | undefined {
     return undefined
   }
 

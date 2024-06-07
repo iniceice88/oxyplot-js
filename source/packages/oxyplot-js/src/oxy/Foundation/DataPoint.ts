@@ -1,4 +1,4 @@
-﻿import { DataVector } from '@/oxyplot'
+﻿import { type DataVector, DataVectorEx } from '@/oxyplot'
 
 /**
  * Represents a point in the data space.
@@ -13,6 +13,54 @@ export interface DataPoint {
    * The y-coordinate.
    */
   y: number
+}
+
+export class DataPointEx implements DataPoint {
+  private readonly _x: number
+  private readonly _y: number
+
+  constructor(x: number, y: number) {
+    this._x = x
+    this._y = y
+  }
+
+  static from(dp: DataPoint) {
+    return new DataPointEx(dp.x, dp.y)
+  }
+
+  get x() {
+    return this._x
+  }
+
+  get y() {
+    return this._y
+  }
+
+  /**
+   * Subtracts a DataPoint from a DataPoint
+   * and returns the result as a DataVector.
+   * @returns A DataVector structure that represents the difference between p1 and p2.
+   */
+  minus(other: DataPoint) {
+    return dataPointMinus(this, other)
+  }
+
+  /**
+   * Subtracts a DataVector from a DataPoint
+   * and returns the result as a DataPoint.
+   * @returns A DataPoint that represents point translated by the negative vector.
+   */
+  minusVector(v: DataVector) {
+    return dataPointMinusVector(this, v)
+  }
+
+  /**
+   * Translates a DataPoint by a DataVector.
+   * @returns The translated point.
+   */
+  plus(other: DataPoint) {
+    return dataPointPlus(this, other)
+  }
 }
 
 /**
@@ -50,8 +98,8 @@ export function isDataPoint(d: any) {
  * and returns the result as a DataVector.
  * @returns A DataVector structure that represents the difference between p1 and p2.
  */
-export function dataPointMinus(p1: DataPoint, p2: DataPoint): DataVector {
-  return new DataVector(p1.x - p2.x, p1.y - p2.y)
+export function dataPointMinus(p1: DataPoint, p2: DataPoint): DataVectorEx {
+  return new DataVectorEx(p1.x - p2.x, p1.y - p2.y)
 }
 
 /**

@@ -15,19 +15,19 @@ export abstract class ManipulatorBase<T extends OxyInputEventArgs> {
 
   /**
    * Occurs when a manipulation is complete.
-   * @param e The OxyInputEventArgs instance containing the event data.
+   * @param _e The OxyInputEventArgs instance containing the event data.
    */
-  completed(e: T): void {}
+  completed(_e: T): void {}
 
   /**
    * Occurs when the input device changes position during a manipulation.
-   * @param e The OxyInputEventArgs instance containing the event data.
+   * @param _e The OxyInputEventArgs instance containing the event data.
    */
-  delta(e: T): void {}
+  delta(_e: T): void {}
 
   /**
    * Occurs when an input device begins a manipulation on the plot.
-   * @param e The OxyInputEventArgs instance containing the event data.
+   * @param _e The OxyInputEventArgs instance containing the event data.
    */
-  started(e: T): void {}
+  started(_e: T): void {}
 }

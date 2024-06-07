@@ -2,6 +2,7 @@ import {
   type CreatePathAnnotationOptions,
   type DataPoint,
   ExtendedDefaultPathAnnotationOptions,
+  FunctionAnnotationType,
   newDataPoint,
   PathAnnotation,
   type PlotModelSerializeOptions,
@@ -9,27 +10,13 @@ import {
 } from '@/oxyplot'
 import { assignObject } from '@/patch'
 
-/**
- * Defines the definition of function in a FunctionAnnotation.
- */
-export enum FunctionAnnotationType {
-  /**
-   * Curve equation x=f(y) given by the Equation property
-   */
-  EquationX,
-  /**
-   * Curve equation y=f(x) given by the Equation property
-   */
-  EquationY,
-}
-
 export interface CreateFunctionAnnotationOptions extends CreatePathAnnotationOptions {
   equation?: (arg: number) => number
   resolution?: number
   type?: FunctionAnnotationType
 }
 
-export const DefaultFunctionAnnotationOptions: CreateFunctionAnnotationOptions = {
+const DefaultFunctionAnnotationOptions: CreateFunctionAnnotationOptions = {
   resolution: 400,
   type: FunctionAnnotationType.EquationX,
 

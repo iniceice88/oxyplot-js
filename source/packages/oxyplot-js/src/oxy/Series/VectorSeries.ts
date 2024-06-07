@@ -5,7 +5,8 @@ import {
   type DataPoint,
   dataPointMinusVector,
   dataPointPlus,
-  DataVector,
+  type DataVector,
+  DataVectorEx,
   ExtendedDefaultXYAxisSeriesOptions,
   HorizontalAlignment,
   type IColorAxis,
@@ -96,7 +97,7 @@ export interface CreateVectorSeriesOptions extends CreateXYAxisSeriesOptions {
   items?: VectorItem[]
 }
 
-export const DefaultVectorSeriesOptions: CreateVectorSeriesOptions = {
+const DefaultVectorSeriesOptions: CreateVectorSeriesOptions = {
   color: OxyColors.Automatic,
   arrowHeadLength: 10,
   arrowHeadWidth: 3,
@@ -320,7 +321,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
 
       vectorColor = this.getSelectableColor(vectorColor, i)
 
-      const vector = item.direction
+      const vector = DataVectorEx.from(item.direction)
       const origin = dataPointMinusVector(item.origin, vector.times(this.arrowStartPosition))
       const textOrigin = dataPointPlus(origin, vector.times(this.arrowLabelPosition))
 
@@ -366,7 +367,7 @@ ${args.colorAxisTitle}: ${args.item!.value}
     color: OxyColor,
   ): Promise<void> {
     // draws a line with an arrowhead glued on the tip (the arrowhead does not point to the end point)
-    const d = ScreenVectorEx.fromVector(direction).normalize()
+    const d = ScreenVectorEx.from(direction).normalize()
     const n = newScreenVectorEx(d.y, -d.x)
 
     const actualHeadLength = this.arrowHeadLength * this.strokeThickness
@@ -491,11 +492,27 @@ ${args.colorAxisTitle}: ${args.item!.value}
     const actualItems = this.ActualItems
 
     const allDataPoints: DataPoint[] = []
+    // allDataPoints.push(
+    //   ...actualItems.map((item) => {
+    //     const dv = DataVectorEx.from(item.direction).times(this.arrowStartPosition)
+    //     return DataPointEx.from(item.origin).minusVector(dv)
+    //   }),
+    // )
+    // allDataPoints.push(
+    //   ...actualItems.map((item) => {
+    //     const dv = DataVectorEx.from(item.direction).times(1 - this.arrowStartPosition)
+    //     return DataPointEx.from(item.origin).plus(dv)
+    //   }),
+    // )
     allDataPoints.push(
-      ...actualItems.map((item) => dataPointMinusVector(item.origin, item.direction.times(this.arrowStartPosition))),
+      ...actualItems.map((item) =>
+        dataPointMinusVector(item.origin, DataVectorEx.from(item.direction).times(this.arrowStartPosition)),
+      ),
     )
     allDataPoints.push(
-      ...actualItems.map((item) => dataPointPlus(item.origin, item.direction.times(1 - this.arrowStartPosition))),
+      ...actualItems.map((item) =>
+        dataPointPlus(item.origin, DataVectorEx.from(item.direction).times(1 - this.arrowStartPosition)),
+      ),
     )
     this.internalUpdateMaxMin(allDataPoints)
 

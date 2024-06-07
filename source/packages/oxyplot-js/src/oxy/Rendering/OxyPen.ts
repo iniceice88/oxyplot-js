@@ -1,4 +1,5 @@
-﻿import { LineJoin, LineStyle, LineStyleHelper, type OxyColor, OxyColorHelper } from '@/oxyplot'
+﻿import { LineStyleHelper, type OxyColor, OxyColorHelper } from '@/oxyplot'
+import { LineJoin, LineStyle } from './types'
 
 /**
  * Describes a pen in terms of color, thickness, line style and line join type.

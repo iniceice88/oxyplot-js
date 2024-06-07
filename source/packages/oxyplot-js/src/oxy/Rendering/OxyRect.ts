@@ -132,9 +132,9 @@ export function newOxyRect(left: number, top: number, width: number, height: num
 /**
  * Gets an infinitely large `OxyRect` starting at (0,0).
  */
-export const OxyRect_Everything = Object.freeze(newOxyRect(0, 0, Infinity, Infinity))
+export const OxyRect_Everything = newOxyRect(0, 0, Infinity, Infinity)
 
-export const OxyRect_Empty = Object.freeze(newOxyRect(0, 0, 0, 0))
+export const OxyRect_Empty = newOxyRect(0, 0, 0, 0)
 
 export class OxyRectHelper {
   /**

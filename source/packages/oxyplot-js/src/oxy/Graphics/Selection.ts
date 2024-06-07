@@ -30,7 +30,7 @@ export class Selection {
    * Gets the indices of the selected items in this selection.
    */
   public getSelectedItems(): number[] {
-    return Array.from(this.selection.keys()).map((si) => si.Index)
+    return Array.from(this.selection.keys()).map((si) => si.index)
   }
 
   /**
@@ -39,8 +39,8 @@ export class Selection {
    */
   public getSelectedItemsByFeature(feature: any): number[] {
     return Array.from(this.selection.keys())
-      .filter((si) => si.Feature === feature)
-      .map((si) => si.Index)
+      .filter((si) => si.feature === feature)
+      .map((si) => si.index)
   }
 
   /**
@@ -60,7 +60,7 @@ export class Selection {
       return true
     }
 
-    const si = new SelectionItem(index, feature)
+    const si = newSelectionItem(index, feature)
     return this.hasSelection(si)
   }
 
@@ -70,7 +70,7 @@ export class Selection {
    * @param feature The feature.
    */
   public select(index: number, feature?: any): void {
-    const si = new SelectionItem(index, feature)
+    const si = newSelectionItem(index, feature)
     this.setSelection(si, true)
   }
 
@@ -80,7 +80,7 @@ export class Selection {
    * @param feature The feature.
    */
   public unselect(index: number, feature?: any): void {
-    const si = new SelectionItem(index, feature)
+    const si = newSelectionItem(index, feature)
     if (!this.hasSelection(si)) {
       throw new Error(`Item ${index} and feature ${feature} is not selected. Cannot unselect.`)
     }
@@ -90,7 +90,7 @@ export class Selection {
 
   private getSameKey(item: SelectionItem) {
     for (const si of this.selection.keys()) {
-      if (si.equals(item)) return si
+      if (selectionItemEquals(si, item)) return si
     }
     return undefined
   }
@@ -114,46 +114,30 @@ export class Selection {
 /**
  * Represents an item in a Selection.
  */
-class SelectionItem {
+interface SelectionItem {
   /**
    * The index
    */
-  private readonly index: number
+  readonly index: number
 
   /**
    * The feature
    */
-  private readonly feature?: any
+  readonly feature?: any
+}
 
-  /**
-   * Initializes a new instance of the SelectionItem class.
-   * @param index The index.
-   * @param feature The feature.
-   */
-  constructor(index: number, feature?: any) {
-    this.index = index
-    this.feature = feature
+function newSelectionItem(index: number, feature?: any): SelectionItem {
+  return {
+    index,
+    feature,
   }
+}
 
-  /**
-   * Gets the index.
-   */
-  public get Index(): number {
-    return this.index
-  }
-
-  /**
-   * Gets the feature.
-   */
-  public get Feature(): any {
-    return this.feature
-  }
-
-  /**
-   * Indicates whether the current object is equal to another object of the same type.
-   * @param other An object to compare with this object.
-   */
-  public equals(other: SelectionItem): boolean {
-    return other.index === this.index && other.feature === this.feature
-  }
+/**
+ * Indicates whether the current object is equal to another object of the same type.
+ * @param si
+ * @param other An object to compare with this object.
+ */
+function selectionItemEquals(si: SelectionItem, other: SelectionItem): boolean {
+  return other.index === si.index && other.feature === si.feature
 }

@@ -17,7 +17,7 @@ export interface CreateCategoryColorAxisOptions extends CreateCategoryAxisOption
   palette?: OxyPalette
 }
 
-export const DefaultCategoryColorAxisOptions: CreateCategoryColorAxisOptions = {
+const DefaultCategoryColorAxisOptions: CreateCategoryColorAxisOptions = {
   invalidCategoryColor: OxyColors.Undefined,
   palette: newOxyPalette(),
 }

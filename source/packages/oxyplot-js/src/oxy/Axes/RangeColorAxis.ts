@@ -23,7 +23,7 @@ export interface CreateRangeColorAxisOptions extends CreateLinearAxisOptions {
   invalidNumberColor?: OxyColor
 }
 
-export const DefaultRangeColorAxisOptions: CreateRangeColorAxisOptions = {
+const DefaultRangeColorAxisOptions: CreateRangeColorAxisOptions = {
   highColor: OxyColors.Undefined,
   lowColor: OxyColors.Undefined,
   invalidNumberColor: OxyColors.Gray,

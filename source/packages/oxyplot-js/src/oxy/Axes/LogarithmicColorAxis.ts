@@ -31,7 +31,7 @@ export interface CreateLogarithmicColorAxisOptions extends CreateLogarithmicAxis
   renderAsImage?: boolean
 }
 
-export const DefaultLogarithmicColorAxisOptions: CreateLogarithmicColorAxisOptions = {
+const DefaultLogarithmicColorAxisOptions: CreateLogarithmicColorAxisOptions = {
   highColor: OxyColors.Undefined,
   lowColor: OxyColors.Undefined,
   invalidNumberColor: OxyColors.Gray,

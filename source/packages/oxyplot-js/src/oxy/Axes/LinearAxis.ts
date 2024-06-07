@@ -7,7 +7,7 @@ export interface CreateLinearAxisOptions extends CreateAxisOptions {
   formatAsFractions?: boolean
 }
 
-export const DefaultLinearAxisOptions: CreateLinearAxisOptions = {
+const DefaultLinearAxisOptions: CreateLinearAxisOptions = {
   fractionUnit: 1.0,
   formatAsFractions: false,
 

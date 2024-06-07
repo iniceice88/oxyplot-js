@@ -19,7 +19,7 @@ export interface CreateTextualAnnotationOptions extends CreateTransposableAnnota
   textRotation?: number
 }
 
-export const DefaultTextualAnnotationOptions: CreateTextualAnnotationOptions = {
+const DefaultTextualAnnotationOptions: CreateTextualAnnotationOptions = {
   textHorizontalAlignment: HorizontalAlignment.Center,
   textVerticalAlignment: VerticalAlignment.Middle,
   textPosition: DataPoint_Undefined,

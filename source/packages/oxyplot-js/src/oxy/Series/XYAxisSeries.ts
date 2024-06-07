@@ -28,7 +28,7 @@ export interface CreateXYAxisSeriesOptions extends CreateItemsSeriesOptions {
   yAxisKey?: string
 }
 
-export const DefaultXYAxisSeriesOptions: CreateXYAxisSeriesOptions = {
+const DefaultXYAxisSeriesOptions: CreateXYAxisSeriesOptions = {
   trackerStringFormatter: undefined,
 
   xAxisKey: undefined,

@@ -30,7 +30,7 @@ export interface CreateErrorBarSeriesOptions extends CreateBarSeriesOptions {
   errorWidth?: number
 }
 
-export const DefaultErrorBarSeriesOptions: CreateErrorBarSeriesOptions = {
+const DefaultErrorBarSeriesOptions: CreateErrorBarSeriesOptions = {
   errorStrokeThickness: 1,
   errorWidth: 0.4,
 }

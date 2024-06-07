@@ -48,7 +48,7 @@ export interface IntervalBarItem extends BarItemBase {
   title?: string
 }
 
-export const DefaultIntervalBarItemOptions: IntervalBarItem = {
+const DefaultIntervalBarItemOptions: IntervalBarItem = {
   categoryIndex: -1,
   color: OxyColors.Automatic,
   end: 0,
@@ -78,7 +78,7 @@ export interface CreateIntervalBarSeriesOptions extends CreateBarSeriesBaseOptio
   trackerStringFormatter?: IntervalBarSeriesTrackerStringFormatterType
 }
 
-export const DefaultIntervalBarSeriesOptions: CreateIntervalBarSeriesOptions = {
+const DefaultIntervalBarSeriesOptions: CreateIntervalBarSeriesOptions = {
   fillColor: OxyColors.Automatic,
   strokeThickness: 1,
   labelMargin: 4,

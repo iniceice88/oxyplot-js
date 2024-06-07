@@ -25,7 +25,7 @@ export interface CreateMagnitudeAxisOptions extends CreateLinearAxisOptions {
   midPoint?: ScreenPoint
 }
 
-export const DefaultMagnitudeAxisOptions: CreateMagnitudeAxisOptions = {
+const DefaultMagnitudeAxisOptions: CreateMagnitudeAxisOptions = {
   midPoint: ScreenPoint_LeftTop,
   position: AxisPosition.None,
   isPanEnabled: false,

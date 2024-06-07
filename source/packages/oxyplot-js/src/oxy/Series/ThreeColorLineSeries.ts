@@ -27,7 +27,7 @@ export interface CrateThreeColorLineSeriesOptions extends CreateLineSeriesOption
   lineStyleHi?: LineStyle
 }
 
-export const DefaultThreeColorLineSeriesOptions: CrateThreeColorLineSeriesOptions = {
+const DefaultThreeColorLineSeriesOptions: CrateThreeColorLineSeriesOptions = {
   colorLo: OxyColorHelper.fromRgb(0, 0, 255), // Blue
   colorHi: OxyColorHelper.fromRgb(255, 0, 0), // Red
   limitLo: -5.0,

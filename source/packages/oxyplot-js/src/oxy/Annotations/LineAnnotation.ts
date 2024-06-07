@@ -2,32 +2,13 @@ import {
   type CreatePathAnnotationOptions,
   type DataPoint,
   ExtendedDefaultPathAnnotationOptions,
+  LineAnnotationType,
   LinearAxis,
   newDataPoint,
   PathAnnotation,
   type ScreenPoint,
 } from '@/oxyplot'
 import { assignObject } from '@/patch'
-
-/**
- * Specifies the definition of the line in a LineAnnotation.
- */
-export enum LineAnnotationType {
-  /**
-   * Horizontal line given by the Y property
-   */
-  Horizontal,
-
-  /**
-   * Vertical line given by the X property
-   */
-  Vertical,
-
-  /**
-   * Linear equation y=mx+b given by the Slope and Intercept properties
-   */
-  LinearEquation,
-}
 
 export interface CreateLineAnnotationOptions extends CreatePathAnnotationOptions {
   intercept?: number
@@ -37,7 +18,7 @@ export interface CreateLineAnnotationOptions extends CreatePathAnnotationOptions
   y?: number
 }
 
-export const DefaultLineAnnotationOptions: CreateLineAnnotationOptions = {
+const DefaultLineAnnotationOptions: CreateLineAnnotationOptions = {
   intercept: 0,
   slope: 0,
   type: LineAnnotationType.LinearEquation,

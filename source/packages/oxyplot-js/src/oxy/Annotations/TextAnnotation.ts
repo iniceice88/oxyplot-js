@@ -1,7 +1,7 @@
 import {
   type CreateTextualAnnotationOptions,
   ExtendedDefaultTextualAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
@@ -33,7 +33,7 @@ export interface CreateTextAnnotationOptions extends CreateTextualAnnotationOpti
   strokeThickness?: number
 }
 
-export const DefaultTextAnnotationOptions: CreateTextAnnotationOptions = {
+const DefaultTextAnnotationOptions: CreateTextAnnotationOptions = {
   background: OxyColors.Undefined,
   offset: ScreenVector_Zero,
   padding: newOxyThickness(4),

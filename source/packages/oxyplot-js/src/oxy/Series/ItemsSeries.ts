@@ -5,7 +5,7 @@ export interface CreateItemsSeriesOptions extends CreateSeriesOptions {
   itemsSource?: any[]
 }
 
-export const DefaultItemsSeriesOptions: CreateItemsSeriesOptions = {
+const DefaultItemsSeriesOptions: CreateItemsSeriesOptions = {
   itemsSource: undefined,
 }
 

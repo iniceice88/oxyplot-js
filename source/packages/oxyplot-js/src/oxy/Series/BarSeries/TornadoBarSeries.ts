@@ -86,7 +86,7 @@ export interface CreateTornadoBarSeriesOptions extends CreateBarSeriesBaseOption
   actualMinimumBarRectangles?: OxyRect[]
 }
 
-export const DefaultTornadoBarSeriesOptions: CreateTornadoBarSeriesOptions = {
+const DefaultTornadoBarSeriesOptions: CreateTornadoBarSeriesOptions = {
   maximumFillColor: OxyColorHelper.fromRgb(216, 82, 85),
   minimumFillColor: OxyColorHelper.fromRgb(84, 138, 209),
 

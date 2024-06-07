@@ -53,11 +53,11 @@ export interface BarSeriesTrackerStringFormatterArgs extends TrackerStringFormat
 /**
  * The default tracker formatter
  */
-export const DefaultBarSeriesTrackerFormatter: BarSeriesTrackerStringFormatterType = function (args) {
+const DefaultBarSeriesTrackerFormatter: BarSeriesTrackerStringFormatterType = function (args) {
   return `${args.title || ''}\n${args.category}: ${args.value}`
 }
 
-export const DefaultBarSeriesOptions: CreateBarSeriesOptions = {
+const DefaultBarSeriesOptions: CreateBarSeriesOptions = {
   fillColor: OxyColors.Automatic,
   negativeFillColor: OxyColors.Undefined,
   labelMargin: 2,

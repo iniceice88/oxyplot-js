@@ -24,7 +24,7 @@ export interface CreatePlotElementOptions extends CreateElementOptions {
   toolTip?: string
 }
 
-export const DefaultPlotElementOptions: CreatePlotElementOptions = {
+const DefaultPlotElementOptions: CreatePlotElementOptions = {
   fontSize: NaN,
   fontWeight: FontWeights.Normal,
   textColor: OxyColors.Automatic,

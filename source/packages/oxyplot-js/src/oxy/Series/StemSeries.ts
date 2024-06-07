@@ -22,7 +22,7 @@ export interface CreateStemSeriesOptions extends CreateLineSeriesOptions {
   base?: number
 }
 
-export const DefaultStemSeriesOptions: CreateStemSeriesOptions = {
+const DefaultStemSeriesOptions: CreateStemSeriesOptions = {
   base: 0,
 }
 

@@ -26,7 +26,7 @@ export interface CreateAnnotationOptions extends CreatePlotElementOptions {
   yAxis?: Axis
 }
 
-export const DefaultAnnotationOptions: CreateAnnotationOptions = {
+const DefaultAnnotationOptions: CreateAnnotationOptions = {
   clipByXAxis: true,
   clipByYAxis: true,
   layer: AnnotationLayer.AboveSeries,

@@ -1,7 +1,7 @@
 import {
   type CreateShapeAnnotationOptions,
   ExtendedDefaultShapeAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IRenderContext,
   MarkerType,
@@ -27,7 +27,7 @@ export interface CreatePointAnnotationOptions extends CreateShapeAnnotationOptio
   customOutline?: ScreenPoint[]
 }
 
-export const DefaultPointAnnotationOptions: CreatePointAnnotationOptions = {
+const DefaultPointAnnotationOptions: CreatePointAnnotationOptions = {
   x: 0,
   y: 0,
   size: 4,

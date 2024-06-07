@@ -1,4 +1,4 @@
-﻿import { HorizontalAlignment, VerticalAlignment } from './Alignments'
+﻿import { HorizontalAlignment, VerticalAlignment } from './types'
 import { newScreenVector, type ScreenVector, ScreenVectorEx } from './ScreenVector'
 import { type ScreenPoint, screenPointPlus } from './ScreenPoint'
 import { newOxyRect, type OxyRect } from './OxyRect'
@@ -29,7 +29,7 @@ export function newOxySize(width?: number, height?: number): Readonly<OxySize> {
   })
 }
 
-export const OxySize_Empty = Object.freeze(newOxySize())
+export const OxySize_Empty = newOxySize()
 
 export class OxySizeEx implements OxySize {
   private _size: OxySize
@@ -94,10 +94,10 @@ export class OxySizeEx implements OxySize {
       return newOxyRect(-origin.x, -origin.y, bounds.width, bounds.height)
     }
 
-    const p0 = ScreenVectorEx.fromXY(0, 0).minus(origin).vector
-    const p1 = ScreenVectorEx.fromXY(bounds.width, 0).minus(origin).vector
-    const p2 = ScreenVectorEx.fromXY(bounds.width, bounds.height).minus(origin).vector
-    const p3 = ScreenVectorEx.fromXY(0, bounds.height).minus(origin).vector
+    const p0 = ScreenVectorEx.fromXY(0, 0).minus(origin)
+    const p1 = ScreenVectorEx.fromXY(bounds.width, 0).minus(origin)
+    const p2 = ScreenVectorEx.fromXY(bounds.width, bounds.height).minus(origin)
+    const p3 = ScreenVectorEx.fromXY(0, bounds.height).minus(origin)
 
     const theta = (angle * Math.PI) / 180.0
     const costh = Math.cos(theta)
@@ -144,16 +144,16 @@ export class OxySizeEx implements OxySize {
     const offset = newScreenVector(u * size.width, v * size.height)
 
     // the corners of the rectangle
-    let p0 = ScreenVectorEx.fromXY(0, 0).minus(offset).vector
-    let p1 = ScreenVectorEx.fromXY(size.width, 0).minus(offset).vector
-    let p2 = ScreenVectorEx.fromXY(size.width, size.height).minus(offset).vector
-    let p3 = ScreenVectorEx.fromXY(0, size.height).minus(offset).vector
+    let p0 = ScreenVectorEx.fromXY(0, 0).minus(offset)
+    let p1 = ScreenVectorEx.fromXY(size.width, 0).minus(offset)
+    let p2 = ScreenVectorEx.fromXY(size.width, size.height).minus(offset)
+    let p3 = ScreenVectorEx.fromXY(0, size.height).minus(offset)
 
     if (angle !== 0) {
       const theta = (angle * Math.PI) / 180.0
       const costh = Math.cos(theta)
       const sinth = Math.sin(theta)
-      const rotate = (p: ScreenVector) => newScreenVector(costh * p.x - sinth * p.y, sinth * p.x + costh * p.y)
+      const rotate = (p: ScreenVector) => ScreenVectorEx.fromXY(costh * p.x - sinth * p.y, sinth * p.x + costh * p.y)
 
       p0 = rotate(p0)
       p1 = rotate(p1)

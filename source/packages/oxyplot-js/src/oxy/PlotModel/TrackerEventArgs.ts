@@ -7,5 +7,5 @@ export interface TrackerEventArgs {
   /**
    * Gets or sets the hit result.
    */
-  hitResult?: TrackerHitResult
+  readonly hitResult?: TrackerHitResult
 }

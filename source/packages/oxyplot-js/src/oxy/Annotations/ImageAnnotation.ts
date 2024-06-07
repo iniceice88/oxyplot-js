@@ -2,7 +2,7 @@ import {
   type CreateTransposableAnnotationOptions,
   DataPoint_Zero,
   ExtendedDefaultTransposableAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
@@ -42,7 +42,7 @@ export interface CreateImageAnnotationOptions extends CreateTransposableAnnotati
   verticalAlignment?: VerticalAlignment
 }
 
-export const DefaultImageAnnotationOptions: CreateImageAnnotationOptions = {
+const DefaultImageAnnotationOptions: CreateImageAnnotationOptions = {
   x: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
   y: newPlotLength(0.5, PlotLengthUnit.RelativeToPlotArea),
   offsetX: newPlotLength(0, PlotLengthUnit.ScreenUnits),

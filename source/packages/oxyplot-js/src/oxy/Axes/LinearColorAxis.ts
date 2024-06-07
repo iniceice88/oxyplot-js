@@ -31,7 +31,7 @@ export interface CreateLinearColorAxisOptions extends CreateLinearAxisOptions {
   renderAsImage?: boolean
 }
 
-export const DefaultLinearColorAxisOptions: CreateLinearColorAxisOptions = {
+const DefaultLinearColorAxisOptions: CreateLinearColorAxisOptions = {
   invalidNumberColor: OxyColors.Gray,
   highColor: OxyColors.Undefined,
   lowColor: OxyColors.Undefined,

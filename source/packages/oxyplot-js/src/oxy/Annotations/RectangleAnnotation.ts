@@ -2,7 +2,7 @@ import {
   type CreateShapeAnnotationOptions,
   EdgeRenderingMode,
   ExtendedDefaultShapeAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   type IRenderContext,
   type OxyRect,
@@ -22,7 +22,7 @@ export interface RectangleAnnotationOptions extends CreateShapeAnnotationOptions
   maximumY?: number
 }
 
-export const DefaultRectangleAnnotationOptions: RectangleAnnotationOptions = {
+const DefaultRectangleAnnotationOptions: RectangleAnnotationOptions = {
   minimumX: -Infinity,
   maximumX: Infinity,
   minimumY: -Infinity,

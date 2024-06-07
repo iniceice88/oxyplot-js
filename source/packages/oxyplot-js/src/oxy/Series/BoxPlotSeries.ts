@@ -72,7 +72,7 @@ export type BoxPlotSeriesOutlierTrackerStringFormatterType = (
   args: BoxPlotSeriesOutlierTrackerStringFormatterArgs,
 ) => string | undefined
 
-export const DefaultBoxPlotSeriesOptions: CreateBoxPlotSeriesOptions = {
+const DefaultBoxPlotSeriesOptions: CreateBoxPlotSeriesOptions = {
   fill: OxyColors.Automatic,
   stroke: OxyColors.Black,
   boxWidth: 0.3,

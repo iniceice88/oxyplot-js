@@ -1,7 +1,7 @@
 import {
-  HitTestArguments,
   type IPlotView,
   MouseManipulator,
+  newHitTestArguments,
   type OxyMouseEventArgs,
   OxyRectHelper,
   type ScreenPoint,
@@ -174,7 +174,7 @@ export class TrackerManipulator extends MouseManipulator {
         continue
       }
 
-      const args = new HitTestArguments(sp, this.firesDistance)
+      const args = newHitTestArguments(sp, this.firesDistance)
       const res = annotation.hitTest(args)
 
       if (!res) {

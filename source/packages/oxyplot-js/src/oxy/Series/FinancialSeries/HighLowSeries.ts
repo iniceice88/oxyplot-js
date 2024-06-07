@@ -97,7 +97,7 @@ export interface CreateHighLowSeriesOptions extends CreateXYAxisSeriesOptions {
   items?: HighLowItem[]
 }
 
-export const DefaultHighLowSeriesOptions: CreateHighLowSeriesOptions = {
+const DefaultHighLowSeriesOptions: CreateHighLowSeriesOptions = {
   color: OxyColors.Automatic,
   lineJoin: LineJoin.Miter,
   lineStyle: LineStyle.Solid,

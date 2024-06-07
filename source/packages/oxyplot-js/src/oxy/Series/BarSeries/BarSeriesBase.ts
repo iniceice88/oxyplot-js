@@ -36,7 +36,7 @@ export interface CreateBarSeriesBaseOptions extends CreateXYAxisSeriesOptions {
   items?: BarItemBase[]
 }
 
-export const DefaultBarSeriesBaseOptions: CreateBarSeriesBaseOptions = {
+const DefaultBarSeriesBaseOptions: CreateBarSeriesBaseOptions = {
   barWidth: 1,
   strokeColor: OxyColors.Black,
   strokeThickness: 0,

@@ -24,7 +24,7 @@ export interface CreateStairStepSeriesOptions extends CreateLineSeriesOptions {
   verticalLineStyle?: LineStyle
 }
 
-export const DefaultStairStepSeriesOptions: CreateStairStepSeriesOptions = {
+const DefaultStairStepSeriesOptions: CreateStairStepSeriesOptions = {
   verticalStrokeThickness: NaN,
   verticalLineStyle: LineStyle.None,
 }

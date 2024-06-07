@@ -25,13 +25,13 @@ import {
 } from '@/oxyplot'
 
 import {
+  assignObject,
   getOrDefault,
   isInfinity,
   isNullOrUndef,
   isUndef,
   Number_MAX_VALUE,
   Number_MIN_VALUE,
-  assignObject,
 } from '@/patch'
 
 /**
@@ -80,7 +80,7 @@ export interface CreateScatterSeriesOptions extends CreateXYAxisSeriesOptions {
   points?: ScatterPoint[]
 }
 
-export const DefaultScatterSeriesOptions: CreateScatterSeriesOptions = {
+const DefaultScatterSeriesOptions: CreateScatterSeriesOptions = {
   markerFill: OxyColors.Automatic,
   markerSize: 5,
   markerStroke: OxyColors.Automatic,
@@ -581,8 +581,8 @@ export class ScatterSeries extends XYAxisSeries {
       const x = pt.x
       const y = pt.y
 
-      // Check if the point is defined (the code below is faster than isNaN)
-      if (x !== x || y !== y) {
+      // Check if the point is defined
+      if (isNaN(x) || isNaN(y)) {
         continue
       }
 

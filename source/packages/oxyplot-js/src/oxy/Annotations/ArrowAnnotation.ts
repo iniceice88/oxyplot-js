@@ -4,7 +4,7 @@ import {
   DataPoint_isDefined,
   DataPoint_Zero,
   ExtendedDefaultTextualAnnotationOptions,
-  HitTestArguments,
+  type HitTestArguments,
   type HitTestResult,
   HorizontalAlignment,
   type IRenderContext,
@@ -24,7 +24,6 @@ import {
   type ScreenVector,
   ScreenVector_Zero,
   ScreenVectorEx,
-  ScreenVectorHelper,
   TextualAnnotation,
   VerticalAlignment,
 } from '@/oxyplot'
@@ -43,7 +42,7 @@ export interface CreateArrowAnnotationOptions extends CreateTextualAnnotationOpt
   veeness?: number
 }
 
-export const DefaultArrowAnnotationOptions: CreateArrowAnnotationOptions = {
+const DefaultArrowAnnotationOptions: CreateArrowAnnotationOptions = {
   color: OxyColors.Blue,
   headLength: 10,
   headWidth: 3,
@@ -144,7 +143,7 @@ export class ArrowAnnotation extends TextualAnnotation {
   public async render(rc: IRenderContext): Promise<void> {
     this._screenEndPoint = this.transform(this.endPoint)
 
-    if (ScreenVectorHelper.lengthSquared(this.arrowDirection) > 0) {
+    if (ScreenVectorEx.from(this.arrowDirection).lengthSquared > 0) {
       this._screenStartPoint = screenPointMinusVector(
         this._screenEndPoint,
         PlotElementExtensions.orientateVector(this, this.arrowDirection),

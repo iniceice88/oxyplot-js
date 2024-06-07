@@ -1,11 +1,11 @@
 import {
   ArrayBuilder,
   AxisPosition,
-  DataVector,
   LinearAxis,
   LinearColorAxis,
   LogarithmicAxis,
   newDataPoint,
+  newDataVector,
   newOxyPalette,
   OxyColorHelper,
   OxyPalettes,
@@ -50,7 +50,7 @@ function vectorField(): PlotModel {
     rowCoordinates.map((y) => {
       return {
         origin: newDataPoint(x, y),
-        direction: new DataVector(dpeaksdx(x, y) / 40, dpeaksdy(x, y) / 40),
+        direction: newDataVector(dpeaksdx(x, y) / 40, dpeaksdy(x, y) / 40),
         value: NaN,
       } as VectorItem
     }),
@@ -99,7 +99,7 @@ function logarithmicYAxis(): PlotModel {
     const mag = rand.next() * max
 
     const origin = newDataPoint(rand.next() * w, rand.next() * h + 1)
-    const direction = new DataVector(Math.cos(ang) * mag, Math.sin(ang) * mag)
+    const direction = newDataVector(Math.cos(ang) * mag, Math.sin(ang) * mag)
     s.items.push({
       origin,
       direction,
@@ -173,7 +173,7 @@ function getModel(includeColorAxis: boolean): {
     const mag = rand.next() * max
 
     const origin = newDataPoint(rand.next() * w, rand.next() * h)
-    const direction = new DataVector(Math.cos(ang) * mag, Math.sin(ang) * mag)
+    const direction = newDataVector(Math.cos(ang) * mag, Math.sin(ang) * mag)
     series.items.push({
       origin,
       direction,

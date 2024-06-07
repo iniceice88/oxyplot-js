@@ -8,7 +8,7 @@ import { assignObject, TimeSpan } from '@/patch'
 
 export interface CreateTimeSpanAxisOptions extends CreateLinearAxisOptions {}
 
-export const DefaultTimeSpanAxisOptions: CreateTimeSpanAxisOptions = {}
+const DefaultTimeSpanAxisOptions: CreateTimeSpanAxisOptions = {}
 
 export const ExtendedDefaultTimeSpanAxisOptions = {
   ...ExtendedDefaultLinearAxisOptions,

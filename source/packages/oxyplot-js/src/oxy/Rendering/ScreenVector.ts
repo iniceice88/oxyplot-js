@@ -26,116 +26,83 @@ export function newScreenVectorEx(x: number, y: number): ScreenVectorEx {
 /**
  * The zero point.
  */
-export const ScreenVector_Zero = Object.freeze(newScreenVector(0, 0)) as ScreenVector
+export const ScreenVector_Zero = newScreenVector(0, 0)
 
 export class ScreenVectorEx implements ScreenVector {
-  private _v: ScreenVector
+  private readonly _x: number
+  private readonly _y: number
 
   get x() {
-    return this._v.x
+    return this._x
   }
 
   get y() {
-    return this._v.y
+    return this._y
   }
 
-  get vector(): ScreenVector {
-    return this._v
+  constructor(x: number, y: number) {
+    this._x = x
+    this._y = y
   }
 
-  constructor(v: ScreenVector) {
-    this._v = v
-  }
-
-  get length(): number {
-    return ScreenVectorHelper.length(this._v)
-  }
-
-  get lengthSquared(): number {
-    return ScreenVectorHelper.lengthSquared(this._v)
-  }
-
-  minus(d: ScreenVector): ScreenVectorEx {
-    return ScreenVectorEx.fromVector(ScreenVectorHelper.minus(this._v, d))
-  }
-
-  times(d: number): ScreenVectorEx {
-    return ScreenVectorEx.fromVector(ScreenVectorHelper.times(this._v, d))
-  }
-
-  negate(): ScreenVectorEx {
-    return ScreenVectorEx.fromVector(ScreenVectorHelper.negate(this._v))
-  }
-
-  normalize() {
-    this._v = ScreenVectorHelper.normalize(this._v)
-    return this
-  }
-
-  static fromVector(v: ScreenVector): ScreenVectorEx {
-    return new ScreenVectorEx(v)
+  static from(sv: ScreenVector) {
+    return new ScreenVectorEx(sv.x, sv.y)
   }
 
   static fromXY(x: number, y: number): ScreenVectorEx {
-    return new ScreenVectorEx(newScreenVector(x, y))
+    return new ScreenVectorEx(x, y)
   }
-}
 
-export class ScreenVectorHelper {
   /**
    * Gets the length of the vector.
    */
-  static length(v: ScreenVector): number {
+  get length(): number {
+    const v = this
     return Math.sqrt(v.x * v.x + v.y * v.y)
   }
 
   /**
    * Gets the squared length of the vector.
    */
-  static lengthSquared(v: ScreenVector): number {
+  get lengthSquared(): number {
+    const v = this
     return v.x * v.x + v.y * v.y
   }
 
   /**
-   * Normalizes the vector (makes its length 1).
-   * If the vector has zero length, it remains unchanged.
+   * Subtracts one specified vector from another.
+   * @param d The vector to be subtracted.
    */
-  static normalize(v: ScreenVector): ScreenVector {
+  minus(d: ScreenVector): ScreenVectorEx {
+    const v = this
+    return new ScreenVectorEx(v.x - d.x, v.y - d.y)
+  }
+
+  /**
+   * Implements the operator *.
+   * @param d The multiplication factor.
+   */
+  times(d: number): ScreenVectorEx {
+    const v = this
+    return new ScreenVectorEx(v.x * d, v.y * d)
+  }
+
+  /**
+   * Negates the specified vector.
+   */
+  negate(): ScreenVectorEx {
+    const v = this
+    return new ScreenVectorEx(-v.x, -v.y)
+  }
+
+  normalize(): ScreenVectorEx {
+    const v = this
     if (v === ScreenVector_Zero) throw new Error('Cannot normalize the zero vector')
 
     const length = Math.sqrt(v.x * v.x + v.y * v.y)
     if (length > 0) {
-      return {
-        x: v.x / length,
-        y: v.y / length,
-      }
+      return new ScreenVectorEx(v.x / length, v.y / length)
     }
     return v
-  }
-
-  static plus(v: ScreenVector, d: ScreenVector): ScreenVector {
-    return newScreenVector(v.x + d.x, v.y + d.y)
-  }
-
-  static minus(v: ScreenVector, d: ScreenVector): ScreenVector {
-    return newScreenVector(v.x - d.x, v.y - d.y)
-  }
-
-  static times(v: ScreenVector, d: number): ScreenVector {
-    return newScreenVector(v.x * d, v.y * d)
-  }
-
-  static negate(v: ScreenVector): ScreenVector {
-    return newScreenVector(-v.x, -v.y)
-  }
-
-  /**
-   * Determines whether this vector equals another vector.
-   * @param v
-   * @param other The vector to compare to.
-   * @returns True if the vectors are equal, false otherwise.
-   */
-  static equals(v: ScreenVector, other: ScreenVector): boolean {
-    return v.x === other.x && v.y === other.y
   }
 }

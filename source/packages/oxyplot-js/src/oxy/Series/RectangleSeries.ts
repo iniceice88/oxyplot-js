@@ -146,7 +146,7 @@ export interface CreateRectangleSeriesOptions extends CreateXYAxisSeriesOptions 
   colorAxis?: IColorAxis
 }
 
-export const DefaultRectangleSeriesOptions: CreateRectangleSeriesOptions = {
+const DefaultRectangleSeriesOptions: CreateRectangleSeriesOptions = {
   labelFontSize: 0,
 
   items: undefined,

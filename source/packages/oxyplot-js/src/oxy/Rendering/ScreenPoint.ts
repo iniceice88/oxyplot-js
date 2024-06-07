@@ -48,7 +48,7 @@ export function screenPointMinus(p1: ScreenPoint, p2: ScreenPoint): ScreenVector
 }
 
 export function screenPointMinusEx(p1: ScreenPoint, p2: ScreenPoint): ScreenVectorEx {
-  return ScreenVectorEx.fromVector(screenPointMinus(p1, p2))
+  return ScreenVectorEx.from(screenPointMinus(p1, p2))
 }
 
 /**

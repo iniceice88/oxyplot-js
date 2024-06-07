@@ -90,7 +90,7 @@ export interface CreatePieSeriesOptions extends CreateItemsSeriesOptions {
   trackerStringFormatter?: PieSeriesTrackerStringFormatterType
 }
 
-export const DefaultPieSeriesOptions: CreatePieSeriesOptions = {
+const DefaultPieSeriesOptions: CreatePieSeriesOptions = {
   angleIncrement: 1.0,
   angleSpan: 360.0,
   areInsideLabelsAngled: false,

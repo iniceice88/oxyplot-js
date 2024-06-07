@@ -98,6 +98,8 @@ export function addPlotViewEvents(view: HTMLElement, plotView: WebPlotViewBase) 
     plotView.actualController.handleMouseLeave(plotView, toOxyMouseEventArgs(e))
   }
   view.onwheel = (e) => {
-    plotView.actualController.handleMouseWheel(plotView, toOxyMouseWheelEventArgs(e))
+    if (plotView.actualController.handleMouseWheel(plotView, toOxyMouseWheelEventArgs(e))) {
+      e.preventDefault()
+    }
   }
 }

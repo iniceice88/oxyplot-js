@@ -191,7 +191,7 @@ export interface CreateVolumeSeriesOptions extends CreateXYAxisSeriesOptions {
   barWidth?: number
 }
 
-export const DefaultVolumeSeriesOptions: CreateVolumeSeriesOptions = {
+const DefaultVolumeSeriesOptions: CreateVolumeSeriesOptions = {
   positiveColor: OxyColors.DarkGreen,
   negativeColor: OxyColors.Red,
   barWidth: 0,

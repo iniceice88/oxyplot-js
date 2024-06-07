@@ -14,7 +14,7 @@ export interface CreateLogarithmicAxisOptions extends CreateAxisOptions {
   powerPadding?: boolean
 }
 
-export const DefaultLogarithmicAxisOptions: CreateLogarithmicAxisOptions = {
+const DefaultLogarithmicAxisOptions: CreateLogarithmicAxisOptions = {
   base: 10,
   powerPadding: true,
   filterMinValue: 0,

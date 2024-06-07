@@ -30,7 +30,7 @@ export interface CreateAngleAxisOptions extends CreateLinearAxisOptions {
   endAngle?: number
 }
 
-export const DefaultAngleAxisOptions: CreateAngleAxisOptions = {
+const DefaultAngleAxisOptions: CreateAngleAxisOptions = {
   position: AxisPosition.All,
   tickStyle: TickStyle.None,
   isPanEnabled: false,

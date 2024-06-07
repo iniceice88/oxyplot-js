@@ -1,6 +1,0 @@
-export * from './AxisChangedEventArgs'
-export * from './AxisChangeTypes'
-export * from './AxisLayer'
-export * from './AxisPosition'
-export * from './DateTimeIntervalType'
-export * from './TickStyle'
