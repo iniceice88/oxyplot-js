@@ -3,7 +3,7 @@ import { IPlotView, PlotModelUtilities } from 'oxyplot-js'
 import { onMounted, ref, watch } from 'vue'
 import { safeStringify } from '../utils/safeStringify.ts'
 import { CanvasPlotView, SvgPlotView } from 'oxyplot-js-renderers'
-import { PdfPlotView } from 'oxyplot-js-renderers-pdf'
+import { PdfExporter, PdfPlotView } from 'oxyplot-js-renderers-pdf'
 import { ExampleInfo } from '../examples/types.ts'
 
 type RendererType = 'svg' | 'canvas' | 'pdf'
@@ -119,6 +119,17 @@ function getPlotView() {
 
   throw new Error(`Unknown renderer type: ${currentRendererType.value}`)
 }
+
+async function handleDownloadPdf() {
+  if (!props.exampleInfo) return
+  const ei = props.exampleInfo
+  const model = await ei.example.model()
+  if (!model) return
+  const pdfExporter = new PdfExporter({
+    orientation: pdfOrientation.value,
+  })
+  await pdfExporter.download(model, model.title || props.exampleInfo.title)
+}
 </script>
 
 <template>
@@ -158,6 +169,15 @@ function getPlotView() {
           >
         </div>
       </div>
+      <div class="flex" v-if="currentRendererType === 'pdf'">
+        <Button size="small" severity="info" icon="pi pi-download" @click="handleDownloadPdf" label="Download" />
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.p-button-sm {
+  height: 36px;
+}
+</style>
